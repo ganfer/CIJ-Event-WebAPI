@@ -286,7 +286,7 @@ Check:
 For GitHub Pages the web application origin is normally:
 
 ```text
-https://ganfer.github.io
+https://username.github.io
 ```
 
 not the full repository URL.
