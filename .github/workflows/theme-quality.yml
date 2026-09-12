@@ -36,6 +36,7 @@ jobs:
           mkdir -p theme-screenshots
           sed -i 's#</body>#  <script src="../public/js/theme.js"></script>\n</body>#' tests/theme-preview.html
           PREVIEW="file://${GITHUB_WORKSPACE}/tests/theme-preview.html"
+          FORM_PREVIEW="file://${GITHUB_WORKSPACE}/tests/registration-form-preview.html"
 
           "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
             --window-size=1440,2200 \
@@ -56,6 +57,26 @@ jobs:
             --window-size=390,2200 \
             --screenshot="${GITHUB_WORKSPACE}/theme-screenshots/dark-mobile.png" \
             "${PREVIEW}#dark"
+
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --window-size=1200,1500 \
+            --screenshot="${GITHUB_WORKSPACE}/theme-screenshots/form-light-desktop.png" \
+            "${FORM_PREVIEW}#light"
+
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --window-size=1200,1500 \
+            --screenshot="${GITHUB_WORKSPACE}/theme-screenshots/form-dark-desktop.png" \
+            "${FORM_PREVIEW}#dark"
+
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --window-size=390,1800 \
+            --screenshot="${GITHUB_WORKSPACE}/theme-screenshots/form-light-mobile.png" \
+            "${FORM_PREVIEW}#light"
+
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --window-size=390,1800 \
+            --screenshot="${GITHUB_WORKSPACE}/theme-screenshots/form-dark-mobile.png" \
+            "${FORM_PREVIEW}#dark"
 
       - name: Upload theme preview screenshots
         uses: actions/upload-artifact@v4

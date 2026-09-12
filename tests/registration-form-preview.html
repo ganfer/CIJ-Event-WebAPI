@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-theme-preference="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <script>
+    const requestedTheme = location.hash === '#dark' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = requestedTheme;
+    document.documentElement.dataset.themePreference = requestedTheme;
+    document.documentElement.style.colorScheme = requestedTheme;
+  </script>
+  <link rel="stylesheet" href="../public/css/styles.css">
+  <link rel="stylesheet" href="../public/css/event-details.css">
+  <link rel="stylesheet" href="../public/css/theme.css">
+  <link rel="stylesheet" href="../public/css/registration-form-theme.css">
+  <style>
+    .preview-shell { width: min(940px, calc(100% - 32px)); margin: 36px auto 72px; }
+    .preview-note { color: var(--theme-text-muted); margin: 0 0 22px; }
+  </style>
+</head>
+<body class="event-portal-event-details-page">
+  <main class="preview-shell">
+    <section class="event-portal-registration-section">
+      <div class="event-portal-registration-heading">
+        <p class="event-portal-section-kicker">Registration</p>
+        <h2>Event Registration</h2>
+        <p class="preview-note">Visual fixture with intentionally conflicting vendor styles. Portal overrides should win.</p>
+      </div>
+
+      <div id="event-portal-registration-form-container">
+        <div class="event-portal-registration-form-wrapper event-portal-ci-form-themed" data-portal-form-theme="active">
+          <div data-form-id="preview-form" style="background:#ffffff;color:#111111;padding:28px;border-radius:0;box-shadow:0 0 0 4px #ff00ff inset;">
+            <form class="marketingForm event-portal-ci-form" data-portal-form-theme="active" style="background:#ffffff;color:#111111;font-family:Georgia,serif;padding:20px;">
+              <div class="columnContainer" style="background:#ffffff;padding:12px;">
+                <div class="column" style="background:#ffffff;">
+                  <div class="textFormFieldBlock" data-editorblocktype="Field-text" style="background:#ffffff;margin-bottom:6px;">
+                    <label style="color:#111111;font-family:Georgia,serif;font-size:12px;">First name <span class="required" style="color:red;">*</span></label>
+                    <input type="text" value="Ferdinand" placeholder="First name" style="background:#ffffff;color:#111111;border:3px solid #999999;border-radius:0;padding:4px;">
+                  </div>
+
+                  <div class="textFormFieldBlock" data-editorblocktype="Field-email" style="background:#ffffff;margin-bottom:6px;">
+                    <label style="color:#111111;font-family:Georgia,serif;font-size:12px;">Email <span class="required" style="color:red;">*</span></label>
+                    <input type="email" value="demo@example.com" placeholder="name@example.com" style="background:#ffffff;color:#111111;border:3px solid #999999;border-radius:0;padding:4px;">
+                  </div>
+
+                  <div class="optionSetFormFieldBlock" data-editorblocktype="Field-optionset" style="background:#ffffff;">
+                    <label style="color:#111111;">Role</label>
+                    <select style="background:#ffffff;color:#111111;border:3px solid #999999;border-radius:0;">
+                      <option>Participant</option>
+                      <option>Speaker</option>
+                    </select>
+                  </div>
+
+                  <div class="textFormFieldBlock" data-editorblocktype="Field-textarea" style="background:#ffffff;">
+                    <label style="color:#111111;">Anything we should know?</label>
+                    <textarea placeholder="Optional message" style="background:#ffffff;color:#111111;border:3px solid #999999;border-radius:0;"></textarea>
+                  </div>
+
+                  <div class="twoOptionFormFieldBlock consentBlock" data-editorblocktype="Field-checkbox" style="background:#ffffff;padding:8px;">
+                    <label style="color:#111111;font-family:Georgia,serif;display:flex;align-items:flex-start;">
+                      <input type="checkbox" checked>
+                      <span>I agree to receive information related to this event.</span>
+                    </label>
+                  </div>
+
+                  <div class="fieldError" role="alert" style="color:#ff0000;font-family:Georgia,serif;">Example validation message</div>
+
+                  <div class="submitButtonWrapper" style="background:#ffffff;margin-top:10px;">
+                    <button type="submit" style="background:#00aa00;color:#000000;border-radius:0;padding:4px 8px;font-family:Georgia,serif;">Register now</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
