@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="eventRegistration">Event Registration</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="event-portal-event-details-page">
+    <header class="event-portal-page-header">
+        <div class="event-portal-top-header-content">
+            <a href="index.html" class="event-portal-home-section" title="Home" data-i18n-attrs="title" data-i18n-title="home">
+                <img src="assets/home.svg" alt="Home" class="event-portal-home-icon">
+                <span class="event-portal-home-text" data-i18n="home">Home</span>
+            </a>
+            <div class="event-portal-language-container">
+                <select id="event-portal-language-select" class="hidden" data-i18n-attrs="title" data-i18n-title="selectLanguage" title="Select Language">
+                    <!-- Language options will be populated by JavaScript -->
+                    <!-- The dropdown is for now hidden by CSS rule, because form localization is not supported out of the box -->
+                </select>
+            </div>
+        </div>
+    </header>
+    <main class="event-portal-page-main">
+        <div id="event-portal-registration-form-container">
+            <p id="event-portal-loading-message" data-i18n="loadingForm">Loading registration form...</p>
+        </div>
+    </main>
+    <!-- Load the API library first -->
+    <script src="lib/PublicApi.bundle.js"></script>
+
+    <!-- Load configuration -->
+    <script src="js/config.js"></script>
+
+    <!-- Load localization before other scripts -->
+    <script src="js/localization.js"></script>
+
+    <!-- Then load our wrapper and details code -->
+    <script src="js/api-wrapper.js"></script>
+    <script src="js/event-details.js"></script>
+</body>
+
+</html>
