@@ -11,6 +11,7 @@ const files = {
 
 const failures = [];
 const checks = [];
+const contrastResults = [];
 
 function check(condition, message) {
   checks.push(message);
@@ -63,13 +64,13 @@ function themeVariables(theme) {
 
 function checkContrast(theme, variables) {
   const pairs = [
-    ['text', 'surface', 4.5],
-    ['text-muted', 'surface', 4.5],
-    ['text-soft', 'surface', 4.5],
-    ['accent', 'surface', 4.5],
-    ['accent-contrast', 'accent', 4.5],
-    ['error-text', 'error-bg', 4.5],
-    ['focus', 'surface', 3.0]
+    ['theme-text', 'theme-surface', 4.5],
+    ['theme-text-muted', 'theme-surface', 4.5],
+    ['theme-text-soft', 'theme-surface', 4.5],
+    ['theme-accent', 'theme-surface', 4.5],
+    ['theme-accent-contrast', 'theme-accent', 4.5],
+    ['theme-error-text', 'theme-error-bg', 4.5],
+    ['theme-focus', 'theme-surface', 3.0]
   ];
 
   for (const [foreground, background, minimum] of pairs) {
@@ -79,6 +80,7 @@ function checkContrast(theme, variables) {
     if (!fg || !bg) continue;
 
     const ratio = contrast(fg, bg);
+    contrastResults.push(`${theme}: ${foreground} on ${background} = ${ratio.toFixed(2)}:1`);
     check(ratio >= minimum, `${theme}: ${foreground}/${background} contrast ${ratio.toFixed(2)}:1 >= ${minimum}:1`);
   }
 }
@@ -111,6 +113,8 @@ const light = themeVariables('light');
 const dark = themeVariables('dark');
 checkContrast('light', light);
 checkContrast('dark', dark);
+
+contrastResults.forEach(result => console.log(result));
 
 if (failures.length > 0) {
   console.error(`Theme quality checks failed (${failures.length}/${checks.length}):`);
