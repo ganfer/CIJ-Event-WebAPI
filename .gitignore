@@ -1,0 +1,10 @@
+# Local Dynamics 365 Events API configuration
+public/js/config.js
+
+# Dependencies
+node_modules/
+
+# Local/editor files
+.DS_Store
+.vscode/
+.idea/
