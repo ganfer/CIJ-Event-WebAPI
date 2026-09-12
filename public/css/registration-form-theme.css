@@ -1,0 +1,392 @@
+/*
+ * Portal-owned presentation layer for Customer Insights - Journeys forms.
+ *
+ * The Events API still supplies and operates the registration form. This file
+ * only normalizes its visual presentation so it follows the portal theme.
+ * Keep all selectors scoped to .event-portal-registration-form-wrapper.
+ */
+
+.event-portal-registration-form-wrapper {
+  --ci-form-text: var(--theme-text);
+  --ci-form-muted: var(--theme-text-muted);
+  --ci-form-soft: var(--theme-text-soft);
+  --ci-form-surface: var(--theme-surface-elevated);
+  --ci-form-control-bg: var(--theme-control-bg);
+  --ci-form-control-hover: var(--theme-surface-soft);
+  --ci-form-border: var(--theme-border);
+  --ci-form-border-strong: var(--theme-border-strong);
+  --ci-form-accent: var(--theme-accent);
+  --ci-form-accent-hover: var(--theme-accent-hover);
+  --ci-form-accent-contrast: var(--theme-accent-contrast);
+  --ci-form-focus: var(--theme-focus);
+  --ci-form-error-bg: var(--theme-error-bg);
+  --ci-form-error-text: var(--theme-error-text);
+  --ci-form-error-border: var(--theme-error-border);
+  --ci-form-success-bg: #edfdf3;
+  --ci-form-success-text: #166534;
+  --ci-form-success-border: #86efac;
+  --ci-form-radius: 12px;
+  --ci-form-radius-sm: 9px;
+  --ci-form-gap: 18px;
+
+  width: 100%;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  color: var(--ci-form-text) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color-scheme: light;
+}
+
+html[data-theme="dark"] .event-portal-registration-form-wrapper {
+  --ci-form-success-bg: #10291e;
+  --ci-form-success-text: #bbf7d0;
+  --ci-form-success-border: #166534;
+  color-scheme: dark;
+}
+
+/* The loader inserts the form directly into this wrapper. Strip vendor page
+   surfaces while preserving the form's structural layout. */
+.event-portal-registration-form-wrapper :where(
+  form,
+  [data-form-id],
+  .marketingForm,
+  .formRoot,
+  .columnContainer,
+  .column,
+  .containerWrapper,
+  [data-layout-container],
+  [data-section],
+  [data-editorblocktype]
+) {
+  color: var(--ci-form-text) !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+.event-portal-registration-form-wrapper form {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: inherit !important;
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+}
+
+/* Typography */
+.event-portal-registration-form-wrapper :where(h1, h2, h3, h4, h5, h6, p, label, legend) {
+  font-family: inherit !important;
+  letter-spacing: normal !important;
+}
+
+.event-portal-registration-form-wrapper :where(h1, h2, h3, h4, h5, h6, legend) {
+  color: var(--ci-form-text) !important;
+}
+
+.event-portal-registration-form-wrapper :where(p, .description, .field-description, .helperText, small) {
+  color: var(--ci-form-muted) !important;
+}
+
+.event-portal-registration-form-wrapper label,
+.event-portal-registration-form-wrapper legend {
+  color: var(--ci-form-text) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+}
+
+.event-portal-registration-form-wrapper a {
+  color: var(--ci-form-accent) !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: 3px !important;
+}
+
+.event-portal-registration-form-wrapper a:hover,
+.event-portal-registration-form-wrapper a:focus-visible {
+  color: var(--ci-form-accent-hover) !important;
+}
+
+/* Field rhythm. These selectors cover both current and older CIJ form markup. */
+.event-portal-registration-form-wrapper :where(
+  [class*="FormFieldBlock"],
+  [class*="formFieldBlock"],
+  [data-editorblocktype^="Field-"],
+  .fieldWrapper,
+  .field-wrapper
+) {
+  margin-block: 0 var(--ci-form-gap) !important;
+}
+
+.event-portal-registration-form-wrapper fieldset {
+  min-width: 0 !important;
+  margin: 0 0 var(--ci-form-gap) !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+/* Textual controls */
+.event-portal-registration-form-wrapper :where(
+  input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+  select,
+  textarea
+) {
+  width: 100% !important;
+  min-height: 46px !important;
+  margin: 6px 0 0 !important;
+  padding: 10px 13px !important;
+  border: 1px solid var(--ci-form-border) !important;
+  border-radius: var(--ci-form-radius-sm) !important;
+  outline: 0 !important;
+  color: var(--ci-form-text) !important;
+  background: var(--ci-form-control-bg) !important;
+  box-shadow: none !important;
+  font: inherit !important;
+  font-size: 15px !important;
+  line-height: 1.45 !important;
+  transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease !important;
+}
+
+.event-portal-registration-form-wrapper textarea {
+  min-height: 124px !important;
+  resize: vertical !important;
+}
+
+.event-portal-registration-form-wrapper select {
+  cursor: pointer !important;
+}
+
+.event-portal-registration-form-wrapper :where(
+  input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+  select,
+  textarea
+):hover {
+  border-color: var(--ci-form-border-strong) !important;
+}
+
+.event-portal-registration-form-wrapper :where(
+  input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+  select,
+  textarea
+):focus,
+.event-portal-registration-form-wrapper :where(
+  input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea
+):focus-visible {
+  border-color: var(--ci-form-accent) !important;
+  outline: 3px solid color-mix(in srgb, var(--ci-form-focus) 38%, transparent) !important;
+  outline-offset: 1px !important;
+  box-shadow: 0 0 0 1px var(--ci-form-accent) !important;
+}
+
+.event-portal-registration-form-wrapper :where(input, textarea)::placeholder {
+  color: var(--ci-form-soft) !important;
+  opacity: 1 !important;
+}
+
+.event-portal-registration-form-wrapper :where(input, select, textarea):disabled,
+.event-portal-registration-form-wrapper :where(input, select, textarea)[readonly] {
+  cursor: not-allowed !important;
+  opacity: 0.72 !important;
+  color: var(--ci-form-muted) !important;
+  background: var(--ci-form-control-hover) !important;
+}
+
+/* Checkbox and radio controls deliberately keep the native interaction model. */
+.event-portal-registration-form-wrapper input[type="checkbox"],
+.event-portal-registration-form-wrapper input[type="radio"] {
+  width: 18px !important;
+  height: 18px !important;
+  margin: 2px 8px 0 0 !important;
+  flex: 0 0 auto !important;
+  accent-color: var(--ci-form-accent) !important;
+  cursor: pointer !important;
+}
+
+.event-portal-registration-form-wrapper :where(
+  .twoOptionFormFieldBlock,
+  .optionSetFormFieldBlock,
+  .consentBlock,
+  [class*="checkbox" i],
+  [class*="radio" i]
+) label {
+  color: var(--ci-form-text) !important;
+  font-weight: 500 !important;
+}
+
+/* Required indicators */
+.event-portal-registration-form-wrapper :where(
+  .required,
+  .requiredIndicator,
+  [class*="required" i]
+) {
+  color: var(--ci-form-error-text) !important;
+}
+
+/* Submit CTA */
+.event-portal-registration-form-wrapper :where(
+  .submitButtonWrapper button,
+  button[type="submit"],
+  input[type="submit"]
+) {
+  min-height: 46px !important;
+  margin: 8px 0 0 !important;
+  padding: 11px 22px !important;
+  border: 1px solid transparent !important;
+  border-radius: 999px !important;
+  color: var(--ci-form-accent-contrast) !important;
+  background: var(--ci-form-accent) !important;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--ci-form-accent) 22%, transparent) !important;
+  font: inherit !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+  cursor: pointer !important;
+  appearance: none !important;
+  transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease !important;
+}
+
+.event-portal-registration-form-wrapper :where(
+  .submitButtonWrapper button,
+  button[type="submit"],
+  input[type="submit"]
+):hover {
+  background: var(--ci-form-accent-hover) !important;
+  transform: translateY(-1px) !important;
+}
+
+.event-portal-registration-form-wrapper :where(
+  .submitButtonWrapper button,
+  button[type="submit"],
+  input[type="submit"]
+):focus-visible {
+  outline: 3px solid var(--ci-form-focus) !important;
+  outline-offset: 3px !important;
+}
+
+.event-portal-registration-form-wrapper :where(
+  .submitButtonWrapper button,
+  button[type="submit"],
+  input[type="submit"]
+):disabled {
+  cursor: not-allowed !important;
+  opacity: 0.58 !important;
+  transform: none !important;
+}
+
+/* Validation and submission feedback */
+.event-portal-registration-form-wrapper :where(
+  [role="alert"],
+  .formError,
+  .fieldError,
+  .errorMessage,
+  [class*="error-message" i],
+  [class*="validation" i]
+) {
+  color: var(--ci-form-error-text) !important;
+}
+
+.event-portal-registration-form-wrapper :where(
+  .formError,
+  .onFormSubmittedFeedbackError,
+  [class*="submissionError" i]
+) {
+  margin-block: 14px !important;
+  padding: 12px 14px !important;
+  border: 1px solid var(--ci-form-error-border) !important;
+  border-radius: var(--ci-form-radius-sm) !important;
+  color: var(--ci-form-error-text) !important;
+  background: var(--ci-form-error-bg) !important;
+}
+
+.event-portal-registration-form-wrapper :where(
+  .onFormSubmittedFeedback,
+  .onFormSubmittedFeedbackSuccess,
+  [class*="submissionSuccess" i]
+) {
+  margin-block: 14px !important;
+  padding: 12px 14px !important;
+  border: 1px solid var(--ci-form-success-border) !important;
+  border-radius: var(--ci-form-radius-sm) !important;
+  color: var(--ci-form-success-text) !important;
+  background: var(--ci-form-success-bg) !important;
+}
+
+/* Keep CAPTCHA functional and visually contained without reaching into its iframe. */
+.event-portal-registration-form-wrapper :where(
+  .captcha,
+  .recaptcha,
+  [class*="captcha" i]
+) {
+  max-width: 100% !important;
+  margin-block: var(--ci-form-gap) !important;
+  overflow: visible !important;
+}
+
+.event-portal-registration-form-wrapper iframe {
+  max-width: 100% !important;
+  border-radius: var(--ci-form-radius-sm) !important;
+}
+
+/* Remove vendor white slabs in dark mode without touching third-party iframe contents. */
+html[data-theme="dark"] .event-portal-registration-form-wrapper :where(
+  form,
+  [data-form-id],
+  .marketingForm,
+  .formRoot,
+  .columnContainer,
+  .column,
+  .containerWrapper,
+  [data-layout-container],
+  [data-section],
+  [data-editorblocktype]
+) {
+  color-scheme: dark !important;
+  color: var(--ci-form-text) !important;
+  background-color: transparent !important;
+}
+
+html[data-theme="light"] .event-portal-registration-form-wrapper :where(
+  input,
+  select,
+  textarea,
+  button
+) {
+  color-scheme: light !important;
+}
+
+html[data-theme="dark"] .event-portal-registration-form-wrapper :where(
+  input,
+  select,
+  textarea,
+  button
+) {
+  color-scheme: dark !important;
+}
+
+@media (max-width: 620px) {
+  .event-portal-registration-form-wrapper :where(
+    input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+    select,
+    textarea
+  ) {
+    font-size: 16px !important; /* prevents mobile Safari zoom */
+  }
+
+  .event-portal-registration-form-wrapper :where(
+    .submitButtonWrapper button,
+    button[type="submit"],
+    input[type="submit"]
+  ) {
+    width: 100% !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-portal-registration-form-wrapper :where(input, select, textarea, button) {
+    transition: none !important;
+  }
+}
