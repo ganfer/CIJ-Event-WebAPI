@@ -5,8 +5,10 @@ const files = {
   index: fs.readFileSync('public/index.html', 'utf8'),
   details: fs.readFileSync('public/event-details.html', 'utf8'),
   css: fs.readFileSync('public/css/theme.css', 'utf8'),
+  registrationCss: fs.readFileSync('public/css/registration-form-theme.css', 'utf8'),
   init: 'public/js/theme-init.js',
-  runtime: 'public/js/theme.js'
+  runtime: 'public/js/theme.js',
+  registrationRuntime: 'public/js/registration-form-theme.js'
 };
 
 const failures = [];
@@ -99,15 +101,36 @@ for (const [name, html] of [['index', files.index], ['details', files.details]])
   check(html.includes('data-theme-status aria-live="polite"'), `${name}: theme changes have a screen-reader status region`);
 }
 
-for (const jsFile of [files.init, files.runtime]) {
+check(files.details.includes('css/registration-form-theme.css'), 'details: registration form theme stylesheet is loaded');
+check(files.details.includes('js/registration-form-theme.js'), 'details: registration form theme controller is loaded');
+check(files.details.indexOf('css/registration-form-theme.css') > files.details.indexOf('css/theme.css'), 'details: registration form overrides load after the shared theme');
+check(files.details.indexOf('js/registration-form-theme.js') < files.details.indexOf('js/event-details.js'), 'details: registration form observer is registered before the event form can render');
+
+for (const jsFile of [files.init, files.runtime, files.registrationRuntime]) {
   const syntax = spawnSync(process.execPath, ['--check', jsFile], { encoding: 'utf8' });
   check(syntax.status === 0, `${jsFile}: JavaScript syntax is valid`);
 }
 
+const registrationRuntimeSource = fs.readFileSync(files.registrationRuntime, 'utf8');
+check(registrationRuntimeSource.includes('d365mkt-afterformload'), 'registration form: listens for the Customer Insights after-form-load event');
+check(registrationRuntimeSource.includes('MutationObserver'), 'registration form: observes asynchronously inserted form markup');
+check(registrationRuntimeSource.includes('event-portal-ci-form-themed'), 'registration form: marks themed form hosts without replacing submission logic');
+check(!registrationRuntimeSource.includes('preventDefault'), 'registration form: does not intercept or replace form submission');
+
 check(files.css.includes('@media (max-width: 520px)'), 'theme: compact mobile breakpoint exists');
 check(files.css.includes('@media (prefers-reduced-motion: reduce)'), 'theme: reduced-motion preference is respected');
-check(files.css.includes('html[data-theme="dark"] .event-portal-registration-form-wrapper'), 'theme: external registration form has a protected dark-mode host surface');
-check(files.css.includes('color-scheme: light;'), 'theme: embedded registration form keeps light native controls in dark mode');
+
+check(files.registrationCss.includes('.event-portal-registration-form-wrapper'), 'registration form: all overrides are scoped to the portal registration wrapper');
+check(files.registrationCss.includes('[data-editorblocktype]'), 'registration form: Customer Insights editor blocks are normalized');
+check(files.registrationCss.includes('input[type="checkbox"]'), 'registration form: checkbox styling exists');
+check(files.registrationCss.includes('input[type="radio"]'), 'registration form: radio styling exists');
+check(files.registrationCss.includes('button[type="submit"]'), 'registration form: submit button styling exists');
+check(files.registrationCss.includes('[role="alert"]'), 'registration form: validation feedback styling exists');
+check(files.registrationCss.includes('html[data-theme="dark"]'), 'registration form: dark mode overrides exist');
+check(files.registrationCss.includes('color-scheme: dark'), 'registration form: native controls use dark color scheme in dark mode');
+check(files.registrationCss.includes('@media (max-width: 620px)'), 'registration form: mobile layout adjustments exist');
+check(files.registrationCss.includes('@media (prefers-reduced-motion: reduce)'), 'registration form: reduced-motion preference is respected');
+check(!files.registrationCss.includes('background: #ffffff'), 'registration form: no forced white form surface remains');
 
 const light = themeVariables('light');
 const dark = themeVariables('dark');
