@@ -1,0 +1,1066 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="color-scheme" content="light" />
+    <meta
+      name="description"
+      content="Veröffentlichte Events aus Dynamics 365 Customer Insights - Journeys"
+    />
+    <title>Events · Your Company</title>
+
+    <style>
+      :root {
+        --ink: #17211b;
+        --muted: #627067;
+        --paper: #f4f1e9;
+        --surface: #fffdf8;
+        --line: rgba(23, 33, 27, 0.15);
+        --accent: #dff25f;
+        --accent-ink: #17211b;
+        --error: #9d2b22;
+        --error-bg: #fff0ed;
+        --radius: 1.15rem;
+        --shadow: 0 22px 60px rgba(23, 33, 27, 0.1);
+        --content: min(1160px, calc(100% - 2rem));
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        min-width: 320px;
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 92% 5%, rgba(223, 242, 95, 0.32), transparent 24rem),
+          var(--paper);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.55;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .skip-link {
+        position: fixed;
+        z-index: 99;
+        top: 0.75rem;
+        left: 0.75rem;
+        padding: 0.65rem 0.9rem;
+        border-radius: 999px;
+        color: white;
+        background: var(--ink);
+        transform: translateY(-160%);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .site-header {
+        width: var(--content);
+        margin-inline: auto;
+        padding: 1.35rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        text-decoration: none;
+        font-weight: 760;
+        letter-spacing: -0.02em;
+      }
+
+      .brand-mark {
+        width: 1.9rem;
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--accent);
+        font-size: 0.85rem;
+      }
+
+      .site-header nav a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.93rem;
+        font-weight: 650;
+      }
+
+      main {
+        min-height: calc(100vh - 10rem);
+      }
+
+      .hero,
+      .events-section {
+        width: var(--content);
+        margin-inline: auto;
+      }
+
+      .hero {
+        padding: clamp(4.5rem, 11vw, 9rem) 0 clamp(3.6rem, 8vw, 6.5rem);
+        display: grid;
+        grid-template-columns: minmax(0, 1.6fr) minmax(16rem, 0.7fr);
+        gap: clamp(2rem, 7vw, 7rem);
+        align-items: end;
+      }
+
+      .eyebrow {
+        margin: 0 0 1rem;
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 780;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 12ch;
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(3.2rem, 8vw, 7.2rem);
+        font-weight: 500;
+        letter-spacing: -0.06em;
+        line-height: 0.9;
+      }
+
+      .hero-copy {
+        max-width: 34rem;
+        margin: 0 0 0.25rem;
+        color: var(--muted);
+        font-size: clamp(1rem, 1.8vw, 1.2rem);
+      }
+
+      .events-section {
+        padding-bottom: 6rem;
+      }
+
+      .section-heading {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 1.5rem;
+        padding: 1.4rem 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .section-heading h2 {
+        margin: 0;
+        font-size: clamp(1.55rem, 3vw, 2.45rem);
+        letter-spacing: -0.045em;
+      }
+
+      .event-count {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 0.75rem;
+        margin: 0 0 1.4rem;
+      }
+
+      .search-field {
+        position: relative;
+        flex: 1;
+      }
+
+      .search-field svg {
+        position: absolute;
+        top: 50%;
+        left: 1rem;
+        width: 1.05rem;
+        transform: translateY(-50%);
+        pointer-events: none;
+      }
+
+      .search-field input {
+        width: 100%;
+        min-height: 3.15rem;
+        padding: 0.75rem 1rem 0.75rem 2.8rem;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--ink);
+        background: rgba(255, 253, 248, 0.8);
+        outline: none;
+        transition: border-color 160ms ease, box-shadow 160ms ease;
+      }
+
+      .search-field input:focus {
+        border-color: var(--ink);
+        box-shadow: 0 0 0 3px rgba(23, 33, 27, 0.1);
+      }
+
+      .notice,
+      .state-panel {
+        margin: 0 0 1.25rem;
+        padding: 1rem 1.1rem;
+        border: 1px solid var(--line);
+        border-radius: 0.9rem;
+        background: rgba(255, 253, 248, 0.82);
+      }
+
+      .notice {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        border-color: rgba(114, 128, 22, 0.35);
+        background: rgba(223, 242, 95, 0.2);
+      }
+
+      .notice p,
+      .state-panel p {
+        margin: 0;
+      }
+
+      .notice code {
+        font-size: 0.88em;
+      }
+
+      .state-panel[hidden],
+      .notice[hidden] {
+        display: none;
+      }
+
+      .state-panel.error {
+        border-color: rgba(157, 43, 34, 0.28);
+        color: var(--error);
+        background: var(--error-bg);
+      }
+
+      .state-panel.empty {
+        padding-block: 2.5rem;
+        text-align: center;
+      }
+
+      .retry-button {
+        margin-top: 0.8rem;
+        padding: 0.55rem 0.9rem;
+        border: 1px solid currentColor;
+        border-radius: 999px;
+        color: inherit;
+        background: transparent;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .events-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.15rem;
+      }
+
+      .event-card {
+        min-width: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.75) inset;
+        transition: transform 180ms ease, box-shadow 180ms ease;
+      }
+
+      .event-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow);
+      }
+
+      .event-visual {
+        position: relative;
+        aspect-ratio: 16 / 10;
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+        background:
+          linear-gradient(140deg, rgba(23, 33, 27, 0.94), rgba(48, 74, 58, 0.84)),
+          var(--ink);
+      }
+
+      .event-visual::after {
+        content: "";
+        position: absolute;
+        width: 11rem;
+        aspect-ratio: 1;
+        right: -3rem;
+        bottom: -5rem;
+        border: 1px solid rgba(223, 242, 95, 0.44);
+        border-radius: 50%;
+        box-shadow:
+          0 0 0 1.8rem rgba(223, 242, 95, 0.07),
+          0 0 0 3.6rem rgba(223, 242, 95, 0.04);
+      }
+
+      .event-visual img {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .date-tile {
+        position: relative;
+        z-index: 2;
+        min-width: 5.4rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 0.8rem;
+        color: white;
+        background: rgba(23, 33, 27, 0.64);
+        backdrop-filter: blur(10px);
+        text-align: center;
+      }
+
+      .date-day,
+      .date-month {
+        display: block;
+      }
+
+      .date-day {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 2.2rem;
+        line-height: 1;
+      }
+
+      .date-month {
+        margin-top: 0.25rem;
+        color: var(--accent);
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      .event-body {
+        flex: 1;
+        padding: 1.35rem;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .event-meta {
+        margin: 0 0 0.8rem;
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 720;
+        letter-spacing: 0.045em;
+        text-transform: uppercase;
+      }
+
+      .event-title {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(1.55rem, 2.4vw, 2rem);
+        font-weight: 500;
+        letter-spacing: -0.035em;
+        line-height: 1.05;
+      }
+
+      .event-description {
+        margin: 0.9rem 0 1.25rem;
+        overflow: hidden;
+        display: -webkit-box;
+        color: var(--muted);
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+      }
+
+      .event-location {
+        margin: auto 0 0;
+        padding-top: 1rem;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .event-actions {
+        margin-top: 1rem;
+      }
+
+      .event-link {
+        min-height: 2.75rem;
+        padding: 0.72rem 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        color: var(--accent-ink);
+        background: var(--accent);
+        text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 780;
+        transition: filter 160ms ease, transform 160ms ease;
+      }
+
+      .event-link:hover {
+        filter: brightness(0.95);
+        transform: translateX(2px);
+      }
+
+      .skeleton {
+        min-height: 29rem;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--surface);
+      }
+
+      .skeleton::before {
+        content: "";
+        display: block;
+        height: 100%;
+        background: linear-gradient(
+          100deg,
+          transparent 20%,
+          rgba(255, 255, 255, 0.8) 45%,
+          transparent 70%
+        );
+        transform: translateX(-100%);
+        animation: shimmer 1.25s infinite;
+      }
+
+      @keyframes shimmer {
+        to {
+          transform: translateX(100%);
+        }
+      }
+
+      .site-footer {
+        width: var(--content);
+        margin-inline: auto;
+        padding: 1.5rem 0 2.25rem;
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      :focus-visible {
+        outline: 3px solid rgba(23, 33, 27, 0.45);
+        outline-offset: 3px;
+      }
+
+      @media (max-width: 850px) {
+        .hero {
+          grid-template-columns: 1fr;
+          gap: 1.75rem;
+        }
+
+        .hero-copy {
+          max-width: 42rem;
+        }
+
+        .events-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 580px) {
+        .site-header {
+          padding-block: 1rem;
+        }
+
+        .hero {
+          padding-top: 4rem;
+        }
+
+        .section-heading,
+        .notice,
+        .site-footer {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .events-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .event-card:hover {
+          transform: none;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#events">Direkt zu den Events</a>
+
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="Startseite">
+        <span class="brand-mark" aria-hidden="true">YC</span>
+        <span data-brand>Your Company</span>
+      </a>
+      <nav aria-label="Hauptnavigation">
+        <a href="#events">Events</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Kommende Veranstaltungen</p>
+          <h1 id="page-title">Ideen brauchen Begegnung.</h1>
+        </div>
+        <p class="hero-copy">
+          Workshops, Gespräche und neue Perspektiven. Entdecke unsere nächsten Termine und sei dabei.
+        </p>
+      </section>
+
+      <section class="events-section" id="events" aria-labelledby="events-heading">
+        <div class="section-heading">
+          <h2 id="events-heading">Alle Events</h2>
+          <p class="event-count" id="eventCount" aria-live="polite"></p>
+        </div>
+
+        <div class="toolbar">
+          <label class="search-field">
+            <span class="visually-hidden">Events durchsuchen</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="m21 21-4.35-4.35m2.35-5.4A7.75 7.75 0 1 1 3.5 11.25a7.75 7.75 0 0 1 15.5 0Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-width="1.8"
+              />
+            </svg>
+            <input id="eventSearch" type="search" placeholder="Nach Event oder Ort suchen …" />
+          </label>
+        </div>
+
+        <aside class="notice" id="setupNotice" hidden>
+          <p>
+            <strong>Vorschaumodus:</strong> Die Seite zeigt Beispieldaten. Trage im
+            <code>CONFIG</code>-Block am Ende der Datei deine Web-Application-Werte ein.
+          </p>
+        </aside>
+
+        <div class="state-panel" id="statePanel" role="status" aria-live="polite" hidden></div>
+        <div class="events-grid" id="eventsGrid" aria-busy="true"></div>
+
+        <noscript>
+          <div class="state-panel error">Zum Laden der Events muss JavaScript aktiviert sein.</div>
+        </noscript>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>© <span id="currentYear"></span> <span data-brand>Your Company</span></span>
+      <span>Events powered by Dynamics 365 Customer Insights - Journeys</span>
+    </footer>
+
+    <script type="module">
+      /*
+       * ================================================================
+       * KONFIGURATION – diese fünf Werte für die eigene Umgebung anpassen
+       * ================================================================
+       * API_BASE_URL ist nur der Ursprung ohne nachfolgenden API-Pfad.
+       * Beispiel: https://public-eur.mkt.dynamics.com
+       *
+       * Der APPLICATION_TOKEN ist der Web-Application-Token aus Customer
+       * Insights - Journeys. Niemals ein Dataverse Client Secret eintragen.
+       */
+      const CONFIG = Object.freeze({
+        API_BASE_URL: "https://public-eur.mkt.dynamics.com",
+        ORG_ID: "HIER-ORGANISATIONS-ID-EINTRAGEN",
+        APPLICATION_TOKEN: "HIER-WEB-APPLICATION-TOKEN-EINTRAGEN",
+        WEBAPP_ID: "", // optional; leer lassen, wenn nicht benötigt
+        BRAND_NAME: "Your Company",
+        LOCALE: "de-DE",
+        TIME_ZONE: "Europe/Berlin",
+        SHOW_PAST_EVENTS: false,
+        USE_DEMO_DATA_WHEN_UNCONFIGURED: true,
+      });
+
+      const elements = {
+        count: document.querySelector("#eventCount"),
+        grid: document.querySelector("#eventsGrid"),
+        notice: document.querySelector("#setupNotice"),
+        search: document.querySelector("#eventSearch"),
+        state: document.querySelector("#statePanel"),
+      };
+
+      const state = {
+        allEvents: [],
+        query: "",
+      };
+
+      const formatters = {
+        date: new Intl.DateTimeFormat(CONFIG.LOCALE, {
+          dateStyle: "medium",
+          timeZone: CONFIG.TIME_ZONE,
+        }),
+        dateTime: new Intl.DateTimeFormat(CONFIG.LOCALE, {
+          dateStyle: "medium",
+          timeStyle: "short",
+          timeZone: CONFIG.TIME_ZONE,
+        }),
+        day: new Intl.DateTimeFormat(CONFIG.LOCALE, {
+          day: "2-digit",
+          timeZone: CONFIG.TIME_ZONE,
+        }),
+        month: new Intl.DateTimeFormat(CONFIG.LOCALE, {
+          month: "short",
+          timeZone: CONFIG.TIME_ZONE,
+        }),
+        time: new Intl.DateTimeFormat(CONFIG.LOCALE, {
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: CONFIG.TIME_ZONE,
+        }),
+      };
+
+      function createElement(tag, options = {}) {
+        const element = document.createElement(tag);
+
+        if (options.className) element.className = options.className;
+        if (options.text !== undefined) element.textContent = options.text;
+        if (options.attributes) {
+          for (const [name, value] of Object.entries(options.attributes)) {
+            element.setAttribute(name, value);
+          }
+        }
+
+        return element;
+      }
+
+      function clear(element) {
+        element.replaceChildren();
+      }
+
+      function isPlaceholder(value) {
+        return !value || /^(HIER-|YOUR-|<)/i.test(String(value).trim());
+      }
+
+      function hasLiveConfiguration() {
+        if (isPlaceholder(CONFIG.ORG_ID) || isPlaceholder(CONFIG.APPLICATION_TOKEN)) return false;
+
+        try {
+          const url = new URL(CONFIG.API_BASE_URL);
+          return url.protocol === "https:" || url.hostname === "localhost";
+        } catch {
+          return false;
+        }
+      }
+
+      function buildPublishedEventsUrl() {
+        const base = new URL(CONFIG.API_BASE_URL);
+        const path = `/api/v1.0/orgs/${encodeURIComponent(CONFIG.ORG_ID)}/eventmanagement/events/published`;
+        const url = new URL(path, base.origin);
+
+        url.searchParams.set("emApplicationtoken", CONFIG.APPLICATION_TOKEN);
+        if (!isPlaceholder(CONFIG.WEBAPP_ID)) {
+          url.searchParams.set("webappId", CONFIG.WEBAPP_ID);
+        }
+
+        return url;
+      }
+
+      async function fetchPublishedEvents() {
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), 15000);
+
+        try {
+          const response = await fetch(buildPublishedEventsUrl(), {
+            method: "GET",
+            headers: { Accept: "application/json" },
+            credentials: "omit",
+            cache: "no-store",
+            referrerPolicy: "no-referrer",
+            signal: controller.signal,
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const payload = await response.json();
+          const events = Array.isArray(payload)
+            ? payload
+            : payload?.events ?? payload?.items ?? payload?.value;
+
+          if (!Array.isArray(events)) {
+            throw new Error("Die API-Antwort enthält keine Eventliste.");
+          }
+
+          return events;
+        } finally {
+          window.clearTimeout(timeout);
+        }
+      }
+
+      function parseDate(value) {
+        if (!value) return null;
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? null : date;
+      }
+
+      function dateKey(date) {
+        if (!date) return "";
+        const parts = new Intl.DateTimeFormat("en-CA", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          timeZone: CONFIG.TIME_ZONE,
+        }).formatToParts(date);
+        const get = (type) => parts.find((part) => part.type === type)?.value ?? "";
+        return `${get("year")}-${get("month")}-${get("day")}`;
+      }
+
+      function cleanText(value) {
+        return String(value ?? "")
+          .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
+          .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
+          .replace(/<[^>]+>/g, " ")
+          .replace(/&nbsp;/gi, " ")
+          .replace(/&amp;/gi, "&")
+          .replace(/&lt;/gi, "<")
+          .replace(/&gt;/gi, ">")
+          .replace(/&quot;/gi, '"')
+          .replace(/&#39;|&apos;/gi, "'")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
+      function safeLink(value) {
+        if (!value) return null;
+
+        try {
+          const url = new URL(value, window.location.href);
+          return url.protocol === "https:" || url.protocol === "http:" ? url.href : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function safeImage(value) {
+        const raw = String(value ?? "").trim();
+        if (!raw) return null;
+
+        if (/^data:image\/(?:png|jpe?g|webp|gif);base64,[a-z0-9+/=\s]+$/i.test(raw)) {
+          return raw;
+        }
+
+        if (raw.length > 160 && raw.length < 4_000_000 && /^[a-z0-9+/=\s]+$/i.test(raw)) {
+          return `data:image/jpeg;base64,${raw.replace(/\s/g, "")}`;
+        }
+
+        try {
+          const url = new URL(raw, CONFIG.API_BASE_URL);
+          return url.protocol === "https:" ? url.href : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function eventLocation(event) {
+        const values = [event.room?.name, event.building?.name, event.building?.city]
+          .map(cleanText)
+          .filter(Boolean);
+        return [...new Set(values)].join(" · ") || "Ort wird noch bekannt gegeben";
+      }
+
+      function normalizeEvent(event, index) {
+        const start = parseDate(event.startDateUTC || event.startDate);
+        const end = parseDate(event.endDateUTC || event.endDate);
+
+        return {
+          id: cleanText(event.eventId || event.readableEventId || `event-${index}`),
+          readableId: cleanText(event.readableEventId),
+          name: cleanText(event.eventName) || "Event ohne Titel",
+          description: cleanText(event.description) || "Weitere Informationen folgen in Kürze.",
+          location: eventLocation(event),
+          start,
+          end,
+          image: safeImage(event.image),
+          publicUrl: safeLink(event.publicEventUrl),
+        };
+      }
+
+      function isPastEvent(event) {
+        if (CONFIG.SHOW_PAST_EVENTS) return false;
+        const now = new Date();
+        if (event.end) return event.end.getTime() < now.getTime();
+        return event.start ? dateKey(event.start) < dateKey(now) : false;
+      }
+
+      function describeDate(event) {
+        if (!event.start) return "Termin folgt";
+        if (!event.end) return formatters.dateTime.format(event.start);
+
+        if (dateKey(event.start) === dateKey(event.end)) {
+          return `${formatters.date.format(event.start)} · ${formatters.time.format(event.start)}–${formatters.time.format(event.end)}`;
+        }
+
+        return `${formatters.dateTime.format(event.start)} – ${formatters.dateTime.format(event.end)}`;
+      }
+
+      function createEventCard(event) {
+        const article = createElement("article", { className: "event-card" });
+        const visual = createElement("div", { className: "event-visual" });
+        const tile = createElement("div", { className: "date-tile" });
+        const day = createElement("span", {
+          className: "date-day",
+          text: event.start ? formatters.day.format(event.start) : "–",
+        });
+        const month = createElement("span", {
+          className: "date-month",
+          text: event.start ? formatters.month.format(event.start).replace(".", "") : "Termin",
+        });
+
+        tile.append(day, month);
+        visual.append(tile);
+
+        if (event.image) {
+          const image = createElement("img", {
+            attributes: {
+              alt: "",
+              loading: "lazy",
+              decoding: "async",
+              src: event.image,
+            },
+          });
+          image.addEventListener("error", () => image.remove(), { once: true });
+          visual.prepend(image);
+        }
+
+        const body = createElement("div", { className: "event-body" });
+        const meta = createElement("p", { className: "event-meta", text: describeDate(event) });
+        const title = createElement("h3", { className: "event-title", text: event.name });
+        const description = createElement("p", {
+          className: "event-description",
+          text: event.description,
+        });
+        const location = createElement("p", {
+          className: "event-location",
+          text: `Ort: ${event.location}`,
+        });
+
+        body.append(meta, title, description, location);
+
+        if (event.publicUrl) {
+          const actions = createElement("div", { className: "event-actions" });
+          const link = createElement("a", {
+            className: "event-link",
+            text: "Details & Anmeldung →",
+            attributes: {
+              href: event.publicUrl,
+              "aria-label": `Details und Anmeldung für ${event.name}`,
+            },
+          });
+          actions.append(link);
+          body.append(actions);
+        }
+
+        article.append(visual, body);
+        return article;
+      }
+
+      function setPanel(type, message, withRetry = false) {
+        clear(elements.state);
+        elements.state.className = `state-panel ${type}`.trim();
+        elements.state.hidden = !message;
+
+        if (!message) return;
+
+        elements.state.append(createElement("p", { text: message }));
+        if (withRetry) {
+          const button = createElement("button", {
+            className: "retry-button",
+            text: "Erneut versuchen",
+            attributes: { type: "button" },
+          });
+          button.addEventListener("click", loadEvents);
+          elements.state.append(button);
+        }
+      }
+
+      function renderSkeletons() {
+        clear(elements.grid);
+        for (let index = 0; index < 3; index += 1) {
+          elements.grid.append(
+            createElement("div", {
+              className: "skeleton",
+              attributes: { "aria-hidden": "true" },
+            }),
+          );
+        }
+      }
+
+      function renderEvents() {
+        const query = state.query.trim().toLocaleLowerCase(CONFIG.LOCALE);
+        const visible = state.allEvents.filter((event) => {
+          if (!query) return true;
+          return [event.name, event.description, event.location]
+            .join(" ")
+            .toLocaleLowerCase(CONFIG.LOCALE)
+            .includes(query);
+        });
+
+        clear(elements.grid);
+        elements.grid.setAttribute("aria-busy", "false");
+        elements.count.textContent = `${visible.length} ${visible.length === 1 ? "Event" : "Events"}`;
+
+        if (!visible.length) {
+          setPanel(
+            "empty",
+            query ? "Zu deiner Suche wurde kein Event gefunden." : "Aktuell sind keine kommenden Events veröffentlicht.",
+          );
+          return;
+        }
+
+        setPanel("", "");
+        const fragment = document.createDocumentFragment();
+        visible.forEach((event) => fragment.append(createEventCard(event)));
+        elements.grid.append(fragment);
+      }
+
+      function demoEvents() {
+        const addDays = (days, hour) => {
+          const date = new Date();
+          date.setDate(date.getDate() + days);
+          date.setHours(hour, 0, 0, 0);
+          return date.toISOString();
+        };
+
+        return [
+          {
+            eventName: "Designing Better Customer Journeys",
+            description:
+              "Ein kompakter Workshop über relevante Touchpoints, klare Datenmodelle und Erlebnisse, die Menschen wirklich weiterbringen.",
+            startDateUTC: addDays(12, 9),
+            endDateUTC: addDays(12, 16),
+            building: { name: "Studio West", city: "Freiburg" },
+          },
+          {
+            eventName: "Ideas After Work",
+            description:
+              "Ein offener Abend für neue Perspektiven, kurze Impulse und gute Gespräche mit Menschen aus Produkt, Design und Technologie.",
+            startDateUTC: addDays(28, 17),
+            endDateUTC: addDays(28, 20),
+            building: { name: "Werkraum", city: "Basel" },
+          },
+          {
+            eventName: "The Future of Connected Experiences",
+            description:
+              "Wie Daten, Automatisierung und menschliches Urteilsvermögen gemeinsam bessere Kundenerlebnisse möglich machen.",
+            startDateUTC: addDays(48, 10),
+            endDateUTC: addDays(49, 15),
+            building: { name: "Forum 21", city: "Stuttgart" },
+          },
+        ];
+      }
+
+      function explainError(error) {
+        if (error?.name === "AbortError") {
+          return "Die Event-API hat nicht rechtzeitig geantwortet. Bitte versuche es erneut.";
+        }
+
+        if (/HTTP 401|HTTP 403/.test(error?.message)) {
+          return "Zugriff abgelehnt. Prüfe Web-Application-Token und die exakt registrierte Origin (inklusive https und www).";
+        }
+
+        if (/HTTP 404/.test(error?.message)) {
+          return "Der API-Endpunkt wurde nicht gefunden. Prüfe Region, Organisations-ID und Basis-URL.";
+        }
+
+        if (error instanceof TypeError) {
+          return "Die Event-API ist nicht erreichbar. Häufige Ursache ist eine abweichende Origin in der Web-Application-Konfiguration (CORS).";
+        }
+
+        return `Die Events konnten nicht geladen werden: ${error?.message || "Unbekannter Fehler"}`;
+      }
+
+      async function loadEvents() {
+        elements.grid.setAttribute("aria-busy", "true");
+        elements.count.textContent = "Events werden geladen …";
+        setPanel("", "");
+        renderSkeletons();
+
+        try {
+          const configured = hasLiveConfiguration();
+          elements.notice.hidden = configured;
+
+          if (!configured && !CONFIG.USE_DEMO_DATA_WHEN_UNCONFIGURED) {
+            throw new Error("Die API-Konfiguration ist noch unvollständig.");
+          }
+
+          const rawEvents = configured ? await fetchPublishedEvents() : demoEvents();
+          state.allEvents = rawEvents
+            .map(normalizeEvent)
+            .filter((event) => !isPastEvent(event))
+            .sort((left, right) => (left.start?.getTime() ?? Infinity) - (right.start?.getTime() ?? Infinity));
+          renderEvents();
+        } catch (error) {
+          clear(elements.grid);
+          elements.grid.setAttribute("aria-busy", "false");
+          elements.count.textContent = "";
+          setPanel("error", explainError(error), true);
+        }
+      }
+
+      document.querySelectorAll("[data-brand]").forEach((element) => {
+        element.textContent = CONFIG.BRAND_NAME;
+      });
+      document.title = `Events · ${CONFIG.BRAND_NAME}`;
+      document.querySelector("#currentYear").textContent = String(new Date().getFullYear());
+      elements.search.addEventListener("input", (event) => {
+        state.query = event.currentTarget.value;
+        renderEvents();
+      });
+
+      loadEvents();
+    </script>
+  </body>
+</html>
