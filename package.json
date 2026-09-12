@@ -1,0 +1,13 @@
+{
+  "name": "simple-js-portal",
+  "version": "1.0.0",
+  "description": "Simple JS portal for event management",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "install-deps": "npm install"
+  },
+  "dependencies": {
+    "express": "^4.22.2"
+  }
+}

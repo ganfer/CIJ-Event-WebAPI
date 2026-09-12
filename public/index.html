@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="eventsPortalTitle">Events Portal - All Events</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <header class="event-portal-page-header">
+        <div class="event-portal-top-header-content">
+            <div class="event-portal-home-section">
+                <img src="assets/home.svg" alt="Home" class="event-portal-home-icon">
+                <span class="event-portal-home-text" data-i18n="home">Home</span>
+            </div>
+            <div class="event-portal-language-container">
+                <select id="event-portal-language-select" data-i18n-attrs="title" data-i18n-title="selectLanguage" title="Select Language">
+                    <!-- Language options will be populated by JavaScript -->
+                </select>
+            </div>
+        </div>
+        <div class="event-portal-header-content">
+            <h1 class="event-portal-header-title" data-i18n="allEvents">All Events</h1>
+            <div class="event-portal-search-container">
+                <div class="event-portal-search-input-wrapper">
+                    <div class="event-portal-search-icon">
+                        <img src="assets/search.svg" alt="Search" data-i18n-attrs="alt" data-i18n-alt="searchAlt">
+                    </div>
+                    <input type="text" id="event-portal-search-input" placeholder="Search ..." data-i18n-attrs="placeholder"
+                        data-i18n-placeholder="searchPlaceholder">
+                </div>
+                <div class="event-portal-sort-container">
+                    <select id="event-portal-sort-select" data-i18n-attrs="title" data-i18n-title="sortByTitle" title="Sort by">
+                        <option value="a-z" data-i18n="sortOptionAZ">A - Z</option>
+                        <option value="z-a" data-i18n="sortOptionZA">Z - A</option>
+                        <option value="newest" data-i18n="sortOptionNewest">Newest</option>
+                        <option value="oldest" data-i18n="sortOptionOldest">Oldest</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div id="event-portal-events-container">
+            <!-- Events will be inserted here dynamically -->
+            <p id="event-portal-loading-message" data-i18n="loadingEvents">Loading events...</p>
+        </div>
+    </main>
+    <!-- Load the API library first -->
+    <script src="lib/PublicApi.bundle.js"></script>
+
+    <!-- Load configuration -->
+    <script src="js/config.js"></script>
+
+    <!-- Load localization before other scripts -->
+    <script src="js/localization.js"></script>
+
+    <!-- Then load our wrapper and event grid code -->
+    <script src="js/api-wrapper.js"></script>
+    <script src="js/event-grid.js"></script>
+</body>
+
+</html>
