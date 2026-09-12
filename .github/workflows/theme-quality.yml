@@ -1,0 +1,25 @@
+name: Theme Quality Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  theme-quality:
+    name: Validate theme behavior and contrast
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Show Node.js version
+        run: node --version
+
+      - name: Run theme quality checks
+        run: npm run test:theme
