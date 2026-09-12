@@ -34,6 +34,7 @@ jobs:
           fi
 
           mkdir -p theme-screenshots
+          sed -i 's#</body>#  <script src="../public/js/theme.js"></script>\n</body>#' tests/theme-preview.html
           PREVIEW="file://${GITHUB_WORKSPACE}/tests/theme-preview.html"
 
           "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
