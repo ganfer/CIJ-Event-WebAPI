@@ -74,6 +74,119 @@ jobs:
           fs.writeFileSync('_site/js/config.js', output, 'utf8');
           NODE
 
+      - name: Validate Dynamics Events API
+        env:
+          EVENTS_BASE_URL: ${{ secrets.EVENTS_BASE_URL }}
+          EVENTS_ORG_ID: ${{ secrets.EVENTS_ORG_ID }}
+          EVENTS_API_TOKEN: ${{ secrets.EVENTS_API_TOKEN }}
+          EVENTS_WEBAPP_ID: ${{ secrets.EVENTS_WEBAPP_ID }}
+          PAGES_ORIGIN: https://${{ github.repository_owner }}.github.io
+        run: |
+          set -euo pipefail
+
+          export EVENTS_BASE_URL="${EVENTS_BASE_URL:-https://public-eur.mkt.dynamics.com}"
+
+          REQUEST_URL="$(node <<'NODE'
+          const baseUrl = process.env.EVENTS_BASE_URL;
+          const orgId = process.env.EVENTS_ORG_ID;
+          const token = process.env.EVENTS_API_TOKEN;
+          const webappId = process.env.EVENTS_WEBAPP_ID;
+
+          if (!orgId || !token) {
+            console.error('Missing EVENTS_ORG_ID or EVENTS_API_TOKEN.');
+            process.exit(1);
+          }
+
+          const url = new URL(
+            `/api/v1.0/orgs/${encodeURIComponent(orgId)}/eventmanagement/events/published`,
+            baseUrl
+          );
+          url.searchParams.set('emApplicationtoken', token);
+          if (webappId) {
+            url.searchParams.set('webappId', webappId);
+          }
+          process.stdout.write(url.toString());
+          NODE
+          )"
+
+          HEADERS_FILE="$(mktemp)"
+          BODY_FILE="$(mktemp)"
+          trap 'rm -f "$HEADERS_FILE" "$BODY_FILE"' EXIT
+
+          HTTP_STATUS="$(curl \
+            --silent \
+            --show-error \
+            --location \
+            --compressed \
+            --connect-timeout 15 \
+            --max-time 30 \
+            --dump-header "$HEADERS_FILE" \
+            --output "$BODY_FILE" \
+            --write-out '%{http_code}' \
+            --header "Origin: ${PAGES_ORIGIN}" \
+            "$REQUEST_URL")"
+
+          case "$HTTP_STATUS" in
+            401)
+              echo "::error::Dynamics Events API returned HTTP 401 Unauthorized. Check EVENTS_API_TOKEN and EVENTS_ORG_ID."
+              exit 1
+              ;;
+            403)
+              echo "::error::Dynamics Events API returned HTTP 403 Forbidden. Check the web application token and allowed origin (${PAGES_ORIGIN})."
+              exit 1
+              ;;
+            404)
+              echo "::error::Dynamics Events API returned HTTP 404 Not Found. Check EVENTS_BASE_URL and EVENTS_ORG_ID."
+              exit 1
+              ;;
+          esac
+
+          if [[ ! "$HTTP_STATUS" =~ ^2[0-9][0-9]$ ]]; then
+            echo "::error::Dynamics Events API smoke test failed with HTTP ${HTTP_STATUS}."
+            exit 1
+          fi
+
+          CORS_ORIGIN="$(awk '
+            BEGIN { IGNORECASE = 1 }
+            /^access-control-allow-origin:/ {
+              line = $0
+              sub(/\r$/, "", line)
+              sub(/^[^:]+:[[:space:]]*/, "", line)
+              value = line
+            }
+            END { print value }
+          ' "$HEADERS_FILE")"
+
+          if [[ -z "$CORS_ORIGIN" ]]; then
+            echo "::error::Dynamics Events API response has no Access-Control-Allow-Origin header. Browser requests from ${PAGES_ORIGIN} would fail CORS."
+            exit 1
+          fi
+
+          if [[ "$CORS_ORIGIN" != "*" && "$CORS_ORIGIN" != "$PAGES_ORIGIN" ]]; then
+            echo "::error::CORS origin mismatch. Expected ${PAGES_ORIGIN}, received ${CORS_ORIGIN}."
+            exit 1
+          fi
+
+          node - "$BODY_FILE" <<'NODE'
+          const fs = require('fs');
+          const file = process.argv[2];
+          const body = fs.readFileSync(file, 'utf8');
+
+          if (!body.trim()) {
+            console.error('Dynamics Events API returned an empty response body.');
+            process.exit(1);
+          }
+
+          try {
+            JSON.parse(body);
+          } catch {
+            console.error('Dynamics Events API returned a non-JSON response.');
+            process.exit(1);
+          }
+          NODE
+
+          echo "Dynamics Events API smoke test passed (HTTP ${HTTP_STATUS}, CORS ${CORS_ORIGIN})."
+
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
