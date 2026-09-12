@@ -1,253 +1,329 @@
 # Event Portal Web
 
-A lightweight web application that displays and lets users search events from the Dynamics 365 Events API. Built with plain JavaScript, HTML, and CSS.
+A lightweight web application that displays and lets users search events from the Dynamics 365 Customer Insights - Journeys Events API. Built with plain JavaScript, HTML, and CSS.
 
 ## Features
 
 - Display live events for a configured web application in a responsive grid layout
 - Search events by name or description
 - View detailed information about each event
-- Embed the Dynamics 365 Marketing registration form
+- Embed the Dynamics 365 event registration form
 - Internationalization (i18n) with multiple language options
 - Right-to-left (RTL) language support
 - Responsive design for mobile and desktop
 - Simple local development server
+- Static deployment to GitHub Pages
 
 ## Project Structure
 
-The repository is intentionally minimal and supports three common usage modes:
-
-1. Development / Customization: Run the Express server locally while you tweak HTML/CSS/JS. Hot-reload via a simple static serve (restart if needed). All editable source lives under `public/`.
-2. Production Deployment: Only deploy the contents of `public/` (everything else is tooling). Any static web host (Azure Storage, GitHub Pages behind auth proxy, CDN, traditional IIS/Apache/Nginx) works.
-3. Reference Implementation: The `public/` folder contains a reference implementation that can be used in production for a simple event portal, or as a starting point for developing a more advanced solution (e.g., add authentication, filtering UI, pagination, advanced search, theming).
-
-Recommended extension points:
-- Add new UI components under `public/js/`
-- Add or modify locales in `public/locales/`
-- Swap styling by replacing or augmenting `public/css/styles.css`
-- Wrap additional APIs in new modules similar to `api-wrapper.js`
+The repository is intentionally minimal. The actual web application lives in `public/`; `server.js` is only a local development server.
 
 ### File Structure
-```
+
+```text
 /
-├── public/                     # Deployable files (static assets for production)
-│   ├── assets/                 # Images and other assets (SVG icons etc.)
-│   │   ├── calendar.svg        # Calendar icon
-│   │   ├── home.svg            # Home icon
-│   │   └── search.svg          # Search icon
+├── .github/
+│   └── workflows/
+│       └── deploy-pages.yml       # GitHub Pages deployment
+├── public/                         # Static application deployed to production
+│   ├── assets/                     # Images and icons
 │   ├── css/
-│   │   └── styles.css          # Styles for the event portal
+│   │   └── styles.css
 │   ├── js/
-│   │   ├── api-wrapper.js      # Thin wrapper around PublicApi.bundle.js
-│   │   ├── config.js           # API / org configuration values
-│   │   ├── event-details.js    # Event details page logic
-│   │   ├── event-grid.js       # Events grid listing logic
-│   │   └── localization.js     # Internationalization (i18n) system
+│   │   ├── api-wrapper.js
+│   │   ├── config.example.js      # Safe configuration template
+│   │   ├── event-details.js
+│   │   ├── event-grid.js
+│   │   └── localization.js
 │   ├── lib/
-│   │   └── PublicApi.bundle.js # Dynamics 365 Events API library (provided)
-│   ├── locales/                # Translation JSON files (one per locale)
-│   ├── index.html              # Events listing page
-│   └── event-details.html      # Event details page (loads registration form)
-├── server.js                   # Express dev server (not for production)
-├── package.json                # NPM scripts & dependencies
-├── LICENSE                     # Project license
-└── README.md                   # Documentation
+│   │   └── PublicApi.bundle.js    # Dynamics 365 Events API library
+│   ├── locales/                   # Translation JSON files
+│   ├── index.html
+│   └── event-details.html
+├── .gitignore
+├── server.js                       # Express development server only
+├── package.json
+├── LICENSE
+└── README.md
 ```
+
+`public/js/config.js` is intentionally **not tracked by Git**. For local development it is created from `config.example.js`; for GitHub Pages it is generated during deployment from GitHub Actions secrets.
 
 ## Getting Started
 
-This section explains how to configure the web application in your Dynamics 365 organization and how to develop and deploy the event portal.
+### Prerequisites
 
-## Prerequisites
-- Set up a web application record for your domain in *Customer Insights – Journeys > Settings > Web applications* (required to allow the portal to call the public API)
-- Authenticate your domains in *Customer Insights – Journeys > Settings > Domains* (required for embedded event registration forms)
-- Node.js v22 or higher (optional; only needed if you use the provided development server)
+- A web application record in **Customer Insights - Journeys > Settings > Web applications**
+- The hosting origin added to that web application so Events API CORS requests are allowed
+- The hosting domain allowed for **External form hosting** if embedded event registration forms are used
+- Node.js v22 or higher only when using the included local development server
 
-### Set up a web application for your domain
-The portal requires a web application record with its origin set to the domain where the portal is hosted so that CORS requests succeed.
+## Customer Insights - Journeys configuration
 
-For the locally hosted development server (described below), do the following:
-1. In your Dynamics 365 organization, go to *Customer Insights – Journeys > Settings > Web applications*.
-2. Create a new web application record.
-3. Set the origin to `http://localhost:3000` (the default address of the development server).
-4. Save the record.
+### 1. Register the web application origin
 
-For production, create a web application record the same way, but set the origin to the production domain where you will host the portal.
+The portal calls the public Events API directly from the browser. The browser origin therefore has to match a web application record in Customer Insights - Journeys.
 
-We recommend configuring the localhost origin only in non-production environments.
+For local development use:
 
-### Authenticate your domains
-To serve embedded event registration forms, your domain must be authenticated in *Customer Insights – Journeys > Settings > Domains*.
-See: [Authenticate your domains](https://learn.microsoft.com/en-us/dynamics365/customer-insights/journeys/domain-authentication).
-
-For the locally hosted development server, do the following:
-1. In your Dynamics 365 organization, go to *Customer Insights – Journeys > Settings > Domains*.
-2. Create a new domain record.
-3. Use `localhost` as the domain name.
-4. Select only **External form hosting**.
-5. Save the record.
-
-## Deployment to Production
-
-To deploy this application to production:
-
-1. Update the credentials in `public/js/config.js` with your production values
-
-```javascript
-const CONFIG = {
-  BASE_URL: "your-dynamics-api-url",
-  ORG_ID: "your-organization-id",
-  TOKEN: "your-api-token",
-  WEBAPP_ID: "your-webapp-id"  // Optional: filter events by webapp ID
-};
+```text
+http://localhost:3000
 ```
- **Note**: If this project was downloaded as a zip from *Customer Insights - Journeys -> Settings -> Web applications*, the configuration values will already be set correctly and you can skip this step.
 
-2. Copy the entire contents of the `public` directory to your web server
+For the default GitHub Pages URL of this repository use:
+
+```text
+https://ganfer.github.io
+```
+
+The browser `Origin` header contains only scheme and host, not the repository path. Therefore the origin is `https://ganfer.github.io`, even though the site itself is normally available below `/CIJ-Event-WebAPI/`.
+
+### 2. Allow the domain for external form hosting
+
+Embedded Customer Insights - Journeys forms are only rendered and accepted from domains that are allowed for external form hosting.
+
+For GitHub Pages, add the domain used by the site, for example `ganfer.github.io`. If you configure a custom GitHub Pages domain later, add that custom domain instead.
+
+See: [Authenticate your domains](https://learn.microsoft.com/en-us/dynamics365/customer-insights/journeys/domain-authentication)
 
 ## Local Development
 
-The included Express server (server.js) is for local development and customization purposes:
-- It serves static files from the project directory
-- Use this for making modifications and testing changes
-- It is NOT intended for production use
-
-For production deployment, use the files in the `/public` directory on your web server of choice.
-
-### Run local server
-1. Unpack the zip file
-2. Open the extracted folder in terminal (where `package.json` is)
-3. Install dependencies:
+### 1. Install dependencies
 
 ```bash
 npm install
 ```
 
-4. Update the API credentials in `public/js/config.js`, you can find these values in *Customer Insights - Journeys -> Settings -> Web applications*:
+### 2. Create the local configuration
 
-5. Start the development server:
+macOS/Linux:
+
+```bash
+cp public/js/config.example.js public/js/config.js
+```
+
+PowerShell:
+
+```powershell
+Copy-Item public/js/config.example.js public/js/config.js
+```
+
+Then edit `public/js/config.js`:
+
+```javascript
+const CONFIG = {
+    BASE_URL: "https://public-eur.mkt.dynamics.com",
+    ORG_ID: "your-organization-id",
+    TOKEN: "your-web-application-token",
+    WEBAPP_ID: "" // optional
+};
+```
+
+`public/js/config.js` is ignored by Git. Do not force-add it to the repository.
+
+### 3. Start the local server
 
 ```bash
 npm start
 ```
 
-6. Open your browser and navigate to http://localhost:3000
+Open:
 
-7. You should see all live events that are assigned to this web application.
-  - To assign an event to a web application, open (or create) the event.
-  - Edit the event.
-  - Depending on your solution version, go to *General > Publishing* or *Website and form*.
-  - Select **Web App Website** in *Where do you want attendees to register for this event?*.
-  - Choose the desired web application in the dropdown.
-  - Publish (Go live). Only live events are loaded and shown on the portal.
+```text
+http://localhost:3000
+```
+
+## Deploy with GitHub Pages
+
+The repository contains `.github/workflows/deploy-pages.yml`. The workflow deploys only the contents of `public/` and creates the production `config.js` inside the deployment artifact.
+
+The current workflow deploys automatically on pushes to the `rework` branch and can also be started manually from the **Actions** tab.
+
+### 1. Add repository secrets
+
+Open:
+
+**Repository > Settings > Secrets and variables > Actions > New repository secret**
+
+Add these secrets:
+
+| Secret | Required | Description |
+| --- | --- | --- |
+| `EVENTS_ORG_ID` | Yes | Dynamics 365 organization ID from the web application configuration |
+| `EVENTS_API_TOKEN` | Yes | Token from the Customer Insights - Journeys web application record |
+| `EVENTS_BASE_URL` | No | Events API base URL; defaults to `https://public-eur.mkt.dynamics.com` |
+| `EVENTS_WEBAPP_ID` | No | Optional web application ID used to filter the event list |
+
+The workflow stops with a clear error if `EVENTS_ORG_ID` or `EVENTS_API_TOKEN` is missing.
+
+### 2. Enable GitHub Pages
+
+Open:
+
+**Repository > Settings > Pages**
+
+Under **Build and deployment**, select **GitHub Actions** as the source.
+
+### 3. Deploy
+
+Push a commit to `rework`, or open **Actions > Deploy GitHub Pages > Run workflow**.
+
+For the repository `ganfer/CIJ-Event-WebAPI`, the default project-site URL is expected to be:
+
+```text
+https://ganfer.github.io/CIJ-Event-WebAPI/
+```
+
+### How configuration is handled during deployment
+
+The deployment follows this flow:
+
+```text
+public/
+   |
+   | copy
+   v
+_site/
+   |
+   | generate _site/js/config.js from GitHub Actions secrets
+   v
+GitHub Pages artifact
+   |
+   v
+GitHub Pages
+```
+
+The real Dynamics configuration therefore does not need to exist in the Git repository or Git history.
+
+> **Important:** This is a browser-based application. The generated `config.js`, including the Events API token, is delivered to the browser and can therefore be inspected by visitors. GitHub Secrets protect the values from being committed to the repository; they do not turn client-side configuration into a server-side secret. This matches the architecture of the static Customer Insights - Journeys event web application. Access is additionally constrained by the configured web application origin.
+
+## Production on other static hosts
+
+GitHub Pages is optional. The application can be hosted on any static host.
+
+For a different static host:
+
+1. Copy `public/js/config.example.js` to `public/js/config.js`.
+2. Set the correct environment values.
+3. Deploy the **contents of `public/`**.
+4. Register the production origin in Customer Insights - Journeys.
+5. Allow the production domain for external form hosting when using embedded forms.
+
+Do not run `server.js` as the production application. It exists only to provide a convenient local development server.
+
+## Publishing Events to the Web Application
+
+To make an event appear in the portal:
+
+1. Open or create the event in Customer Insights - Journeys.
+2. Edit the event.
+3. Depending on the solution version, open **General > Publishing** or **Website and form**.
+4. Select the web application as the place where attendees register.
+5. Choose the desired web application.
+6. Publish / Go live.
+
+Only events returned by the configured Events API/web application are shown by the portal.
 
 ## Registration Form Integration
 
-The application integrates with Dynamics 365 Marketing forms to enable event registration functionality:
+The application uses the registration form information returned for the event and embeds the Customer Insights - Journeys form on the event details page.
 
-1. When viewing event details, the application automatically loads the registration form associated with the event
-2. The form is embedded directly from the event data received from the API
-3. The form appears in a dedicated section
-4. Form submission is handled by the Dynamics 365 Marketing FormLoader script
-
-### Form Integration Structure
-
-The form is integrated using the following structure:
+The integration follows the general structure:
 
 ```html
 <div
-  data-form-id='[FORM_ID]'
-  data-form-api-url='[FORM_API_URL]'
-  data-cached-form-url='[CACHED_FORM_URL]'
-  data-readable-event-id='[EVENT_ID]'>
-<script src='[CDN_ENDPOINT]/FormLoader/FormLoader.bundle.js'></script>
+  data-form-id="[FORM_ID]"
+  data-form-api-url="[FORM_API_URL]"
+  data-cached-form-url="[CACHED_FORM_URL]"
+  data-readable-event-id="[EVENT_ID]">
+</div>
+<script src="[CDN_ENDPOINT]/FormLoader/FormLoader.bundle.js"></script>
 ```
+
+Form submission is handled by the Microsoft FormLoader script.
 
 ## Localization Support
 
-The application includes built-in internationalization (i18n) support:
+The application includes built-in internationalization support:
 
-### Supported Features
-
-- Multi-language support with translation files
-- Language selection UI
-- Selected language is persisted in browser local storage under the key `userLocale`
-- Right-to-left (RTL) text direction for languages like Arabic and Hebrew
-- Date and time localization
-- Translation of UI elements, including:
-  - Text content
-  - Placeholders
-  - Tool tips
-  - Alt text
-  - Error messages
+- Multiple translation files under `public/locales/`
+- Browser-language detection
+- Manual language selection
+- Persistence of the selected language in `localStorage` under `userLocale`
+- RTL text direction for supported RTL locales
+- Localized date and time formatting
+- Translation of text, placeholders, tooltips, alt text, and error messages
 
 ### Adding a New Language
 
-To add support for a new language:
-
-1. Create a new translation file in `public/locales/` named `translation.[locale].json`
-2. Copy the structure from an existing translation file like `translation.en-US.json`
-3. Translate all values while keeping the keys unchanged
-4. Add the new locale to the `supportedLocales` in `public/js/localization.js`
-
-### Using Translation Keys
-
-The localization system uses data attributes to mark elements for translation:
-
-```html
-<!-- Basic text translation -->
-<h1 data-i18n="allEvents">All Events</h1>
-
-<!-- Attribute translation -->
-<input placeholder="Search..." data-i18n-attrs="placeholder" data-i18n-placeholder="searchPlaceholder">
-```
-
-### RTL Language Support
-
-Right-to-left language support is automatically enabled for specific locales. To add a new RTL locale:
-
-1. Open `public/js/localization.js`
-2. Add the locale code to the `rtlLocales` array in the constructor
-
+1. Create `public/locales/translation.[locale].json`.
+2. Copy the structure of an existing translation file such as `translation.en-US.json`.
+3. Translate the values while keeping the keys unchanged.
+4. Add the locale to `supportedLocales` in `public/js/localization.js`.
+5. For an RTL language, also add the locale to `rtlLocales`.
 
 ### Form Localization
 
-Form localization is not supported out of the box. See `event-details.js` for the location where a custom solution could be added.
+Form localization is not implemented by this reference application. See `event-details.js` for the integration point if custom behavior is needed.
 
 Resources:
+
+- [Create an event portal using the web application](https://learn.microsoft.com/en-us/dynamics365/customer-insights/journeys/developer/event-portal-web-application)
 - [Extend Customer Insights - Journeys marketing forms using code](https://learn.microsoft.com/en-us/dynamics365/customer-insights/journeys/developer/realtime-marketing-form-client-side-extensibility)
-- [Customizable error messages for form field validation](https://community.dynamics.com/blogs/post/?postid=cdcd1dbf-2b7f-ef11-ac20-7c1e521a63a7)
+- [Authenticate your domains](https://learn.microsoft.com/en-us/dynamics365/customer-insights/journeys/domain-authentication)
 
 ## Troubleshooting
 
-Below are common issues and how to diagnose and fix them.
+### API calls fail with 401, 403, 404, or CORS errors
 
-### 1. Calls to the public API are failing
-**Symptoms:** Network tab shows 401 / 403 / 404 / CORS errors. Console may show: "CORS policy: No 'Access-Control-Allow-Origin' header" or 401 Unauthorized.
+Check:
 
-**Likely causes & fixes:**
-- Incorrect `BASE_URL` in `public/js/config.js`  → Verify it matches the root of the Dynamics 365 Events API endpoint (no extra path or trailing slash issues).
-- Invalid configuration in `config.js`. Check on the web application record.
-- Missing or incorrect Web Application origin in *Web applications* → Create web application with the correct origin (e.g., `http://localhost:3000` while developing or your production HTTPS domain).
-- Mixed HTTP/HTTPS usage → If the site is served over HTTPS, the API must also be HTTPS.
+- `BASE_URL`, `ORG_ID`, and `TOKEN`
+- The web application origin in Customer Insights - Journeys
+- That the production site and API use HTTPS
+- The browser Network tab for the exact failed request and response
 
-**Debug tips:**
-- Open DevTools > Network, filter by `events` or the failing call; inspect Request Headers (Origin) and Response Headers.
-- Reproduce in an incognito/private window to eliminate cached or extension interference.
+For GitHub Pages the web application origin is normally:
 
-### 2. API requests succeed but no events are displayed
-**Symptoms:** Empty grid with "no events" message.
+```text
+https://ganfer.github.io
+```
 
-**Likely causes & fixes:**
-- The web application has no events assigned → Assign events to the web application (see assignment steps above) and publish (Go live).
-- Events exist but none are Live/Published → Only live events are returned; publish at least one event.
-- Filtering by `WEBAPP_ID` in `config.js` excludes all events → Temporarily remove or correct `WEBAPP_ID`.
+not the full repository URL.
 
-**Debug tips:**
-- Inspect the raw JSON response in DevTools (Network > event list call) to confirm the payload truly has zero results vs a rendering issue.
+### GitHub Pages workflow fails because configuration is missing
 
-### 3. Event details page does not load the registration form (domain error)
-**Symptoms:** Form area stays blank or shows an error referencing domain validation / unauthorized domain.
+If the Actions log reports missing secrets, add:
 
-**Likely causes & fixes:**
-- Domain not authenticated in *Customer Insights – Journeys > Settings > Domains* → Add and authenticate the domain (or `localhost` for local dev) with **External form hosting** enabled.
+```text
+EVENTS_ORG_ID
+EVENTS_API_TOKEN
+```
+
+under **Settings > Secrets and variables > Actions**.
+
+### GitHub Pages workflow cannot configure or deploy Pages
+
+Make sure GitHub Pages is enabled under **Settings > Pages** and the source is set to **GitHub Actions**.
+
+GitHub Pages is available for public repositories on GitHub Free. Private-repository availability depends on the GitHub plan.
+
+### Events API works but no events are shown
+
+Check that:
+
+- At least one event is live/published.
+- The event is assigned to the intended web application.
+- `EVENTS_WEBAPP_ID` / `WEBAPP_ID` is either correct or left empty.
+
+### Registration form is not rendered
+
+Make sure the site's domain is allowed for **External form hosting** in Customer Insights - Journeys. If a custom GitHub Pages domain is used, allow that custom domain.
+
+## Security Notes
+
+- Do not commit real environment values to `public/js/config.js`.
+- Do not commit copies of downloaded production configuration files.
+- Use GitHub Actions secrets for GitHub Pages deployment.
+- Remember that values used by browser JavaScript are visible to the browser at runtime.
+- Keep the Customer Insights - Journeys web application origin restricted to the intended site.
