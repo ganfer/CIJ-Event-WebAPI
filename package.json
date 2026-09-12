@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "test:theme": "node scripts/check-theme.mjs",
     "install-deps": "npm install"
   },
   "dependencies": {

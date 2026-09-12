@@ -1,0 +1,446 @@
+/* Shared color theme for the static event portal. */
+:root,
+html[data-theme="light"] {
+  --theme-bg: #f8fbff;
+  --theme-bg-end: #ffffff;
+  --theme-text: #162033;
+  --theme-text-muted: #526071;
+  --theme-text-soft: #667085;
+  --theme-surface: #ffffff;
+  --theme-surface-elevated: #ffffff;
+  --theme-surface-soft: #f2f5f9;
+  --theme-control-bg: #ffffff;
+  --theme-border: #d8dee8;
+  --theme-border-strong: #b9c3d0;
+  --theme-accent: #0b63b6;
+  --theme-accent-hover: #084c8c;
+  --theme-accent-soft: #e7f2ff;
+  --theme-accent-contrast: #ffffff;
+  --theme-focus: #7c3aed;
+  --theme-shadow: 0 16px 42px rgba(16, 24, 40, 0.09);
+  --theme-shadow-soft: 0 8px 24px rgba(16, 24, 40, 0.07);
+  --theme-error-bg: #fff1f2;
+  --theme-error-text: #9f1239;
+  --theme-error-border: #fecdd3;
+  --theme-icon-filter: none;
+  --theme-hero-bg: linear-gradient(135deg, #eef6ff 0%, #ffffff 54%, #f4eefb 100%);
+  --theme-page-bg: radial-gradient(circle at 95% 0%, rgba(121, 83, 163, 0.12), transparent 31%), linear-gradient(180deg, #f8fbff 0%, #ffffff 58%);
+  --theme-placeholder-bg: linear-gradient(135deg, #e8f3ff 0%, #f5effb 100%);
+}
+
+html[data-theme="dark"] {
+  --theme-bg: #0b1020;
+  --theme-bg-end: #0f172a;
+  --theme-text: #f4f7fb;
+  --theme-text-muted: #c1cad8;
+  --theme-text-soft: #aeb9c9;
+  --theme-surface: #121a2b;
+  --theme-surface-elevated: #172033;
+  --theme-surface-soft: #1a2436;
+  --theme-control-bg: #111827;
+  --theme-border: #334155;
+  --theme-border-strong: #526173;
+  --theme-accent: #78b7ff;
+  --theme-accent-hover: #a4d0ff;
+  --theme-accent-soft: #17355a;
+  --theme-accent-contrast: #07111f;
+  --theme-focus: #c4b5fd;
+  --theme-shadow: 0 18px 48px rgba(0, 0, 0, 0.36);
+  --theme-shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.28);
+  --theme-error-bg: #3b1720;
+  --theme-error-text: #fecdd3;
+  --theme-error-border: #7f1d3a;
+  --theme-icon-filter: invert(92%) sepia(8%) saturate(297%) hue-rotate(178deg) brightness(104%) contrast(95%);
+  --theme-hero-bg: linear-gradient(135deg, #14243a 0%, #121a2b 54%, #241a35 100%);
+  --theme-page-bg: radial-gradient(circle at 95% 0%, rgba(148, 111, 202, 0.18), transparent 32%), linear-gradient(180deg, #0b1020 0%, #0f172a 62%, #0b1020 100%);
+  --theme-placeholder-bg: linear-gradient(135deg, #17355a 0%, #2b1f3f 100%);
+}
+
+html {
+  background: var(--theme-bg);
+}
+
+body,
+body.event-portal-event-details-page,
+body:not(.event-portal-event-details-page) {
+  color: var(--theme-text);
+  background: var(--theme-page-bg);
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+body.event-portal-event-details-page {
+  --event-portal-ink: var(--theme-text);
+  --event-portal-muted: var(--theme-text-muted);
+  --event-portal-border: var(--theme-border);
+  --event-portal-surface: var(--theme-surface);
+  --event-portal-surface-soft: var(--theme-surface-soft);
+  --event-portal-accent: var(--theme-accent);
+  --event-portal-accent-dark: var(--theme-accent-hover);
+  --event-portal-accent-soft: var(--theme-accent-soft);
+  --event-portal-shadow: var(--theme-shadow);
+}
+
+body:not(.event-portal-event-details-page) {
+  --event-grid-ink: var(--theme-text);
+  --event-grid-muted: var(--theme-text-muted);
+  --event-grid-border: var(--theme-border);
+  --event-grid-accent: var(--theme-accent);
+  --event-grid-accent-dark: var(--theme-accent-hover);
+}
+
+.event-portal-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-width: 0;
+}
+
+.event-portal-theme-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px;
+  border: 1px solid var(--theme-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--theme-surface-elevated) 92%, transparent);
+  box-shadow: var(--theme-shadow-soft);
+}
+
+.event-portal-theme-option {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--theme-text-muted);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.event-portal-theme-option svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  stroke: currentColor;
+}
+
+.event-portal-theme-option:hover {
+  color: var(--theme-text);
+  background: var(--theme-surface-soft);
+}
+
+.event-portal-theme-option.is-active,
+.event-portal-theme-option[aria-pressed="true"] {
+  color: var(--theme-accent-contrast);
+  background: var(--theme-accent);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--theme-accent) 26%, transparent);
+}
+
+.event-portal-theme-option:focus-visible,
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--theme-focus) !important;
+  outline-offset: 2px;
+}
+
+.event-portal-theme-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.event-portal-home-text,
+.event-portal-header-title,
+.event-portal-event-name,
+.event-portal-detail-hero h1,
+.event-portal-content-section h2,
+.event-portal-summary-card h2,
+.event-portal-registration-heading h2,
+.event-portal-session-body h3,
+.event-portal-speaker-content h3 {
+  color: var(--theme-text);
+}
+
+.event-portal-home-icon,
+.event-portal-search-icon img,
+.event-portal-calendar-icon img {
+  filter: var(--theme-icon-filter);
+}
+
+.event-portal-language-container,
+.event-portal-sort-container {
+  box-shadow: none;
+}
+
+#event-portal-language-select,
+#event-portal-sort-select,
+#event-portal-search-input {
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+  background-color: var(--theme-control-bg);
+  box-shadow: var(--theme-shadow-soft);
+}
+
+#event-portal-language-select:hover,
+#event-portal-sort-select:hover,
+#event-portal-search-input:hover {
+  border-color: var(--theme-border-strong);
+}
+
+#event-portal-search-input::placeholder {
+  color: var(--theme-text-soft);
+  opacity: 1;
+}
+
+#event-portal-language-select:focus,
+#event-portal-sort-select:focus,
+#event-portal-search-input:focus {
+  border-color: var(--theme-accent);
+  background-color: var(--theme-control-bg);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-accent) 20%, transparent);
+}
+
+html[data-theme="dark"] #event-portal-language-select,
+html[data-theme="dark"] #event-portal-sort-select {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23dbe5f2' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+}
+
+.event-portal-event-card,
+.event-portal-event-card-modern {
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+  background: var(--theme-surface);
+  box-shadow: var(--theme-shadow-soft);
+}
+
+.event-portal-event-card-modern:hover {
+  box-shadow: var(--theme-shadow);
+}
+
+.event-portal-event-card-media {
+  background: var(--theme-surface-soft);
+}
+
+.event-portal-event-card-media-placeholder {
+  color: var(--theme-accent);
+  background: var(--theme-placeholder-bg);
+}
+
+.event-portal-event-date,
+.event-portal-event-card-modern .event-portal-event-date,
+.event-portal-event-location,
+.event-portal-event-description,
+.event-portal-event-card-modern .event-portal-event-description {
+  color: var(--theme-text-muted);
+}
+
+.event-portal-event-location::before {
+  border-color: var(--theme-accent);
+}
+
+.event-portal-event-link,
+.event-portal-event-card-modern .event-portal-event-link,
+.event-portal-primary-button {
+  color: var(--theme-accent-contrast);
+  background: var(--theme-accent);
+}
+
+.event-portal-event-link:hover,
+.event-portal-event-link:focus-visible,
+.event-portal-event-card-modern .event-portal-event-link:hover,
+.event-portal-event-card-modern .event-portal-event-link:focus-visible,
+.event-portal-primary-button:hover,
+.event-portal-primary-button:focus-visible {
+  color: var(--theme-accent-contrast);
+  background: var(--theme-accent-hover);
+}
+
+.event-portal-detail-loading,
+#event-portal-loading-message,
+.event-portal-registration-heading p:last-child,
+.event-portal-summary-label,
+.event-portal-summary-secondary,
+.event-portal-session-body p,
+.event-portal-speaker-content p,
+.event-portal-form-notice {
+  color: var(--theme-text-muted);
+}
+
+.event-portal-loading-spinner {
+  border-color: var(--theme-border);
+  border-top-color: var(--theme-accent);
+}
+
+.event-portal-detail-hero {
+  border-color: var(--theme-border);
+  background: var(--theme-hero-bg);
+  box-shadow: var(--theme-shadow);
+}
+
+.event-portal-detail-hero-meta,
+.event-portal-rich-text,
+.event-portal-session-speakers,
+.event-portal-speaker-title {
+  color: var(--theme-text-muted) !important;
+}
+
+.event-portal-detail-hero-media {
+  background: var(--theme-surface-soft);
+}
+
+.event-portal-eyebrow,
+.event-portal-section-kicker,
+.event-portal-session-time,
+.event-portal-rich-text a {
+  color: var(--theme-accent);
+}
+
+.event-portal-content-section,
+.event-portal-summary-card,
+.event-portal-registration-section {
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+  background: color-mix(in srgb, var(--theme-surface) 96%, transparent);
+}
+
+.event-portal-summary-card {
+  box-shadow: var(--theme-shadow-soft);
+}
+
+.event-portal-summary-item {
+  border-top-color: var(--theme-border);
+}
+
+.event-portal-secondary-button {
+  color: var(--theme-accent);
+  border-color: var(--theme-accent);
+  background: transparent;
+}
+
+.event-portal-secondary-button:hover,
+.event-portal-secondary-button:focus-visible {
+  color: var(--theme-text);
+  background: var(--theme-accent-soft);
+}
+
+.event-portal-session-card,
+#event-portal-loading-message,
+.event-portal-form-notice {
+  background: var(--theme-surface-soft);
+}
+
+.event-portal-speaker-card {
+  border-color: var(--theme-border);
+  background: var(--theme-surface-elevated);
+}
+
+.event-portal-speaker-visual {
+  color: var(--theme-accent);
+  background: var(--theme-accent-soft);
+}
+
+.event-portal-error-message,
+#event-portal-api-error {
+  color: var(--theme-error-text);
+  border: 1px solid var(--theme-error-border);
+  background: var(--theme-error-bg);
+}
+
+/* Customer Insights forms are external markup. Keep their host surface intentionally light
+   so vendor-provided form styles remain readable even when the portal is dark. */
+html[data-theme="dark"] .event-portal-registration-form-wrapper {
+  padding: 20px;
+  border: 1px solid #465268;
+  border-radius: 14px;
+  color: #172033;
+  background: #ffffff;
+  color-scheme: light;
+}
+
+html[data-theme="dark"] .event-portal-registration-form-wrapper input,
+html[data-theme="dark"] .event-portal-registration-form-wrapper select,
+html[data-theme="dark"] .event-portal-registration-form-wrapper textarea,
+html[data-theme="dark"] .event-portal-registration-form-wrapper button {
+  color-scheme: light;
+}
+
+@media (max-width: 760px) {
+  .event-portal-top-header-content {
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .event-portal-header-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .event-portal-theme-option {
+    min-height: 34px;
+    padding: 7px 9px;
+  }
+}
+
+@media (max-width: 520px) {
+  .event-portal-top-header-content {
+    align-items: center;
+  }
+
+  .event-portal-header-actions {
+    flex: 1;
+  }
+
+  .event-portal-language-container {
+    width: 100%;
+    order: 2;
+  }
+
+  #event-portal-language-select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .event-portal-theme-switcher {
+    margin-inline-start: auto;
+  }
+
+  .event-portal-theme-option-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .event-portal-theme-option {
+    width: 36px;
+    padding: 7px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  body.event-portal-event-details-page,
+  body:not(.event-portal-event-details-page),
+  .event-portal-theme-option {
+    transition: none;
+  }
+}

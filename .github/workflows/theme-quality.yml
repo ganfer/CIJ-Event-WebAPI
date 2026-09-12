@@ -1,0 +1,65 @@
+name: Theme Quality Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  theme-quality:
+    name: Validate theme behavior and contrast
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Show Node.js version
+        run: node --version
+
+      - name: Run theme quality checks
+        run: npm run test:theme
+
+      - name: Render theme preview screenshots
+        run: |
+          set -euo pipefail
+          BROWSER="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [[ -z "$BROWSER" ]]; then
+            echo "::error::No Chromium-compatible browser is available on the runner."
+            exit 1
+          fi
+
+          mkdir -p theme-screenshots
+          PREVIEW="file://${GITHUB_WORKSPACE}/tests/theme-preview.html"
+
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --window-size=1440,2200 \
+            --screenshot="${GITHUB_WORKSPACE}/theme-screenshots/light-desktop.png" \
+            "${PREVIEW}#light"
+
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --window-size=1440,2200 \
+            --screenshot="${GITHUB_WORKSPACE}/theme-screenshots/dark-desktop.png" \
+            "${PREVIEW}#dark"
+
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --window-size=390,2200 \
+            --screenshot="${GITHUB_WORKSPACE}/theme-screenshots/light-mobile.png" \
+            "${PREVIEW}#light"
+
+          "$BROWSER" --headless=new --no-sandbox --disable-gpu --hide-scrollbars \
+            --window-size=390,2200 \
+            --screenshot="${GITHUB_WORKSPACE}/theme-screenshots/dark-mobile.png" \
+            "${PREVIEW}#dark"
+
+      - name: Upload theme preview screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: theme-preview-screenshots
+          path: theme-screenshots/
+          if-no-files-found: error
+          retention-days: 7

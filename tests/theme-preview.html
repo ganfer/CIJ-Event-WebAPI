@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-theme-preference="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <script>
+    const requestedTheme = location.hash === '#dark' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = requestedTheme;
+    document.documentElement.dataset.themePreference = requestedTheme;
+    document.documentElement.style.colorScheme = requestedTheme;
+  </script>
+  <link rel="stylesheet" href="../public/css/styles.css">
+  <link rel="stylesheet" href="../public/css/event-grid.css">
+  <link rel="stylesheet" href="../public/css/event-details.css">
+  <link rel="stylesheet" href="../public/css/theme.css">
+  <style>
+    body.event-portal-event-details-page { min-height: 100vh; }
+    .preview-shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding-bottom: 72px; }
+    .preview-label { margin: 28px 0 14px; font: 800 12px/1.2 Arial, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--theme-accent); }
+    .preview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+    .preview-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .preview-form label { display: grid; gap: 6px; color: #344054; font: 700 13px/1.4 Arial, sans-serif; }
+    .preview-form input { width: 100%; padding: 11px 12px; border: 1px solid #98a2b3; border-radius: 8px; background: #fff; color: #172033; }
+    .preview-form button { justify-self: start; padding: 11px 18px; border: 0; border-radius: 999px; background: #0b63b6; color: #fff; font-weight: 700; }
+    @media (max-width: 760px) { .preview-grid, .preview-form { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body class="event-portal-event-details-page">
+  <header class="event-portal-page-header event-portal-details-header">
+    <div class="event-portal-top-header-content">
+      <a href="#" class="event-portal-home-section">
+        <span class="event-portal-home-text">Events</span>
+      </a>
+      <div class="event-portal-header-actions">
+        <div class="event-portal-theme-switcher" role="group" aria-label="Color theme">
+          <button type="button" class="event-portal-theme-option" data-theme-choice="system" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="12" rx="2" stroke-width="1.8"/><path d="M8 20h8M12 16v4" stroke-width="1.8"/></svg><span class="event-portal-theme-option-label">System</span>
+          </button>
+          <button type="button" class="event-portal-theme-option" data-theme-choice="light" aria-pressed="true">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke-width="1.8"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2" stroke-width="1.8"/></svg><span class="event-portal-theme-option-label">Light</span>
+          </button>
+          <button type="button" class="event-portal-theme-option" data-theme-choice="dark" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.5 8.5 0 1 0 20.2 15.2Z" stroke-width="1.8"/></svg><span class="event-portal-theme-option-label">Dark</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="preview-shell">
+    <p class="preview-label">Overview components</p>
+    <div class="preview-grid">
+      <article class="event-portal-event-card event-portal-event-card-modern">
+        <div class="event-portal-event-card-media event-portal-event-card-media-placeholder"><span>JD</span></div>
+        <div class="event-portal-event-details">
+          <h2 class="event-portal-event-name">Youth, Future & Dynamics</h2>
+          <p class="event-portal-event-date">October 21 · 09:30–16:00 CEST</p>
+          <p class="event-portal-event-location">Innovation Campus · Room 3.14</p>
+          <p class="event-portal-event-description">A practical event about modern customer experiences, technology and the next generation of digital engagement.</p>
+          <div class="event-portal-event-footer"><a class="event-portal-event-link" href="#">Details & Registration</a></div>
+        </div>
+      </article>
+
+      <section class="event-portal-content-section">
+        <p class="event-portal-section-kicker">Overview</p>
+        <h2>About this event</h2>
+        <div class="event-portal-rich-text">
+          <p>Meet people, exchange ideas and explore a modern event experience built around the Events API.</p>
+          <p><a href="#">Read the agenda</a> or continue directly to registration.</p>
+        </div>
+      </section>
+    </div>
+
+    <p class="preview-label">Detail page</p>
+    <section class="event-portal-detail-hero">
+      <div class="event-portal-detail-hero-copy">
+        <p class="event-portal-eyebrow">Event</p>
+        <h1>Youth, Future & Dynamics</h1>
+        <p class="event-portal-detail-hero-meta">Tuesday, October 21, 2026 · 09:30–16:00 CEST</p>
+        <p class="event-portal-detail-hero-meta">Innovation Campus · Freiburg</p>
+        <a href="#registration" class="event-portal-primary-button">Register now</a>
+      </div>
+      <div class="event-portal-detail-hero-media event-portal-event-card-media-placeholder"><span>EVENT</span></div>
+    </section>
+
+    <div class="event-portal-detail-layout" style="margin-top: 32px;">
+      <div class="event-portal-detail-main-column">
+        <section class="event-portal-content-section">
+          <p class="event-portal-section-kicker">Schedule</p>
+          <h2>Agenda</h2>
+          <div class="event-portal-session-list">
+            <article class="event-portal-session-card"><div class="event-portal-session-time">09:30–10:15</div><div class="event-portal-session-body"><h3>Opening keynote</h3><p>How digital event experiences can feel simpler and more personal.</p><p class="event-portal-session-speakers">Alex Morgan · Jamie Lee</p></div></article>
+            <article class="event-portal-session-card"><div class="event-portal-session-time">11:00–12:00</div><div class="event-portal-session-body"><h3>Hands-on session</h3><p>From event discovery to registration using the public Events API.</p></div></article>
+          </div>
+        </section>
+
+        <section class="event-portal-content-section">
+          <p class="event-portal-section-kicker">People</p>
+          <h2>Speakers</h2>
+          <div class="event-portal-speaker-grid">
+            <article class="event-portal-speaker-card"><div class="event-portal-speaker-visual">AM</div><div class="event-portal-speaker-content"><h3>Alex Morgan</h3><p class="event-portal-speaker-title">Solution Architect</p><p>Focuses on modern event experiences and accessible design.</p></div></article>
+            <article class="event-portal-speaker-card"><div class="event-portal-speaker-visual">JL</div><div class="event-portal-speaker-content"><h3>Jamie Lee</h3><p class="event-portal-speaker-title">Product Specialist</p><p>Works on practical customer journeys and event engagement.</p></div></article>
+          </div>
+        </section>
+      </div>
+
+      <aside class="event-portal-summary-card">
+        <p class="event-portal-section-kicker">At a glance</p>
+        <h2>Event details</h2>
+        <div class="event-portal-summary-item"><span class="event-portal-summary-label">Date & time</span><strong>October 21 · 09:30–16:00</strong></div>
+        <div class="event-portal-summary-item"><span class="event-portal-summary-label">Location</span><strong>Innovation Campus</strong><span class="event-portal-summary-secondary">Example Street 10, Freiburg</span></div>
+        <a href="#registration" class="event-portal-secondary-button">Go to registration</a>
+      </aside>
+    </div>
+
+    <section id="registration" class="event-portal-registration-section" style="margin-top: 32px;">
+      <div class="event-portal-registration-heading">
+        <p class="event-portal-section-kicker">Registration</p>
+        <h2>Event Registration</h2>
+        <p>Customer Insights form host surface preview.</p>
+      </div>
+      <div class="event-portal-registration-form-wrapper">
+        <form class="preview-form">
+          <label>First name<input value="Ferdinand"></label>
+          <label>Email<input value="demo@example.com"></label>
+          <button type="button">Register</button>
+        </form>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
