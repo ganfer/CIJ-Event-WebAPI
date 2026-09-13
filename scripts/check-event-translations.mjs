@@ -5,20 +5,26 @@ const baseUrl = process.env.EVENTS_BASE_URL || 'https://public-eur.mkt.dynamics.
 const orgId = process.env.EVENTS_ORG_ID;
 const token = process.env.EVENTS_API_TOKEN;
 const webappId = process.env.EVENTS_WEBAPP_ID || '';
-const portalLocales = [
-  'ar-SA', 'bg-BG', 'ca-ES', 'cs-CZ', 'da-DK', 'de-DE', 'el-GR',
-  'en-AU', 'en-CA', 'en-GB', 'en-US', 'es-ES', 'et-EE', 'eu-ES',
-  'fi-FI', 'fr-CA', 'fr-FR', 'gl-ES', 'he-IL', 'hr-HR', 'hu-HU',
-  'id-ID', 'it-IT', 'ja-JP', 'ko-KR', 'lt-LT', 'lv-LV', 'nb-NO',
-  'nl-NL', 'pl-PL', 'pt-BR', 'pt-PT', 'ro-RO', 'ru-RU', 'sk-SK',
-  'sl-SI', 'sr-Cyrl-CS', 'sr-Latn-CS', 'sv-SE', 'th-TH', 'tr-TR',
-  'uk-UA', 'vi-VN', 'zh-CN', 'zh-HK', 'zh-TW'
-];
-const requiredLocales = (process.env.EVENT_TRANSLATION_REQUIRED_LOCALES || portalLocales.join(','))
-  .split(',')
-  .map(value => value.trim())
-  .filter(Boolean);
+const localesDir = path.join(process.cwd(), 'public', 'locales');
+
+function discoverPortalLocales() {
+  return [...new Set(
+    fs.readdirSync(localesDir)
+      .map(file => file.match(/^translation\.(.+)\.json$/)?.[1])
+      .filter(Boolean)
+  )].sort();
+}
+
+const discoveredLocales = discoverPortalLocales();
+const requiredLocales = process.env.EVENT_TRANSLATION_REQUIRED_LOCALES
+  ? process.env.EVENT_TRANSLATION_REQUIRED_LOCALES.split(',').map(value => value.trim()).filter(Boolean)
+  : discoveredLocales;
 const translationsDir = path.join(process.cwd(), 'public', 'translations', 'events');
+
+if (!requiredLocales.includes('en-US')) {
+  console.error('Event translation check requires the en-US source locale.');
+  process.exit(1);
+}
 
 if (!orgId || !token) {
   console.error('Event translation check requires EVENTS_ORG_ID and EVENTS_API_TOKEN.');
@@ -87,11 +93,9 @@ for (const event of events) {
     continue;
   }
 
-  const missingLocales = requiredLocales.filter(locale => {
-    const language = locale.split('-')[0].toLowerCase();
-    return !(translation?.[locale] && typeof translation[locale] === 'object') &&
-      !(translation?.[language] && typeof translation[language] === 'object');
-  });
+  const missingLocales = requiredLocales.filter(locale =>
+    !(translation?.[locale] && typeof translation[locale] === 'object')
+  );
 
   if (missingLocales.length > 0) {
     failures.push(`${label} (${key}): missing locale(s): ${missingLocales.join(', ')}.`);
