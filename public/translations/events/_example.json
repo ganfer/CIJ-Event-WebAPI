@@ -1,0 +1,14 @@
+{
+  "de-DE": {
+    "title": "Beispielveranstaltung",
+    "description": "<p>Dies ist die deutsche Beschreibung der Veranstaltung.</p>"
+  },
+  "en-US": {
+    "title": "Example event",
+    "description": "<p>This is the English event description.</p>"
+  },
+  "fr-FR": {
+    "title": "Événement exemple",
+    "description": "<p>Ceci est la description française de l’événement.</p>"
+  }
+}
