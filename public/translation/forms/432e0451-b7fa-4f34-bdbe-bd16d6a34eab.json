@@ -1,4 +1,137 @@
 {
+  "ar-SA": {
+    "fields": {
+      "firstname": {
+        "label": "الاسم الأول",
+        "placeholder": "الاسم الأول"
+      },
+      "lastname": {
+        "label": "اسم العائلة",
+        "placeholder": "اسم العائلة"
+      },
+      "emailaddress1": {
+        "label": "البريد الإلكتروني",
+        "placeholder": "البريد الإلكتروني"
+      }
+    },
+    "buttons": {
+      "submit": "إرسال"
+    }
+  },
+  "bg-BG": {
+    "fields": {
+      "firstname": {
+        "label": "Име",
+        "placeholder": "Име"
+      },
+      "lastname": {
+        "label": "Фамилия",
+        "placeholder": "Фамилия"
+      },
+      "emailaddress1": {
+        "label": "Имейл адрес",
+        "placeholder": "Имейл адрес"
+      }
+    },
+    "buttons": {
+      "submit": "Изпращане"
+    }
+  },
+  "ca-ES": {
+    "fields": {
+      "firstname": {
+        "label": "Nom",
+        "placeholder": "Nom"
+      },
+      "lastname": {
+        "label": "Cognoms",
+        "placeholder": "Cognoms"
+      },
+      "emailaddress1": {
+        "label": "Adreça electrònica",
+        "placeholder": "Adreça electrònica"
+      }
+    },
+    "buttons": {
+      "submit": "Envia"
+    }
+  },
+  "cs-CZ": {
+    "fields": {
+      "firstname": {
+        "label": "Jméno",
+        "placeholder": "Jméno"
+      },
+      "lastname": {
+        "label": "Příjmení",
+        "placeholder": "Příjmení"
+      },
+      "emailaddress1": {
+        "label": "E-mailová adresa",
+        "placeholder": "E-mailová adresa"
+      }
+    },
+    "buttons": {
+      "submit": "Odeslat"
+    }
+  },
+  "da-DK": {
+    "fields": {
+      "firstname": {
+        "label": "Fornavn",
+        "placeholder": "Fornavn"
+      },
+      "lastname": {
+        "label": "Efternavn",
+        "placeholder": "Efternavn"
+      },
+      "emailaddress1": {
+        "label": "E-mailadresse",
+        "placeholder": "E-mailadresse"
+      }
+    },
+    "buttons": {
+      "submit": "Send"
+    }
+  },
+  "de-DE": {
+    "fields": {
+      "firstname": {
+        "label": "Vorname",
+        "placeholder": "Vorname"
+      },
+      "lastname": {
+        "label": "Nachname",
+        "placeholder": "Nachname"
+      },
+      "emailaddress1": {
+        "label": "E-Mail-Adresse",
+        "placeholder": "E-Mail-Adresse"
+      }
+    },
+    "buttons": {
+      "submit": "Absenden"
+    }
+  },
+  "el-GR": {
+    "fields": {
+      "firstname": {
+        "label": "Όνομα",
+        "placeholder": "Όνομα"
+      },
+      "lastname": {
+        "label": "Επώνυμο",
+        "placeholder": "Επώνυμο"
+      },
+      "emailaddress1": {
+        "label": "Διεύθυνση email",
+        "placeholder": "Διεύθυνση email"
+      }
+    },
+    "buttons": {
+      "submit": "Υποβολή"
+    }
+  },
   "en-AU": {
     "fields": {
       "firstname": {
@@ -75,59 +208,771 @@
       "submit": "Submit"
     }
   },
+  "es-ES": {
+    "fields": {
+      "firstname": {
+        "label": "Nombre",
+        "placeholder": "Nombre"
+      },
+      "lastname": {
+        "label": "Apellidos",
+        "placeholder": "Apellidos"
+      },
+      "emailaddress1": {
+        "label": "Correo electrónico",
+        "placeholder": "Correo electrónico"
+      }
+    },
+    "buttons": {
+      "submit": "Enviar"
+    }
+  },
+  "et-EE": {
+    "fields": {
+      "firstname": {
+        "label": "Eesnimi",
+        "placeholder": "Eesnimi"
+      },
+      "lastname": {
+        "label": "Perekonnanimi",
+        "placeholder": "Perekonnanimi"
+      },
+      "emailaddress1": {
+        "label": "E-posti aadress",
+        "placeholder": "E-posti aadress"
+      }
+    },
+    "buttons": {
+      "submit": "Saada"
+    }
+  },
+  "eu-ES": {
+    "fields": {
+      "firstname": {
+        "label": "Izena",
+        "placeholder": "Izena"
+      },
+      "lastname": {
+        "label": "Abizenak",
+        "placeholder": "Abizenak"
+      },
+      "emailaddress1": {
+        "label": "Helbide elektronikoa",
+        "placeholder": "Helbide elektronikoa"
+      }
+    },
+    "buttons": {
+      "submit": "Bidali"
+    }
+  },
+  "fi-FI": {
+    "fields": {
+      "firstname": {
+        "label": "Etunimi",
+        "placeholder": "Etunimi"
+      },
+      "lastname": {
+        "label": "Sukunimi",
+        "placeholder": "Sukunimi"
+      },
+      "emailaddress1": {
+        "label": "Sähköpostiosoite",
+        "placeholder": "Sähköpostiosoite"
+      }
+    },
+    "buttons": {
+      "submit": "Lähetä"
+    }
+  },
+  "fr-CA": {
+    "fields": {
+      "firstname": {
+        "label": "Prénom",
+        "placeholder": "Prénom"
+      },
+      "lastname": {
+        "label": "Nom",
+        "placeholder": "Nom"
+      },
+      "emailaddress1": {
+        "label": "Adresse courriel",
+        "placeholder": "Adresse courriel"
+      }
+    },
+    "buttons": {
+      "submit": "Envoyer"
+    }
+  },
+  "fr-FR": {
+    "fields": {
+      "firstname": {
+        "label": "Prénom",
+        "placeholder": "Prénom"
+      },
+      "lastname": {
+        "label": "Nom",
+        "placeholder": "Nom"
+      },
+      "emailaddress1": {
+        "label": "Adresse e-mail",
+        "placeholder": "Adresse e-mail"
+      }
+    },
+    "buttons": {
+      "submit": "Envoyer"
+    }
+  },
+  "gl-ES": {
+    "fields": {
+      "firstname": {
+        "label": "Nome",
+        "placeholder": "Nome"
+      },
+      "lastname": {
+        "label": "Apelidos",
+        "placeholder": "Apelidos"
+      },
+      "emailaddress1": {
+        "label": "Enderezo de correo electrónico",
+        "placeholder": "Enderezo de correo electrónico"
+      }
+    },
+    "buttons": {
+      "submit": "Enviar"
+    }
+  },
+  "he-IL": {
+    "fields": {
+      "firstname": {
+        "label": "שם פרטי",
+        "placeholder": "שם פרטי"
+      },
+      "lastname": {
+        "label": "שם משפחה",
+        "placeholder": "שם משפחה"
+      },
+      "emailaddress1": {
+        "label": "כתובת דוא\"ל",
+        "placeholder": "כתובת דוא\"ל"
+      }
+    },
+    "buttons": {
+      "submit": "שליחה"
+    }
+  },
+  "hr-HR": {
+    "fields": {
+      "firstname": {
+        "label": "Ime",
+        "placeholder": "Ime"
+      },
+      "lastname": {
+        "label": "Prezime",
+        "placeholder": "Prezime"
+      },
+      "emailaddress1": {
+        "label": "Adresa e-pošte",
+        "placeholder": "Adresa e-pošte"
+      }
+    },
+    "buttons": {
+      "submit": "Pošalji"
+    }
+  },
+  "hu-HU": {
+    "fields": {
+      "firstname": {
+        "label": "Keresztnév",
+        "placeholder": "Keresztnév"
+      },
+      "lastname": {
+        "label": "Vezetéknév",
+        "placeholder": "Vezetéknév"
+      },
+      "emailaddress1": {
+        "label": "E-mail-cím",
+        "placeholder": "E-mail-cím"
+      }
+    },
+    "buttons": {
+      "submit": "Küldés"
+    }
+  },
+  "id-ID": {
+    "fields": {
+      "firstname": {
+        "label": "Nama depan",
+        "placeholder": "Nama depan"
+      },
+      "lastname": {
+        "label": "Nama belakang",
+        "placeholder": "Nama belakang"
+      },
+      "emailaddress1": {
+        "label": "Alamat email",
+        "placeholder": "Alamat email"
+      }
+    },
+    "buttons": {
+      "submit": "Kirim"
+    }
+  },
+  "it-IT": {
+    "fields": {
+      "firstname": {
+        "label": "Nome",
+        "placeholder": "Nome"
+      },
+      "lastname": {
+        "label": "Cognome",
+        "placeholder": "Cognome"
+      },
+      "emailaddress1": {
+        "label": "Indirizzo email",
+        "placeholder": "Indirizzo email"
+      }
+    },
+    "buttons": {
+      "submit": "Invia"
+    }
+  },
+  "ja-JP": {
+    "fields": {
+      "firstname": {
+        "label": "名",
+        "placeholder": "名"
+      },
+      "lastname": {
+        "label": "姓",
+        "placeholder": "姓"
+      },
+      "emailaddress1": {
+        "label": "メールアドレス",
+        "placeholder": "メールアドレス"
+      }
+    },
+    "buttons": {
+      "submit": "送信"
+    }
+  },
+  "ko-KR": {
+    "fields": {
+      "firstname": {
+        "label": "이름",
+        "placeholder": "이름"
+      },
+      "lastname": {
+        "label": "성",
+        "placeholder": "성"
+      },
+      "emailaddress1": {
+        "label": "이메일 주소",
+        "placeholder": "이메일 주소"
+      }
+    },
+    "buttons": {
+      "submit": "제출"
+    }
+  },
+  "lt-LT": {
+    "fields": {
+      "firstname": {
+        "label": "Vardas",
+        "placeholder": "Vardas"
+      },
+      "lastname": {
+        "label": "Pavardė",
+        "placeholder": "Pavardė"
+      },
+      "emailaddress1": {
+        "label": "El. pašto adresas",
+        "placeholder": "El. pašto adresas"
+      }
+    },
+    "buttons": {
+      "submit": "Pateikti"
+    }
+  },
+  "lv-LV": {
+    "fields": {
+      "firstname": {
+        "label": "Vārds",
+        "placeholder": "Vārds"
+      },
+      "lastname": {
+        "label": "Uzvārds",
+        "placeholder": "Uzvārds"
+      },
+      "emailaddress1": {
+        "label": "E-pasta adrese",
+        "placeholder": "E-pasta adrese"
+      }
+    },
+    "buttons": {
+      "submit": "Iesniegt"
+    }
+  },
+  "nb-NO": {
+    "fields": {
+      "firstname": {
+        "label": "Fornavn",
+        "placeholder": "Fornavn"
+      },
+      "lastname": {
+        "label": "Etternavn",
+        "placeholder": "Etternavn"
+      },
+      "emailaddress1": {
+        "label": "E-postadresse",
+        "placeholder": "E-postadresse"
+      }
+    },
+    "buttons": {
+      "submit": "Send"
+    }
+  },
+  "nl-NL": {
+    "fields": {
+      "firstname": {
+        "label": "Voornaam",
+        "placeholder": "Voornaam"
+      },
+      "lastname": {
+        "label": "Achternaam",
+        "placeholder": "Achternaam"
+      },
+      "emailaddress1": {
+        "label": "E-mailadres",
+        "placeholder": "E-mailadres"
+      }
+    },
+    "buttons": {
+      "submit": "Verzenden"
+    }
+  },
+  "pl-PL": {
+    "fields": {
+      "firstname": {
+        "label": "Imię",
+        "placeholder": "Imię"
+      },
+      "lastname": {
+        "label": "Nazwisko",
+        "placeholder": "Nazwisko"
+      },
+      "emailaddress1": {
+        "label": "Adres e-mail",
+        "placeholder": "Adres e-mail"
+      }
+    },
+    "buttons": {
+      "submit": "Wyślij"
+    }
+  },
+  "pt-BR": {
+    "fields": {
+      "firstname": {
+        "label": "Nome",
+        "placeholder": "Nome"
+      },
+      "lastname": {
+        "label": "Sobrenome",
+        "placeholder": "Sobrenome"
+      },
+      "emailaddress1": {
+        "label": "Endereço de e-mail",
+        "placeholder": "Endereço de e-mail"
+      }
+    },
+    "buttons": {
+      "submit": "Enviar"
+    }
+  },
+  "pt-PT": {
+    "fields": {
+      "firstname": {
+        "label": "Nome",
+        "placeholder": "Nome"
+      },
+      "lastname": {
+        "label": "Apelido",
+        "placeholder": "Apelido"
+      },
+      "emailaddress1": {
+        "label": "Endereço de e-mail",
+        "placeholder": "Endereço de e-mail"
+      }
+    },
+    "buttons": {
+      "submit": "Enviar"
+    }
+  },
+  "ro-RO": {
+    "fields": {
+      "firstname": {
+        "label": "Prenume",
+        "placeholder": "Prenume"
+      },
+      "lastname": {
+        "label": "Nume",
+        "placeholder": "Nume"
+      },
+      "emailaddress1": {
+        "label": "Adresă de e-mail",
+        "placeholder": "Adresă de e-mail"
+      }
+    },
+    "buttons": {
+      "submit": "Trimite"
+    }
+  },
+  "ru-RU": {
+    "fields": {
+      "firstname": {
+        "label": "Имя",
+        "placeholder": "Имя"
+      },
+      "lastname": {
+        "label": "Фамилия",
+        "placeholder": "Фамилия"
+      },
+      "emailaddress1": {
+        "label": "Адрес электронной почты",
+        "placeholder": "Адрес электронной почты"
+      }
+    },
+    "buttons": {
+      "submit": "Отправить"
+    }
+  },
+  "sk-SK": {
+    "fields": {
+      "firstname": {
+        "label": "Meno",
+        "placeholder": "Meno"
+      },
+      "lastname": {
+        "label": "Priezvisko",
+        "placeholder": "Priezvisko"
+      },
+      "emailaddress1": {
+        "label": "E-mailová adresa",
+        "placeholder": "E-mailová adresa"
+      }
+    },
+    "buttons": {
+      "submit": "Odoslať"
+    }
+  },
+  "sl-SI": {
+    "fields": {
+      "firstname": {
+        "label": "Ime",
+        "placeholder": "Ime"
+      },
+      "lastname": {
+        "label": "Priimek",
+        "placeholder": "Priimek"
+      },
+      "emailaddress1": {
+        "label": "E-poštni naslov",
+        "placeholder": "E-poštni naslov"
+      }
+    },
+    "buttons": {
+      "submit": "Pošlji"
+    }
+  },
+  "sr-Cyrl-CS": {
+    "fields": {
+      "firstname": {
+        "label": "Име",
+        "placeholder": "Име"
+      },
+      "lastname": {
+        "label": "Презиме",
+        "placeholder": "Презиме"
+      },
+      "emailaddress1": {
+        "label": "Адреса е-поште",
+        "placeholder": "Адреса е-поште"
+      }
+    },
+    "buttons": {
+      "submit": "Пошаљи"
+    }
+  },
+  "sr-Cyrl-RS": {
+    "fields": {
+      "firstname": {
+        "label": "Име",
+        "placeholder": "Име"
+      },
+      "lastname": {
+        "label": "Презиме",
+        "placeholder": "Презиме"
+      },
+      "emailaddress1": {
+        "label": "Адреса е-поште",
+        "placeholder": "Адреса е-поште"
+      }
+    },
+    "buttons": {
+      "submit": "Пошаљи"
+    }
+  },
+  "sr-Latn-CS": {
+    "fields": {
+      "firstname": {
+        "label": "Ime",
+        "placeholder": "Ime"
+      },
+      "lastname": {
+        "label": "Prezime",
+        "placeholder": "Prezime"
+      },
+      "emailaddress1": {
+        "label": "Adresa e-pošte",
+        "placeholder": "Adresa e-pošte"
+      }
+    },
+    "buttons": {
+      "submit": "Pošalji"
+    }
+  },
+  "sr-Latn-RS": {
+    "fields": {
+      "firstname": {
+        "label": "Ime",
+        "placeholder": "Ime"
+      },
+      "lastname": {
+        "label": "Prezime",
+        "placeholder": "Prezime"
+      },
+      "emailaddress1": {
+        "label": "Adresa e-pošte",
+        "placeholder": "Adresa e-pošte"
+      }
+    },
+    "buttons": {
+      "submit": "Pošalji"
+    }
+  },
+  "sv-SE": {
+    "fields": {
+      "firstname": {
+        "label": "Förnamn",
+        "placeholder": "Förnamn"
+      },
+      "lastname": {
+        "label": "Efternamn",
+        "placeholder": "Efternamn"
+      },
+      "emailaddress1": {
+        "label": "E-postadress",
+        "placeholder": "E-postadress"
+      }
+    },
+    "buttons": {
+      "submit": "Skicka"
+    }
+  },
+  "th-TH": {
+    "fields": {
+      "firstname": {
+        "label": "ชื่อ",
+        "placeholder": "ชื่อ"
+      },
+      "lastname": {
+        "label": "นามสกุล",
+        "placeholder": "นามสกุล"
+      },
+      "emailaddress1": {
+        "label": "ที่อยู่อีเมล",
+        "placeholder": "ที่อยู่อีเมล"
+      }
+    },
+    "buttons": {
+      "submit": "ส่ง"
+    }
+  },
+  "tr-TR": {
+    "fields": {
+      "firstname": {
+        "label": "Ad",
+        "placeholder": "Ad"
+      },
+      "lastname": {
+        "label": "Soyad",
+        "placeholder": "Soyad"
+      },
+      "emailaddress1": {
+        "label": "E-posta adresi",
+        "placeholder": "E-posta adresi"
+      }
+    },
+    "buttons": {
+      "submit": "Gönder"
+    }
+  },
+  "uk-UA": {
+    "fields": {
+      "firstname": {
+        "label": "Ім’я",
+        "placeholder": "Ім’я"
+      },
+      "lastname": {
+        "label": "Прізвище",
+        "placeholder": "Прізвище"
+      },
+      "emailaddress1": {
+        "label": "Адреса електронної пошти",
+        "placeholder": "Адреса електронної пошти"
+      }
+    },
+    "buttons": {
+      "submit": "Надіслати"
+    }
+  },
+  "vi-VN": {
+    "fields": {
+      "firstname": {
+        "label": "Tên",
+        "placeholder": "Tên"
+      },
+      "lastname": {
+        "label": "Họ",
+        "placeholder": "Họ"
+      },
+      "emailaddress1": {
+        "label": "Địa chỉ email",
+        "placeholder": "Địa chỉ email"
+      }
+    },
+    "buttons": {
+      "submit": "Gửi"
+    }
+  },
+  "zh-CN": {
+    "fields": {
+      "firstname": {
+        "label": "名字",
+        "placeholder": "名字"
+      },
+      "lastname": {
+        "label": "姓氏",
+        "placeholder": "姓氏"
+      },
+      "emailaddress1": {
+        "label": "电子邮件地址",
+        "placeholder": "电子邮件地址"
+      }
+    },
+    "buttons": {
+      "submit": "提交"
+    }
+  },
+  "zh-HK": {
+    "fields": {
+      "firstname": {
+        "label": "名字",
+        "placeholder": "名字"
+      },
+      "lastname": {
+        "label": "姓氏",
+        "placeholder": "姓氏"
+      },
+      "emailaddress1": {
+        "label": "電子郵件地址",
+        "placeholder": "電子郵件地址"
+      }
+    },
+    "buttons": {
+      "submit": "提交"
+    }
+  },
+  "zh-Hans-CN": {
+    "fields": {
+      "firstname": {
+        "label": "名字",
+        "placeholder": "名字"
+      },
+      "lastname": {
+        "label": "姓氏",
+        "placeholder": "姓氏"
+      },
+      "emailaddress1": {
+        "label": "电子邮件地址",
+        "placeholder": "电子邮件地址"
+      }
+    },
+    "buttons": {
+      "submit": "提交"
+    }
+  },
+  "zh-Hant-HK": {
+    "fields": {
+      "firstname": {
+        "label": "名字",
+        "placeholder": "名字"
+      },
+      "lastname": {
+        "label": "姓氏",
+        "placeholder": "姓氏"
+      },
+      "emailaddress1": {
+        "label": "電子郵件地址",
+        "placeholder": "電子郵件地址"
+      }
+    },
+    "buttons": {
+      "submit": "提交"
+    }
+  },
+  "zh-Hant-TW": {
+    "fields": {
+      "firstname": {
+        "label": "名字",
+        "placeholder": "名字"
+      },
+      "lastname": {
+        "label": "姓氏",
+        "placeholder": "姓氏"
+      },
+      "emailaddress1": {
+        "label": "電子郵件地址",
+        "placeholder": "電子郵件地址"
+      }
+    },
+    "buttons": {
+      "submit": "提交"
+    }
+  },
+  "zh-TW": {
+    "fields": {
+      "firstname": {
+        "label": "名字",
+        "placeholder": "名字"
+      },
+      "lastname": {
+        "label": "姓氏",
+        "placeholder": "姓氏"
+      },
+      "emailaddress1": {
+        "label": "電子郵件地址",
+        "placeholder": "電子郵件地址"
+      }
+    },
+    "buttons": {
+      "submit": "提交"
+    }
+  },
   "_meta": {
     "sourceLocale": "en-US",
-    "translationProvider": "googletrans",
-    "translationSchemaVersion": 1,
+    "translationProvider": "googletrans+standard-fields",
+    "translationSchemaVersion": 2,
     "sourceHash": "7fcc6d7e6498d17bdee2eba5804e375f070b9d4fed9d3b0bb8d151dc60c23af0",
-    "pendingLocales": [
-      "ar-SA",
-      "bg-BG",
-      "ca-ES",
-      "cs-CZ",
-      "da-DK",
-      "de-DE",
-      "el-GR",
-      "es-ES",
-      "et-EE",
-      "eu-ES",
-      "fi-FI",
-      "fr-CA",
-      "fr-FR",
-      "gl-ES",
-      "he-IL",
-      "hr-HR",
-      "hu-HU",
-      "id-ID",
-      "it-IT",
-      "ja-JP",
-      "ko-KR",
-      "lt-LT",
-      "lv-LV",
-      "nb-NO",
-      "nl-NL",
-      "pl-PL",
-      "pt-BR",
-      "pt-PT",
-      "ro-RO",
-      "ru-RU",
-      "sk-SK",
-      "sl-SI",
-      "sr-Cyrl-CS",
-      "sr-Cyrl-RS",
-      "sr-Latn-CS",
-      "sr-Latn-RS",
-      "sv-SE",
-      "th-TH",
-      "tr-TR",
-      "uk-UA",
-      "vi-VN",
-      "zh-CN",
-      "zh-HK",
-      "zh-Hans-CN",
-      "zh-Hant-HK",
-      "zh-Hant-TW",
-      "zh-TW"
-    ]
+    "pendingLocales": []
   }
 }
