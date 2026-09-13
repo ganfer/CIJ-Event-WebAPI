@@ -1,0 +1,15 @@
+{
+  "en-US": {
+    "title": "Jugend, Zukunft und Dynamics"
+  },
+  "de-DE": {
+    "title": "Jugend, Zukunft und Dynamik"
+  },
+  "fr-FR": {
+    "title": "Jugend, Zukunft et Dynamics"
+  },
+  "_meta": {
+    "sourceLocale": "en-US",
+    "translationProvider": "googletrans"
+  }
+}
