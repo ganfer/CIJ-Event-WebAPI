@@ -17,7 +17,7 @@ jobs:
   translate:
     name: Sync and translate event content
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repository
@@ -48,6 +48,17 @@ jobs:
           EVENTS_WEBAPP_ID: ${{ secrets.EVENTS_WEBAPP_ID }}
         run: node scripts/sync-event-sources.mjs
 
+      - name: Sync extended registration form copy
+        env:
+          EVENTS_BASE_URL: ${{ secrets.EVENTS_BASE_URL }}
+          EVENTS_ORG_ID: ${{ secrets.EVENTS_ORG_ID }}
+          EVENTS_API_TOKEN: ${{ secrets.EVENTS_API_TOKEN }}
+          EVENTS_WEBAPP_ID: ${{ secrets.EVENTS_WEBAPP_ID }}
+        run: node scripts/sync-form-copy.mjs
+
+      - name: Translate supplemental portal UI
+        run: python scripts/translate-portal-ui.py
+
       - name: Translate event files
         shell: bash
         run: |
@@ -70,7 +81,7 @@ jobs:
           while IFS= read -r source_file; do
             form_key="$(basename "$source_file" .source.json)"
             output_file="public/translation/forms/${form_key}.json"
-            python scripts/translate-form-content.py "$source_file" "$output_file"
+            python scripts/translate-form-content-extended.py "$source_file" "$output_file"
           done < <(find public/translation/forms -maxdepth 1 -type f -name '*.source.json' -print | sort)
 
       - name: Run project checks
@@ -90,14 +101,14 @@ jobs:
       - name: Commit synchronized translations
         shell: bash
         run: |
-          git add public/translations/events public/translation/forms
+          git add public/translations/events public/translation/forms public/translation/portal
 
-          if git diff --cached --quiet -- public/translations/events public/translation/forms; then
+          if git diff --cached --quiet -- public/translations/events public/translation/forms public/translation/portal; then
             echo "No translation changes to commit."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "content: sync event and form translations"
+          git commit -m "content: sync portal, event and form translations"
           git push
