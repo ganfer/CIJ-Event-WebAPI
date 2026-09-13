@@ -36,7 +36,7 @@ The loader also understands `eventId`/`id` when those properties are present in 
 
 ## Fallback behavior
 
-Translation files are optional. A missing file never prevents an event from rendering. For each event the portal uses:
+At runtime, translation files remain optional so that a missing file never breaks an event page. For each event the portal uses:
 
 1. the selected exact locale, for example `fr-FR`;
 2. the selected language key, for example `fr`;
@@ -44,6 +44,21 @@ Translation files are optional. A missing file never prevents an event from rend
 4. the original value returned by the Microsoft Events API.
 
 Individual fields are optional too. If a translated title exists but the description is missing, only the title is overridden.
+
+## CI validation
+
+The CI pipeline is intentionally stricter than the runtime fallback. `npm run check:translations` loads the currently published events from the configured Microsoft Events API and verifies that every returned event has a matching JSON file in this directory.
+
+By default the check requires `de-DE`, `en-US`, and `fr-FR` (language-only keys such as `de`, `en`, and `fr` are accepted as equivalents). The required list can be changed with `EVENT_TRANSLATION_REQUIRED_LOCALES`.
+
+The check uses the same GitHub Actions secrets as the deployment:
+
+- `EVENTS_BASE_URL`
+- `EVENTS_ORG_ID`
+- `EVENTS_API_TOKEN`
+- `EVENTS_WEBAPP_ID` (optional)
+
+A missing file, invalid JSON, missing required locale, Events API authentication problem, or failed API request makes the CI job fail. This catches newly published events that have not yet received their translation file.
 
 ## Power Automate / Dynamics workflow
 
