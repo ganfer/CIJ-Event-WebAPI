@@ -1,0 +1,81 @@
+name: Event Translation Sync
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: event-translation-sync
+  cancel-in-progress: false
+
+jobs:
+  translate:
+    name: Translate event content
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'schedule' && 'main' || github.ref_name }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install translator
+        run: pip install -r requirements-translations.txt
+
+      - name: Translate event files with retries
+        shell: bash
+        run: |
+          set -uo pipefail
+          attempts=3
+          delays=(0 300 900)
+
+          for attempt in $(seq 1 "$attempts"); do
+            if [ "${delays[$((attempt-1))]}" -gt 0 ]; then
+              echo "Waiting ${delays[$((attempt-1))]} seconds before attempt ${attempt}..."
+              sleep "${delays[$((attempt-1))]}"
+            fi
+
+            echo "Translation attempt ${attempt}/${attempts}"
+            failed=0
+
+            while IFS= read -r source_file; do
+              event_key="$(basename "$source_file" .source.json)"
+              output_file="public/translations/events/${event_key}.json"
+              if ! python scripts/translate-event-content.py "$source_file" "$output_file"; then
+                failed=1
+                break
+              fi
+            done < <(find public/translations/events -maxdepth 1 -type f -name '*.source.json' -print | sort)
+
+            if [ "$failed" -eq 0 ]; then
+              exit 0
+            fi
+          done
+
+          echo "Translation failed after ${attempts} attempts."
+          exit 1
+
+      - name: Commit generated translations
+        shell: bash
+        run: |
+          if git diff --quiet -- public/translations/events; then
+            echo "No translation changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/translations/events
+          git commit -m "content: sync event translations"
+          git push
