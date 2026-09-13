@@ -24,11 +24,12 @@ The repository is intentionally minimal. The actual web application lives in `pu
 /
 ├── .github/
 │   └── workflows/
-│       └── deploy-pages.yml       # GitHub Pages deployment
-├── public/                         # Static application deployed to production
+│       ├── ci.yml                  # npm checks, tests, build and audit
+│       ├── deploy-pages.yml        # GitHub Pages deployment
+│       └── theme-quality.yml       # Theme/contrast and screenshot checks
+├── public/                         # Static application source
 │   ├── assets/                     # Images and icons
 │   ├── css/
-│   │   └── styles.css
 │   ├── js/
 │   │   ├── api-wrapper.js
 │   │   ├── config.example.js      # Safe configuration template
@@ -40,6 +41,10 @@ The repository is intentionally minimal. The actual web application lives in `pu
 │   ├── locales/                   # Translation JSON files
 │   ├── index.html
 │   └── event-details.html
+├── scripts/
+│   ├── build.mjs                  # Creates the static _site/ artifact
+│   ├── check-project.mjs          # General source/integrity checks
+│   └── check-theme.mjs            # Theme and contrast checks
 ├── .gitignore
 ├── server.js                       # Express development server only
 ├── package.json
@@ -56,7 +61,7 @@ The repository is intentionally minimal. The actual web application lives in `pu
 - A web application record in **Customer Insights - Journeys > Settings > Web applications**
 - The hosting origin added to that web application so Events API CORS requests are allowed
 - The hosting domain allowed for **External form hosting** if embedded event registration forms are used
-- Node.js v22 or higher only when using the included local development server
+- Node.js v22 or higher for local development, checks and builds
 
 ## Customer Insights - Journeys configuration
 
@@ -90,9 +95,13 @@ See: [Authenticate your domains](https://learn.microsoft.com/en-us/dynamics365/c
 
 ### 1. Install dependencies
 
+For a clean install that exactly follows `package-lock.json`:
+
 ```bash
-npm install
+npm ci
 ```
+
+Use `npm install` when intentionally changing dependencies.
 
 ### 2. Create the local configuration
 
@@ -133,11 +142,35 @@ Open:
 http://localhost:3000
 ```
 
+## Quality checks and build
+
+The repository exposes the same npm commands used by GitHub Actions:
+
+```bash
+npm run check
+npm test
+npm run build
+```
+
+- `npm run check` validates authored JavaScript syntax, JSON files, required project files and local HTML asset references.
+- `npm test` runs the general project checks and the theme/contrast test suite.
+- `npm run build` creates the deployable static site under `_site/`.
+
+The build deliberately excludes a local `public/js/config.js`. Production configuration is added only by the deployment workflow from GitHub Actions secrets.
+
+The general CI workflow also runs:
+
+```bash
+npm audit --omit=dev --audit-level=high
+```
+
+Pull requests to `main` must therefore survive dependency installation, tests, the static build and the production-dependency audit before they are considered clean.
+
 ## Deploy with GitHub Pages
 
-The repository contains `.github/workflows/deploy-pages.yml`. The workflow deploys only the contents of `public/` and creates the production `config.js` inside the deployment artifact.
+The repository contains `.github/workflows/deploy-pages.yml`. The workflow runs `npm ci`, `npm test` and `npm run build`, then creates the production `config.js` inside the `_site/` deployment artifact.
 
-The current workflow deploys automatically on pushes to the `rework` branch and can also be started manually from the **Actions** tab.
+The current workflow deploys automatically on pushes to the `main` branch and can also be started manually from the **Actions** tab.
 
 ### 1. Add repository secrets
 
@@ -166,7 +199,7 @@ Under **Build and deployment**, select **GitHub Actions** as the source.
 
 ### 3. Deploy
 
-Push a commit to `rework`, or open **Actions > Deploy GitHub Pages > Run workflow**.
+Push a commit to `main`, or open **Actions > Deploy GitHub Pages > Run workflow**.
 
 For the repository `ganfer/CIJ-Event-WebAPI`, the default project-site URL is expected to be:
 
@@ -181,7 +214,7 @@ The deployment follows this flow:
 ```text
 public/
    |
-   | copy
+   | npm run build
    v
 _site/
    |
