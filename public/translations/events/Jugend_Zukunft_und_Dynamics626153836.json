@@ -1,35 +1,35 @@
 {
-  "en-US": {
-    "title": "Youth, Future and Dynamics",
-    "description": "This event is for demonstration purposes"
+  "cs-CZ": {
+    "title": "Mládí, budoucnost a dynamika",
+    "description": "Tato akce je pro demonstrační účely"
   },
   "de-DE": {
     "title": "Jugend, Zukunft und Dynamik",
     "description": "Diese Veranstaltung dient Demonstrationszwecken"
   },
-  "it-IT": {
-    "title": "Giovani, futuro e dinamiche",
-    "description": "Questo evento è a scopo dimostrativo"
-  },
-  "fr-FR": {
-    "title": "Jeunesse, avenir et dynamique",
-    "description": "Cet événement est à des fins de démonstration"
+  "en-US": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
   },
   "es-ES": {
     "title": "Juventud, Futuro y Dinámica",
     "description": "Este evento es para fines de demostración."
   },
-  "pt-PT": {
-    "title": "Juventude, Futuro e Dinâmica",
-    "description": "Este evento é para fins de demonstração"
+  "fr-FR": {
+    "title": "Jeunesse, avenir et dynamique",
+    "description": "Cet événement est à des fins de démonstration"
+  },
+  "it-IT": {
+    "title": "Giovani, futuro e dinamiche",
+    "description": "Questo evento è a scopo dimostrativo"
   },
   "pl-PL": {
     "title": "Młodość, przyszłość i dynamika",
     "description": "To wydarzenie ma charakter demonstracyjny"
   },
-  "cs-CZ": {
-    "title": "Mládí, budoucnost a dynamika",
-    "description": "Tato akce je pro demonstrační účely"
+  "pt-PT": {
+    "title": "Juventude, Futuro e Dinâmica",
+    "description": "Este evento é para fins de demonstração"
   },
   "_meta": {
     "sourceLocale": "en-US",

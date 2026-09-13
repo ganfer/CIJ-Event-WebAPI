@@ -1,24 +1,24 @@
 {
-  "en-US": {
+  "cs-CZ": {
     "fields": {
       "firstname": {
-        "label": "Enter your first name",
-        "placeholder": "Enter your first name",
+        "label": "Jméno",
+        "placeholder": "Jméno",
         "hint": "First Name"
       },
       "lastname": {
-        "label": "Enter your last name",
-        "placeholder": "Enter your last name",
+        "label": "Příjmení",
+        "placeholder": "Příjmení",
         "hint": "Last Name"
       },
       "emailaddress1": {
-        "label": "Enter your email address",
-        "placeholder": "Enter your email address",
+        "label": "E-mailová adresa",
+        "placeholder": "E-mailová adresa",
         "hint": "Email"
       }
     },
     "buttons": {
-      "submit": "Submit"
+      "submit": "Odeslat"
     },
     "texts": {
       "text_001": "{{EventName}}",
@@ -65,59 +65,26 @@
       "message_004": "required"
     }
   },
-  "it-IT": {
+  "en-US": {
     "fields": {
       "firstname": {
-        "label": "Nome",
-        "placeholder": "Nome",
+        "label": "Enter your first name",
+        "placeholder": "Enter your first name",
         "hint": "First Name"
       },
       "lastname": {
-        "label": "Cognome",
-        "placeholder": "Cognome",
+        "label": "Enter your last name",
+        "placeholder": "Enter your last name",
         "hint": "Last Name"
       },
       "emailaddress1": {
-        "label": "Indirizzo email",
-        "placeholder": "Indirizzo email",
+        "label": "Enter your email address",
+        "placeholder": "Enter your email address",
         "hint": "Email"
       }
     },
     "buttons": {
-      "submit": "Invia"
-    },
-    "texts": {
-      "text_001": "{{EventName}}",
-      "text_002": "{{AboutEventDescription}}",
-      "text_003": "© 2023. All rights reserved."
-    },
-    "messages": {
-      "message_001": "Thank you for submitting the form.",
-      "message_002": "There was an error, please try again.",
-      "message_003": "You have been added to the waitlist.",
-      "message_004": "required"
-    }
-  },
-  "fr-FR": {
-    "fields": {
-      "firstname": {
-        "label": "Prénom",
-        "placeholder": "Prénom",
-        "hint": "First Name"
-      },
-      "lastname": {
-        "label": "Nom",
-        "placeholder": "Nom",
-        "hint": "Last Name"
-      },
-      "emailaddress1": {
-        "label": "Adresse e-mail",
-        "placeholder": "Adresse e-mail",
-        "hint": "Email"
-      }
-    },
-    "buttons": {
-      "submit": "Envoyer"
+      "submit": "Submit"
     },
     "texts": {
       "text_001": "{{EventName}}",
@@ -164,7 +131,40 @@
       "message_004": "required"
     }
   },
-  "pt-PT": {
+  "fr-FR": {
+    "fields": {
+      "firstname": {
+        "label": "Prénom",
+        "placeholder": "Prénom",
+        "hint": "First Name"
+      },
+      "lastname": {
+        "label": "Nom",
+        "placeholder": "Nom",
+        "hint": "Last Name"
+      },
+      "emailaddress1": {
+        "label": "Adresse e-mail",
+        "placeholder": "Adresse e-mail",
+        "hint": "Email"
+      }
+    },
+    "buttons": {
+      "submit": "Envoyer"
+    },
+    "texts": {
+      "text_001": "{{EventName}}",
+      "text_002": "{{AboutEventDescription}}",
+      "text_003": "© 2023. All rights reserved."
+    },
+    "messages": {
+      "message_001": "Thank you for submitting the form.",
+      "message_002": "There was an error, please try again.",
+      "message_003": "You have been added to the waitlist.",
+      "message_004": "required"
+    }
+  },
+  "it-IT": {
     "fields": {
       "firstname": {
         "label": "Nome",
@@ -172,18 +172,18 @@
         "hint": "First Name"
       },
       "lastname": {
-        "label": "Apelido",
-        "placeholder": "Apelido",
+        "label": "Cognome",
+        "placeholder": "Cognome",
         "hint": "Last Name"
       },
       "emailaddress1": {
-        "label": "Endereço de e-mail",
-        "placeholder": "Endereço de e-mail",
+        "label": "Indirizzo email",
+        "placeholder": "Indirizzo email",
         "hint": "Email"
       }
     },
     "buttons": {
-      "submit": "Enviar"
+      "submit": "Invia"
     },
     "texts": {
       "text_001": "{{EventName}}",
@@ -230,26 +230,26 @@
       "message_004": "required"
     }
   },
-  "cs-CZ": {
+  "pt-PT": {
     "fields": {
       "firstname": {
-        "label": "Jméno",
-        "placeholder": "Jméno",
+        "label": "Nome",
+        "placeholder": "Nome",
         "hint": "First Name"
       },
       "lastname": {
-        "label": "Příjmení",
-        "placeholder": "Příjmení",
+        "label": "Apelido",
+        "placeholder": "Apelido",
         "hint": "Last Name"
       },
       "emailaddress1": {
-        "label": "E-mailová adresa",
-        "placeholder": "E-mailová adresa",
+        "label": "Endereço de e-mail",
+        "placeholder": "Endereço de e-mail",
         "hint": "Email"
       }
     },
     "buttons": {
-      "submit": "Odeslat"
+      "submit": "Enviar"
     },
     "texts": {
       "text_001": "{{EventName}}",
