@@ -38,4 +38,4 @@ jobs:
           git commit -m "content: bootstrap portal locale translations [skip ci]"
           git push
 
-# One-time bootstrap workflow; remove after the locale seed is verified.
+# Final one-time bootstrap run; remove this workflow after verification.
