@@ -75,7 +75,7 @@
   "lang_zh-HK": "Chinois (Hong Kong R.A.S.)",
   "lang_zh-TW": "Chinois (Taïwan)",
   "colorTheme": "Thème de couleur",
-  "themeLight": "Lumière",
+  "themeLight": "Clair",
   "themeSystem": "Système",
   "metaEventDetailsDescription": "Détails de l'événement et inscription",
   "useSystemTheme": "Utiliser le thème système",
@@ -92,7 +92,7 @@
   "schedule": "Calendrier",
   "agenda": "Ordre du jour",
   "people": "Personnes",
-  "speakers": "Haut-parleurs",
+  "speakers": "Intervenants",
   "atAGlance": "En un coup d'œil",
   "eventDetails": "Détails de l'événement",
   "dateAndTime": "Date et heure",
@@ -102,7 +102,7 @@
   "eventFallback": "Événement",
   "location": "Emplacement",
   "eventImageAlt": "Image d'événement {{eventName}}",
-  "speakerFallback": "Conférencier",
+  "speakerFallback": "Intervenant",
   "genericEventImageAlt": "Image de l'événement",
   "sessionFallback": "Session"
 }
