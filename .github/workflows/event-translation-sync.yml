@@ -28,10 +28,9 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-          cache: pip
 
       - name: Install translator
-        run: pip install -r requirements-translations.txt
+        run: pip install 'googletrans==4.0.2'
 
       - name: Translate event files with retries
         shell: bash
