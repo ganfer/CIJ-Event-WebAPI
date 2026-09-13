@@ -56,7 +56,7 @@ jobs:
           EVENTS_WEBAPP_ID: ${{ secrets.EVENTS_WEBAPP_ID }}
         run: node scripts/sync-form-copy.mjs
 
-      - name: Translate supplemental portal UI
+      - name: Complete standard portal locale files
         run: python scripts/translate-portal-ui.py
 
       - name: Translate event files
@@ -101,9 +101,9 @@ jobs:
       - name: Commit synchronized translations
         shell: bash
         run: |
-          git add public/translations/events public/translation/forms public/translation/portal
+          git add public/locales public/translations/events public/translation/forms
 
-          if git diff --cached --quiet -- public/translations/events public/translation/forms public/translation/portal; then
+          if git diff --cached --quiet -- public/locales public/translations/events public/translation/forms; then
             echo "No translation changes to commit."
             exit 0
           fi
