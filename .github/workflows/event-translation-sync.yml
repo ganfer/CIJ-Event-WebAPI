@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '17 3 * * *'
+      timezone: 'Europe/Berlin'
 
 permissions:
   contents: write
@@ -14,15 +15,22 @@ concurrency:
 
 jobs:
   translate:
-    name: Translate event content
+    name: Sync and translate event content
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          ref: ${{ github.event_name == 'schedule' && 'main' || github.ref_name }}
+          node-version: 22
+          cache: npm
+
+      - name: Install Node.js dependencies
+        run: npm ci
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -32,6 +40,14 @@ jobs:
       - name: Install translator
         run: pip install 'googletrans==4.0.2'
 
+      - name: Sync English source from Events API
+        env:
+          EVENTS_BASE_URL: ${{ secrets.EVENTS_BASE_URL }}
+          EVENTS_ORG_ID: ${{ secrets.EVENTS_ORG_ID }}
+          EVENTS_API_TOKEN: ${{ secrets.EVENTS_API_TOKEN }}
+          EVENTS_WEBAPP_ID: ${{ secrets.EVENTS_WEBAPP_ID }}
+        run: node scripts/sync-event-sources.mjs
+
       - name: Translate event files with retries
         shell: bash
         run: |
@@ -40,9 +56,10 @@ jobs:
           delays=(0 300 900)
 
           for attempt in $(seq 1 "$attempts"); do
-            if [ "${delays[$((attempt-1))]}" -gt 0 ]; then
-              echo "Waiting ${delays[$((attempt-1))]} seconds before attempt ${attempt}..."
-              sleep "${delays[$((attempt-1))]}"
+            delay="${delays[$((attempt-1))]}"
+            if [ "$delay" -gt 0 ]; then
+              echo "Waiting ${delay} seconds before attempt ${attempt}..."
+              sleep "$delay"
             fi
 
             echo "Translation attempt ${attempt}/${attempts}"
@@ -58,14 +75,30 @@ jobs:
             done < <(find public/translations/events -maxdepth 1 -type f -name '*.source.json' -print | sort)
 
             if [ "$failed" -eq 0 ]; then
-              exit 0
+              break
+            fi
+
+            if [ "$attempt" -eq "$attempts" ]; then
+              echo "Translation failed after ${attempts} attempts."
+              exit 1
             fi
           done
 
-          echo "Translation failed after ${attempts} attempts."
-          exit 1
+      - name: Run project checks
+        run: npm test
 
-      - name: Commit generated translations
+      - name: Validate event translations
+        env:
+          EVENTS_BASE_URL: ${{ secrets.EVENTS_BASE_URL }}
+          EVENTS_ORG_ID: ${{ secrets.EVENTS_ORG_ID }}
+          EVENTS_API_TOKEN: ${{ secrets.EVENTS_API_TOKEN }}
+          EVENTS_WEBAPP_ID: ${{ secrets.EVENTS_WEBAPP_ID }}
+        run: npm run check:translations
+
+      - name: Build static site
+        run: npm run build
+
+      - name: Commit synchronized translations
         shell: bash
         run: |
           if git diff --quiet -- public/translations/events; then
