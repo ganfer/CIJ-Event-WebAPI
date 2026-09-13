@@ -1,16 +1,42 @@
 #!/usr/bin/env python3
 import asyncio
 import json
+import re
 import sys
+from pathlib import Path
 from googletrans import Translator
 
-TARGETS = {"de-DE": "de", "fr-FR": "fr"}
+LOCALES_DIR = Path("public/locales")
+LOCALE_FILE_PATTERN = re.compile(r"^translation\.(.+)\.json$")
+
+# googletrans expects language codes, while the portal uses regional locales.
+# Most locales map to their primary language automatically; only exceptions live here.
+GOOGLETRANS_LANGUAGE_OVERRIDES = {
+    "nb": "no",
+    "zh-CN": "zh-cn",
+    "zh-HK": "zh-tw",
+    "zh-TW": "zh-tw",
+}
+
+
+def discover_portal_locales():
+    locales = []
+    for file in LOCALES_DIR.glob("translation.*.json"):
+        match = LOCALE_FILE_PATTERN.match(file.name)
+        if match:
+            locales.append(match.group(1))
+    return sorted(set(locales))
+
+
+def googletrans_language(locale):
+    if locale in GOOGLETRANS_LANGUAGE_OVERRIDES:
+        return GOOGLETRANS_LANGUAGE_OVERRIDES[locale]
+    language = locale.split("-", 1)[0].lower()
+    return GOOGLETRANS_LANGUAGE_OVERRIDES.get(language, language)
+
 
 async def translate_node(translator, source, existing, language, path=()):
     if isinstance(source, dict):
-        # Rebuild dictionaries from the current source structure. Existing values
-        # are reused only for keys that still exist in the source, which removes
-        # stale descriptions, sessions, speakers, and nested fields automatically.
         existing_dict = existing if isinstance(existing, dict) else {}
         result = {}
         for key, value in source.items():
@@ -32,6 +58,7 @@ async def translate_node(translator, source, existing, language, path=()):
 
     return existing if existing is not None else source
 
+
 async def main():
     if len(sys.argv) != 3:
         raise SystemExit("Usage: translate-event-content.py <source.json> <output.json>")
@@ -40,20 +67,31 @@ async def main():
     with open(source_path, encoding="utf-8") as handle:
         source = json.load(handle)
 
+    locales = discover_portal_locales()
+    if "en-US" not in locales:
+        raise RuntimeError("Portal locale en-US is required because event source content uses en-US.")
+
     try:
         with open(output_path, encoding="utf-8") as handle:
-            result = json.load(handle)
+            existing_result = json.load(handle)
     except FileNotFoundError:
-        result = {}
+        existing_result = {}
 
-    result["en-US"] = source
+    # Rebuild the output from the currently available portal locales so removing
+    # a locale file also removes that locale from generated event translations.
+    result = {}
+
     async with Translator() as translator:
-        for locale, language in TARGETS.items():
+        for locale in locales:
+            if locale.lower().startswith("en-"):
+                result[locale] = source
+                continue
+
             result[locale] = await translate_node(
                 translator,
                 source,
-                result.get(locale),
-                language,
+                existing_result.get(locale),
+                googletrans_language(locale),
             )
 
     result["_meta"] = {
@@ -64,6 +102,7 @@ async def main():
     with open(output_path, "w", encoding="utf-8") as handle:
         json.dump(result, handle, ensure_ascii=False, indent=2)
         handle.write("\n")
+
 
 if __name__ == "__main__":
     asyncio.run(main())
