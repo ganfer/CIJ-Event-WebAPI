@@ -10,6 +10,7 @@ LOCALES_DIR = Path("public/locales")
 SOURCE_LOCALE = "en-US"
 LOCALE_PATTERN = re.compile(r"^translation\.(.+)\.json$")
 PLACEHOLDER_PATTERN = re.compile(r"{{[^{}]+}}")
+TRANSLATION_TIMEOUT_SECONDS = 30
 
 GOOGLETRANS_LANGUAGE_OVERRIDES = {
     "nb": "no",
@@ -137,17 +138,26 @@ async def main():
             else:
                 print(f"portal {locale}: translating {len(missing)} missing key(s) in one batch")
                 try:
-                    translated, failed = await translate_missing(
-                        translator,
-                        source,
-                        missing,
-                        google_language(locale),
+                    translated, failed = await asyncio.wait_for(
+                        translate_missing(
+                            translator,
+                            source,
+                            missing,
+                            google_language(locale),
+                        ),
+                        timeout=TRANSLATION_TIMEOUT_SECONDS,
                     )
                     updated.update(translated)
                     for key, error in failed:
                         print(f"::warning title=Portal UI translation pending::{locale}/{key}: {error}")
                     if failed:
                         pending.append(locale)
+                except asyncio.TimeoutError:
+                    pending.append(locale)
+                    print(
+                        f"::warning title=Portal UI translation pending::"
+                        f"{locale}: googletrans timed out after {TRANSLATION_TIMEOUT_SECONDS}s"
+                    )
                 except Exception as error:
                     pending.append(locale)
                     print(f"::warning title=Portal UI translation pending::{locale}: {error}")
