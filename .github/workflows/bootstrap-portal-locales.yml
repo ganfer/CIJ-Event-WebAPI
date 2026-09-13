@@ -37,3 +37,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "content: bootstrap portal locale translations [skip ci]"
           git push
+
+# One-time bootstrap workflow; remove after the locale seed is verified.
