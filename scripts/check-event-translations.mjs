@@ -5,7 +5,16 @@ const baseUrl = process.env.EVENTS_BASE_URL || 'https://public-eur.mkt.dynamics.
 const orgId = process.env.EVENTS_ORG_ID;
 const token = process.env.EVENTS_API_TOKEN;
 const webappId = process.env.EVENTS_WEBAPP_ID || '';
-const requiredLocales = (process.env.EVENT_TRANSLATION_REQUIRED_LOCALES || 'de-DE,en-US,fr-FR')
+const portalLocales = [
+  'ar-SA', 'bg-BG', 'ca-ES', 'cs-CZ', 'da-DK', 'de-DE', 'el-GR',
+  'en-AU', 'en-CA', 'en-GB', 'en-US', 'es-ES', 'et-EE', 'eu-ES',
+  'fi-FI', 'fr-CA', 'fr-FR', 'gl-ES', 'he-IL', 'hr-HR', 'hu-HU',
+  'id-ID', 'it-IT', 'ja-JP', 'ko-KR', 'lt-LT', 'lv-LV', 'nb-NO',
+  'nl-NL', 'pl-PL', 'pt-BR', 'pt-PT', 'ro-RO', 'ru-RU', 'sk-SK',
+  'sl-SI', 'sr-Cyrl-CS', 'sr-Latn-CS', 'sv-SE', 'th-TH', 'tr-TR',
+  'uk-UA', 'vi-VN', 'zh-CN', 'zh-HK', 'zh-TW'
+];
+const requiredLocales = (process.env.EVENT_TRANSLATION_REQUIRED_LOCALES || portalLocales.join(','))
   .split(',')
   .map(value => value.trim())
   .filter(Boolean);
@@ -89,7 +98,7 @@ for (const event of events) {
     continue;
   }
 
-  console.log(`✓ ${label} (${key}) — ${requiredLocales.join(', ')}`);
+  console.log(`✓ ${label} (${key}) — ${requiredLocales.length} portal locales`);
 }
 
 if (failures.length > 0) {
@@ -98,4 +107,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`\nEvent translation check passed: ${checked}/${events.length} published event(s) have translation files for ${requiredLocales.join(', ')}.`);
+console.log(`\nEvent translation check passed: ${checked}/${events.length} published event(s) have translation files for all ${requiredLocales.length} required locale(s).`);
