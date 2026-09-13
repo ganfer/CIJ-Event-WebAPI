@@ -18,7 +18,12 @@ class EventsAPI {
             if (webappId) options.query.webappId = webappId;
             const response = await this.service.publicApiGetEvents(options);
             this.checkResponseStatus(response);
-            return response.data || [];
+            const events = response.data || [];
+            if (!window.eventTranslations) return events;
+            return window.eventTranslations.localizeAll(
+                events,
+                window.i18n?.currentLocale || navigator.language || 'en-US'
+            );
         } catch (error) {
             this.handleError(error, 'errorLoadingEvents');
             return [];
