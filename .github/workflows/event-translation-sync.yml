@@ -2,8 +2,13 @@ name: Event Translation Sync
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'public/locales/translation.en-US.json'
   schedule:
-    - cron: '17 3 * * *'
+    - cron: '17 * * * *'
       timezone: 'Europe/Berlin'
 
 permissions:
