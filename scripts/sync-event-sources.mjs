@@ -89,11 +89,6 @@ function buildSource(event, sessions, speakers, key) {
     throw new Error(`${key}: event title could not be resolved from the Events API payload.`);
   }
 
-  if (!description) {
-    const availableFields = Object.keys(event || {}).sort().join(', ');
-    throw new Error(`${key}: event description could not be resolved from the Events API payload. Available event fields: ${availableFields}`);
-  }
-
   const sessionMap = {};
   for (const session of sessions) {
     const sessionKey = entityKey(session, 'session');
