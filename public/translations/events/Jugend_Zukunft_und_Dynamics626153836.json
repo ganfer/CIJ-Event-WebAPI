@@ -205,6 +205,8 @@
   },
   "_meta": {
     "sourceLocale": "en-US",
-    "translationProvider": "googletrans"
+    "translationProvider": "googletrans",
+    "translationSchemaVersion": 2,
+    "sourceHash": "ca0d778f79c06545b339c5926ff1035ec36b983517cbf40ae5eebb77d19a0261"
   }
 }
