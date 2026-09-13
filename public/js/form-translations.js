@@ -49,8 +49,16 @@
 
         getLocaleCandidates(locale) {
             const normalized = String(locale || 'en-US').replace('_', '-');
-            const primary = normalized.split('-')[0];
-            return [...new Set([normalized, primary, 'en-US', 'en'])];
+            const primary = normalized.split('-')[0].toLowerCase();
+
+            // A visitor who selected German/French/etc. must never silently fall
+            // back to English form labels. English fallbacks are only valid for
+            // English regional locales.
+            if (primary === 'en') {
+                return [...new Set([normalized, 'en-US', 'en'])];
+            }
+
+            return [...new Set([normalized, primary])];
         }
 
         async load() {
@@ -88,20 +96,47 @@
 
         findLabels(field) {
             const labels = [];
+            const add = (candidate) => {
+                if (candidate && !labels.includes(candidate)) labels.push(candidate);
+            };
             const id = String(field.id || '').trim();
 
             if (id) {
                 try {
-                    const direct = this.container?.querySelector(`label[for="${CSS.escape(id)}"]`);
-                    if (direct) labels.push(direct);
+                    add(this.container?.querySelector(`label[for="${CSS.escape(id)}"]`));
                 } catch (_) {
                     // Ignore malformed IDs and continue with structural lookup.
                 }
             }
 
-            const wrapper = field.closest?.('.lp-form-field, .marketing-field, .field, [data-editorblocktype="Field"], [data-editorblocktype="Consent"]');
-            const structural = wrapper?.querySelector?.('label');
-            if (structural && !labels.includes(structural)) labels.push(structural);
+            const labelledBy = String(field.getAttribute?.('aria-labelledby') || '')
+                .split(/\s+/)
+                .filter(Boolean);
+            labelledBy.forEach(labelId => {
+                try {
+                    add(this.container?.querySelector(`#${CSS.escape(labelId)}`));
+                } catch (_) {
+                    // Ignore malformed IDs.
+                }
+            });
+
+            add(field.closest?.('label'));
+
+            const wrapper = field.closest?.([
+                '.lp-form-field',
+                '.marketing-field',
+                '.field',
+                '.fieldWrapper',
+                '.field-wrapper',
+                '[class*="FormFieldBlock"]',
+                '[class*="formFieldBlock"]',
+                '[data-editorblocktype="Field"]',
+                '[data-editorblocktype^="Field-"]',
+                '[data-editorblocktype="Consent"]'
+            ].join(', '));
+
+            add(wrapper?.querySelector?.('label'));
+            add(wrapper?.querySelector?.('[data-field-label], [class*="labelText"], [class*="label-text"]'));
 
             return labels;
         }
@@ -120,9 +155,14 @@
                 return;
             }
 
-            const textContainer = label.querySelector('span:not([aria-hidden="true"]), .text, .label-text');
+            const textContainer = label.querySelector?.('span:not([aria-hidden="true"]), .text, .label-text, [class*="labelText"]');
             if (textContainer && textContainer.children.length === 0) {
                 textContainer.textContent = value;
+                return;
+            }
+
+            if (label.children?.length === 0) {
+                label.textContent = value;
                 return;
             }
 
