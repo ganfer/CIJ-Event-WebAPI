@@ -3,7 +3,7 @@ import asyncio
 from googletrans import Translator
 
 SOURCE = "This event is for demonstration purposes"
-LANGUAGES = ("de", "fr", "es", "ar", "ja")
+LANGUAGES = ("de", "it", "fr", "es", "pt", "pl", "cs")
 
 
 async def main():

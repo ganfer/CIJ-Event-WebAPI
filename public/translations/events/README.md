@@ -25,7 +25,7 @@ Sessions and speakers are keyed by their API identifier. Missing entities or ind
 
 ## Format
 
-See `_example.json` for a complete DE/EN/FR example including sessions and speakers.
+See `_example.json` for a DE/EN/FR example including sessions and speakers. The portal supports `en-US`, `de-DE`, `it-IT`, `fr-FR`, `es-ES`, `pt-PT`, `pl-PL` and `cs-CZ`.
 
 ```json
 {
@@ -64,7 +64,7 @@ Fallback applies per entity and per field, so partial translations are safe.
 
 ## CI validation
 
-`npm run check:translations` loads the currently published events from the configured Events API and requires one valid translation file per published event. The required locales default to `de-DE,en-US,fr-FR` and can be configured with `EVENT_TRANSLATION_REQUIRED_LOCALES`.
+`npm run check:translations` loads the currently published events from the configured Events API and requires one valid translation file per published event. By default it discovers the eight supported locales from `public/locales/`. CI explicitly validates `en-US,de-DE,it-IT,fr-FR,es-ES,pt-PT,pl-PL,cs-CZ`; the list can be overridden with `EVENT_TRANSLATION_REQUIRED_LOCALES`.
 
 The runtime remains intentionally more tolerant than CI: missing translation content never prevents the portal from rendering the original Events API content.
 

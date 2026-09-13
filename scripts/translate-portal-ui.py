@@ -11,17 +11,6 @@ SOURCE_LOCALE = "en-US"
 LOCALE_PATTERN = re.compile(r"^translation\.(.+)\.json$")
 PLACEHOLDER_PATTERN = re.compile(r"{{[^{}]+}}")
 
-GOOGLETRANS_LANGUAGE_OVERRIDES = {
-    "nb": "no",
-    "zh-CN": "zh-cn",
-    "zh-HK": "zh-tw",
-    "zh-Hans-CN": "zh-cn",
-    "zh-Hant-HK": "zh-tw",
-    "zh-Hant-TW": "zh-tw",
-    "zh-TW": "zh-tw",
-}
-
-
 def discover_locales():
     locales = []
     for file in LOCALES_DIR.glob("translation.*.json"):
@@ -32,10 +21,7 @@ def discover_locales():
 
 
 def google_language(locale):
-    if locale in GOOGLETRANS_LANGUAGE_OVERRIDES:
-        return GOOGLETRANS_LANGUAGE_OVERRIDES[locale]
-    language = locale.split("-", 1)[0].lower()
-    return GOOGLETRANS_LANGUAGE_OVERRIDES.get(language, language)
+    return locale.split("-", 1)[0].lower()
 
 
 def read_json(path):

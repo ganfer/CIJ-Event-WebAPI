@@ -21,6 +21,12 @@ const requiredLocales = process.env.EVENT_TRANSLATION_REQUIRED_LOCALES
   : discoveredLocales;
 const translationsDir = path.join(process.cwd(), 'public', 'translations', 'events');
 
+const unsupportedRequiredLocales = requiredLocales.filter(locale => !discoveredLocales.includes(locale));
+if (unsupportedRequiredLocales.length > 0) {
+  console.error(`Event translation check contains unsupported locale(s): ${unsupportedRequiredLocales.join(', ')}.`);
+  process.exit(1);
+}
+
 if (!requiredLocales.includes('en-US')) {
   console.error('Event translation check requires the en-US source locale.');
   process.exit(1);

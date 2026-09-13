@@ -8,8 +8,7 @@ A lightweight web application that displays and lets users search events from th
 - Search events by name or description
 - View detailed information about each event
 - Embed the Dynamics 365 event registration form
-- Internationalization (i18n) with multiple language options
-- Right-to-left (RTL) language support
+- Internationalization (i18n) in English, German, Italian, French, Spanish, Portuguese, Polish and Czech
 - Responsive design for mobile and desktop
 - Simple local development server
 - Static deployment to GitHub Pages
@@ -283,9 +282,10 @@ The application includes built-in internationalization support:
 - Browser-language detection
 - Manual language selection
 - Persistence of the selected language in `localStorage` under `userLocale`
-- RTL text direction for supported RTL locales
 - Localized date and time formatting
 - Translation of text, placeholders, tooltips, alt text, and error messages
+
+The language switcher deliberately shows language names without flags or country/region names. The supported locales are `en-US`, `de-DE`, `it-IT`, `fr-FR`, `es-ES`, `pt-PT`, `pl-PL` and `cs-CZ`.
 
 ### Adding a New Language
 
@@ -293,11 +293,11 @@ The application includes built-in internationalization support:
 2. Copy the structure of an existing translation file such as `translation.en-US.json`.
 3. Translate the values while keeping the keys unchanged.
 4. Add the locale to `supportedLocales` in `public/js/localization.js`.
-5. For an RTL language, also add the locale to `rtlLocales`.
+5. Update the locale validation in `scripts/check-project.mjs`.
 
 ### Form Localization
 
-Form localization is not implemented by this reference application. See `event-details.js` for the integration point if custom behavior is needed.
+Registration form copy is localized from the generated files under `public/translation/forms/`. The translation workflow discovers the same eight locale files as the portal and keeps form labels, placeholders and buttons aligned with the selected language.
 
 Resources:
 
