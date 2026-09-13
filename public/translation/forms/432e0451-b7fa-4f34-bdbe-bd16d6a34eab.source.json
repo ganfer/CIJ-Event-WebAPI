@@ -1,0 +1,19 @@
+{
+  "fields": {
+    "firstname": {
+      "label": "Enter your first name",
+      "placeholder": "Enter your first name"
+    },
+    "lastname": {
+      "label": "Enter your last name",
+      "placeholder": "Enter your last name"
+    },
+    "emailaddress1": {
+      "label": "Enter your email address",
+      "placeholder": "Enter your email address"
+    }
+  },
+  "buttons": {
+    "submit": "Submit"
+  }
+}

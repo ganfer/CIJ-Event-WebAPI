@@ -1,0 +1,133 @@
+{
+  "en-AU": {
+    "fields": {
+      "firstname": {
+        "label": "Enter your first name",
+        "placeholder": "Enter your first name"
+      },
+      "lastname": {
+        "label": "Enter your last name",
+        "placeholder": "Enter your last name"
+      },
+      "emailaddress1": {
+        "label": "Enter your email address",
+        "placeholder": "Enter your email address"
+      }
+    },
+    "buttons": {
+      "submit": "Submit"
+    }
+  },
+  "en-CA": {
+    "fields": {
+      "firstname": {
+        "label": "Enter your first name",
+        "placeholder": "Enter your first name"
+      },
+      "lastname": {
+        "label": "Enter your last name",
+        "placeholder": "Enter your last name"
+      },
+      "emailaddress1": {
+        "label": "Enter your email address",
+        "placeholder": "Enter your email address"
+      }
+    },
+    "buttons": {
+      "submit": "Submit"
+    }
+  },
+  "en-GB": {
+    "fields": {
+      "firstname": {
+        "label": "Enter your first name",
+        "placeholder": "Enter your first name"
+      },
+      "lastname": {
+        "label": "Enter your last name",
+        "placeholder": "Enter your last name"
+      },
+      "emailaddress1": {
+        "label": "Enter your email address",
+        "placeholder": "Enter your email address"
+      }
+    },
+    "buttons": {
+      "submit": "Submit"
+    }
+  },
+  "en-US": {
+    "fields": {
+      "firstname": {
+        "label": "Enter your first name",
+        "placeholder": "Enter your first name"
+      },
+      "lastname": {
+        "label": "Enter your last name",
+        "placeholder": "Enter your last name"
+      },
+      "emailaddress1": {
+        "label": "Enter your email address",
+        "placeholder": "Enter your email address"
+      }
+    },
+    "buttons": {
+      "submit": "Submit"
+    }
+  },
+  "_meta": {
+    "sourceLocale": "en-US",
+    "translationProvider": "googletrans",
+    "translationSchemaVersion": 1,
+    "sourceHash": "7fcc6d7e6498d17bdee2eba5804e375f070b9d4fed9d3b0bb8d151dc60c23af0",
+    "pendingLocales": [
+      "ar-SA",
+      "bg-BG",
+      "ca-ES",
+      "cs-CZ",
+      "da-DK",
+      "de-DE",
+      "el-GR",
+      "es-ES",
+      "et-EE",
+      "eu-ES",
+      "fi-FI",
+      "fr-CA",
+      "fr-FR",
+      "gl-ES",
+      "he-IL",
+      "hr-HR",
+      "hu-HU",
+      "id-ID",
+      "it-IT",
+      "ja-JP",
+      "ko-KR",
+      "lt-LT",
+      "lv-LV",
+      "nb-NO",
+      "nl-NL",
+      "pl-PL",
+      "pt-BR",
+      "pt-PT",
+      "ro-RO",
+      "ru-RU",
+      "sk-SK",
+      "sl-SI",
+      "sr-Cyrl-CS",
+      "sr-Cyrl-RS",
+      "sr-Latn-CS",
+      "sr-Latn-RS",
+      "sv-SE",
+      "th-TH",
+      "tr-TR",
+      "uk-UA",
+      "vi-VN",
+      "zh-CN",
+      "zh-HK",
+      "zh-Hans-CN",
+      "zh-Hant-HK",
+      "zh-Hant-TW",
+      "zh-TW"
+    ]
+  }
+}
