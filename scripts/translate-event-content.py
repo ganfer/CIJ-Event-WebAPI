@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import asyncio
+import hashlib
 import json
 import re
 import sys
@@ -8,6 +9,7 @@ from googletrans import Translator
 
 LOCALES_DIR = Path("public/locales")
 LOCALE_FILE_PATTERN = re.compile(r"^translation\.(.+)\.json$")
+TRANSLATION_SCHEMA_VERSION = 2
 
 # googletrans expects language codes, while the portal uses regional locales.
 # Most locales map to their primary language automatically; only exceptions live here.
@@ -15,6 +17,9 @@ GOOGLETRANS_LANGUAGE_OVERRIDES = {
     "nb": "no",
     "zh-CN": "zh-cn",
     "zh-HK": "zh-tw",
+    "zh-Hans-CN": "zh-cn",
+    "zh-Hant-HK": "zh-tw",
+    "zh-Hant-TW": "zh-tw",
     "zh-TW": "zh-tw",
 }
 
@@ -35,7 +40,12 @@ def googletrans_language(locale):
     return GOOGLETRANS_LANGUAGE_OVERRIDES.get(language, language)
 
 
-async def translate_node(translator, source, existing, language, path=()):
+def source_hash(source):
+    canonical = json.dumps(source, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+async def translate_node(translator, source, existing, language, reuse_existing, path=()):
     if isinstance(source, dict):
         existing_dict = existing if isinstance(existing, dict) else {}
         result = {}
@@ -45,6 +55,7 @@ async def translate_node(translator, source, existing, language, path=()):
                 value,
                 existing_dict.get(key),
                 language,
+                reuse_existing,
                 (*path, key),
             )
         return result
@@ -53,10 +64,12 @@ async def translate_node(translator, source, existing, language, path=()):
     if len(path) >= 3 and path[-3] == "speakers" and path[-1] == "name":
         return source
 
-    if isinstance(source, str) and source.strip() and not existing:
+    if isinstance(source, str) and source.strip():
+        if reuse_existing and existing is not None:
+            return existing
         return (await translator.translate(source, src="en", dest=language)).text
 
-    return existing if existing is not None else source
+    return existing if reuse_existing and existing is not None else source
 
 
 async def main():
@@ -77,6 +90,15 @@ async def main():
     except FileNotFoundError:
         existing_result = {}
 
+    current_source_hash = source_hash(source)
+    existing_meta = existing_result.get("_meta", {}) if isinstance(existing_result, dict) else {}
+    cache_is_valid = (
+        existing_meta.get("translationSchemaVersion") == TRANSLATION_SCHEMA_VERSION
+        and existing_meta.get("sourceHash") == current_source_hash
+        and existing_meta.get("sourceLocale") == "en-US"
+        and existing_meta.get("translationProvider") == "googletrans"
+    )
+
     # Rebuild the output from the currently available portal locales so removing
     # a locale file also removes that locale from generated event translations.
     result = {}
@@ -87,16 +109,23 @@ async def main():
                 result[locale] = source
                 continue
 
+            # Existing values are only trusted when they were produced by the current
+            # schema from exactly the same source. This invalidates the legacy files
+            # that accidentally copied English source text into untranslated locales.
+            reuse_existing = cache_is_valid and isinstance(existing_result.get(locale), dict)
             result[locale] = await translate_node(
                 translator,
                 source,
                 existing_result.get(locale),
                 googletrans_language(locale),
+                reuse_existing,
             )
 
     result["_meta"] = {
         "sourceLocale": "en-US",
         "translationProvider": "googletrans",
+        "translationSchemaVersion": TRANSLATION_SCHEMA_VERSION,
+        "sourceHash": current_source_hash,
     }
 
     with open(output_path, "w", encoding="utf-8") as handle:
