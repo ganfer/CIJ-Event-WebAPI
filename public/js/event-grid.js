@@ -142,7 +142,7 @@ function createEventElement(event) {
     const card = document.createElement('article');
     card.className = 'event-portal-event-card event-portal-event-card-modern';
 
-    const imageUrl = typeof event.image === 'string' && /^https?:\/\//i.test(event.image) ? event.image : '';
+    const imageUrl = typeof event.image === 'string' && /^https:\/\//i.test(event.image) ? event.image : '';
     const media = document.createElement('div');
     media.className = 'event-portal-event-card-media';
 
@@ -151,6 +151,8 @@ function createEventElement(event) {
         image.src = imageUrl;
         image.alt = event.eventName ? `${event.eventName} event image` : 'Event image';
         image.loading = 'lazy';
+        image.decoding = 'async';
+        image.referrerPolicy = 'no-referrer';
         media.appendChild(image);
     } else {
         media.classList.add('event-portal-event-card-media-placeholder');
@@ -308,7 +310,7 @@ async function loadEvents() {
             sortSelect.value = currentSortOption;
         }
     } catch (error) {
-        console.error('Failed to load events:', error);
+        eventsAPI.logFailure('event_list', error);
         const message = document.createElement('p');
         message.className = 'event-portal-error-message';
         message.textContent = window.__ ? __('errorLoadingEvents') : 'Error loading events. Please try again later.';

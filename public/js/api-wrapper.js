@@ -1,47 +1,125 @@
 /**
- * Events Portal API Wrapper
- * Provides a simplified interface to the Dynamics 365 Events API.
- *
- * Note: Config values are loaded from config.js.
+ * Thin, browser-only wrapper around the Microsoft Dynamics 365 Events API SDK.
+ * It validates configuration and identifiers, bounds request duration and keeps
+ * API errors free of token-bearing Request/Response objects.
  */
+class EventsApiError extends Error {
+    constructor(message, { code = 'EVENTS_API_ERROR', status = null } = {}) {
+        super(message);
+        this.name = 'EventsApiError';
+        this.code = code;
+        this.status = status;
+    }
+}
+
 class EventsAPI {
-    constructor() {
-        d365events.init(CONFIG.BASE_URL, CONFIG.TOKEN, CONFIG.ORG_ID);
-        this.service = d365events.service;
+    constructor(configuration = typeof CONFIG !== 'undefined' ? CONFIG : null, sdk = typeof d365events !== 'undefined' ? d365events : null) {
+        this.configuration = configuration;
+        this.service = null;
+        this.requestTimeoutMs = 15000;
+        this.configurationError = this.validateConfiguration(configuration, sdk);
+
+        if (!this.configurationError) {
+            sdk.init(configuration.BASE_URL, configuration.TOKEN, configuration.ORG_ID);
+            this.service = sdk.service;
+        }
+    }
+
+    validateConfiguration(configuration, sdk) {
+        if (!configuration || !sdk || typeof sdk.init !== 'function') {
+            return new EventsApiError('Events API configuration is unavailable.', { code: 'CONFIGURATION_ERROR' });
+        }
+
+        if (!window.EventPortalSecurity?.isAllowedEventsApiBaseUrl(configuration.BASE_URL)) {
+            return new EventsApiError('Events API base URL must be an HTTPS Microsoft Dynamics endpoint.', { code: 'CONFIGURATION_ERROR' });
+        }
+
+        const organizationId = window.EventPortalSecurity.normalizeOpaqueId(configuration.ORG_ID);
+        const token = window.EventPortalSecurity.normalizeOpaqueId(configuration.TOKEN);
+        if (!organizationId || !token) {
+            return new EventsApiError('Events API organization ID and token are required.', { code: 'CONFIGURATION_ERROR' });
+        }
+
+        return null;
+    }
+
+    ensureReady() {
+        if (this.configurationError) throw this.configurationError;
+        if (!this.service) {
+            throw new EventsApiError('Events API service is unavailable.', { code: 'CONFIGURATION_ERROR' });
+        }
+    }
+
+    createRequestSignal() {
+        if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+            return { signal: AbortSignal.timeout(this.requestTimeoutMs), cleanup: () => {} };
+        }
+
+        if (typeof AbortController !== 'undefined') {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), this.requestTimeoutMs);
+            return { signal: controller.signal, cleanup: () => clearTimeout(timer) };
+        }
+
+        return { signal: undefined, cleanup: () => {} };
+    }
+
+    async request(serviceMethod, options) {
+        this.ensureReady();
+        const method = this.service[serviceMethod];
+        if (typeof method !== 'function') {
+            throw new EventsApiError('Requested Events API operation is unavailable.', { code: 'UNSUPPORTED_OPERATION' });
+        }
+
+        const { signal, cleanup } = this.createRequestSignal();
+        try {
+            const response = await method({ ...options, ...(signal ? { signal } : {}) });
+            this.checkResponseStatus(response);
+            return response;
+        } catch (error) {
+            if (error?.name === 'AbortError' || error?.name === 'TimeoutError') {
+                throw new EventsApiError('Events API request timed out.', { code: 'TIMEOUT' });
+            }
+            if (error instanceof EventsApiError) throw error;
+            throw new EventsApiError('Events API request failed.', { code: 'NETWORK_ERROR' });
+        } finally {
+            cleanup();
+        }
     }
 
     async getAllEvents(businessUnitId = null, webappId = null) {
-        try {
-            this.clearError();
-            const options = { path: { organizationId: CONFIG.ORG_ID }, query: {} };
-            if (businessUnitId) options.query.businessUnitId = businessUnitId;
-            if (webappId) options.query.webappId = webappId;
-            const response = await this.service.publicApiGetEvents(options);
-            this.checkResponseStatus(response);
-            const events = response.data || [];
-            if (!window.eventTranslations) return events;
-            return window.eventTranslations.localizeAll(
-                events,
-                window.i18n?.currentLocale || navigator.language || 'en-US'
-            );
-        } catch (error) {
-            this.handleError(error, 'errorLoadingEvents');
-            return [];
+        const options = { path: { organizationId: this.configuration?.ORG_ID }, query: {} };
+        if (businessUnitId) options.query.businessUnitId = businessUnitId;
+        if (webappId) options.query.webappId = webappId;
+
+        const response = await this.request('publicApiGetEvents', options);
+        if (!Array.isArray(response.data)) {
+            throw new EventsApiError('Events API returned an invalid event list.', { code: 'INVALID_RESPONSE' });
         }
+
+        if (!window.eventTranslations) return response.data;
+        return window.eventTranslations.localizeAll(
+            response.data,
+            window.i18n?.currentLocale || navigator.language || 'en-US'
+        );
     }
 
     async getEventById(eventId) {
-        try {
-            this.clearError();
-            const response = await this.service.publicApiGetEvent(this.buildEventOptions(eventId));
-            this.checkResponseStatus(response);
-            const event = response.data || null;
-            if (!event || !window.eventTranslations) return event;
-            return window.eventTranslations.localize(event);
-        } catch (error) {
-            this.handleError(error, 'errorLoadingEventDetails');
-            return null;
+        const normalizedEventId = window.EventPortalSecurity?.normalizeEventId(eventId) || '';
+        if (!normalizedEventId) {
+            throw new EventsApiError('A valid event ID is required.', { code: 'INVALID_EVENT_ID', status: 400 });
         }
+
+        const response = await this.request('publicApiGetEvent', this.buildEventOptions(normalizedEventId));
+        const event = response.data && typeof response.data === 'object' && !Array.isArray(response.data)
+            ? response.data
+            : null;
+        if (!event) {
+            throw new EventsApiError('Events API returned invalid event details.', { code: 'INVALID_RESPONSE' });
+        }
+
+        if (!window.eventTranslations) return event;
+        return window.eventTranslations.localize(event);
     }
 
     async getEventSessions(eventId) {
@@ -56,8 +134,7 @@ class EventsAPI {
 
     async localizeEventCollection(eventId, items, type) {
         if (!window.eventTranslations) return items;
-        const eventRef = { readableEventId: eventId };
-        const translation = await window.eventTranslations.load(eventRef);
+        const translation = await window.eventTranslations.load({ readableEventId: eventId });
         const localized = window.eventTranslations.getLocalizedContent(
             translation,
             window.i18n?.currentLocale || navigator.language || 'en-US'
@@ -70,59 +147,53 @@ class EventsAPI {
     }
 
     buildEventOptions(eventId) {
+        const normalizedEventId = window.EventPortalSecurity?.normalizeEventId(eventId) || '';
+        if (!normalizedEventId) {
+            throw new EventsApiError('A valid event ID is required.', { code: 'INVALID_EVENT_ID', status: 400 });
+        }
+
         return {
             path: {
-                organizationId: CONFIG.ORG_ID,
-                readableEventId: eventId
+                organizationId: this.configuration?.ORG_ID,
+                readableEventId: normalizedEventId
             }
         };
     }
 
     async getOptionalEventCollection(serviceMethod, eventId, resourceName) {
         try {
-            const method = this.service[serviceMethod];
-            if (typeof method !== 'function') {
-                console.warn(`Events API method ${serviceMethod} is not available.`);
-                return [];
+            const response = await this.request(serviceMethod, this.buildEventOptions(eventId));
+            if (!Array.isArray(response.data)) {
+                throw new EventsApiError(`Events API returned invalid ${resourceName}.`, { code: 'INVALID_RESPONSE' });
             }
-            const response = await method(this.buildEventOptions(eventId));
-            this.checkResponseStatus(response);
-            return Array.isArray(response.data) ? response.data : [];
+            return response.data;
         } catch (error) {
-            console.warn(`Could not load event ${resourceName}:`, error);
+            this.logFailure(`optional_${resourceName}`, error);
             return [];
         }
     }
 
     checkResponseStatus(response) {
-        if (!response || !response.response) throw new Error('Invalid response format');
-        const { status, statusText } = response.response;
-        if (status < 200 || status >= 300) {
-            const error = new Error(`HTTP ${status}: ${statusText}`);
-            error.status = status;
-            error.statusText = statusText;
-            error.response = response.response;
-            throw error;
+        if (!response || !response.response) {
+            throw new EventsApiError('Events API returned an invalid response.', { code: 'INVALID_RESPONSE' });
+        }
+
+        const status = Number(response.response.status);
+        if (!Number.isInteger(status) || status < 200 || status >= 300) {
+            throw new EventsApiError('Events API returned an error response.', {
+                code: 'HTTP_ERROR',
+                status: Number.isInteger(status) ? status : null
+            });
         }
     }
 
-    handleError(error, errorKey) {
-        console.error('API Error:', error);
-        this.clearError();
-        const errorElement = document.createElement('div');
-        errorElement.id = 'event-portal-api-error';
-        errorElement.setAttribute('role', 'alert');
-        const mainElement = document.querySelector('main');
-        if (mainElement) mainElement.insertBefore(errorElement, mainElement.firstChild);
-        else document.body.insertBefore(errorElement, document.body.firstChild);
-        let errorMessage = `${__(errorKey)}`;
-        if (error.status) errorMessage += ` (HTTP ${error.status})`;
-        errorElement.textContent = errorMessage;
-    }
-
-    clearError() {
-        const errorElement = document.getElementById('event-portal-api-error');
-        if (errorElement) errorElement.remove();
+    logFailure(operation, error) {
+        const diagnostic = {
+            operation,
+            code: error?.code || 'EVENTS_API_ERROR',
+            status: Number.isInteger(error?.status) ? error.status : undefined
+        };
+        console.warn('Events API operation failed.', diagnostic);
     }
 }
 
