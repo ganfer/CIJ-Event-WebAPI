@@ -3,7 +3,7 @@
  *
  * UI translations continue to live in /locales/translation.<locale>.json.
  * Event-specific content lives in /translations/events/<event-key>.json.
- * Missing files, locales, or fields always fall back to the Events API.
+ * Missing files, locales, entities, or fields always fall back to the Events API.
  */
 class EventTranslationManager {
     constructor() {
@@ -12,12 +12,15 @@ class EventTranslationManager {
     }
 
     getEventKey(event) {
-        const candidates = [
-            event?.readableEventId,
-            event?.eventId,
-            event?.id,
-            event?.eventID
-        ];
+        const candidates = [event?.readableEventId, event?.eventId, event?.id, event?.eventID];
+        const value = candidates.find(candidate => typeof candidate === 'string' && candidate.trim());
+        return value ? value.trim() : '';
+    }
+
+    getEntityKey(entity, type) {
+        const candidates = type === 'session'
+            ? [entity?.readableSessionId, entity?.sessionId, entity?.id, entity?.sessionID]
+            : [entity?.speakerId, entity?.id, entity?.speakerID];
         const value = candidates.find(candidate => typeof candidate === 'string' && candidate.trim());
         return value ? value.trim() : '';
     }
@@ -48,18 +51,19 @@ class EventTranslationManager {
         return request;
     }
 
-    async localize(event, locale = window.i18n?.currentLocale || navigator.language || 'en-US') {
-        const translation = await this.load(event);
-        if (!translation) return { ...event };
-
-        let localized = null;
+    getLocalizedContent(translation, locale) {
+        if (!translation) return null;
         for (const candidate of this.getLocaleCandidates(locale)) {
             if (translation[candidate] && typeof translation[candidate] === 'object') {
-                localized = translation[candidate];
-                break;
+                return translation[candidate];
             }
         }
+        return null;
+    }
 
+    async localize(event, locale = window.i18n?.currentLocale || navigator.language || 'en-US') {
+        const translation = await this.load(event);
+        const localized = this.getLocalizedContent(translation, locale);
         if (!localized) return { ...event };
 
         return {
@@ -70,6 +74,44 @@ class EventTranslationManager {
                 ...(event.websiteContent || {}),
                 ...(localized.websiteContent || {})
             }
+        };
+    }
+
+    localizeCollection(items, translations, type) {
+        if (!Array.isArray(items) || !translations || typeof translations !== 'object') return items || [];
+        return items.map(item => {
+            const key = this.getEntityKey(item, type);
+            const override = key ? translations[key] : null;
+            if (!override || typeof override !== 'object') return { ...item };
+
+            if (type === 'session') {
+                return {
+                    ...item,
+                    name: override.title || override.name || item.name,
+                    sessionSummary: override.summary || override.sessionSummary || item.sessionSummary,
+                    detailedDescription: override.description || override.detailedDescription || item.detailedDescription,
+                    sessionObjectives: override.objectives || override.sessionObjectives || item.sessionObjectives
+                };
+            }
+
+            return {
+                ...item,
+                name: override.name || item.name,
+                title: override.title || item.title,
+                about: override.about || override.bio || item.about
+            };
+        });
+    }
+
+    async localizeDetails(event, sessions = [], speakers = [], locale = window.i18n?.currentLocale || navigator.language || 'en-US') {
+        const translation = await this.load(event);
+        const localized = this.getLocalizedContent(translation, locale);
+        const localizedEvent = await this.localize(event, locale);
+
+        return {
+            event: localizedEvent,
+            sessions: this.localizeCollection(sessions, localized?.sessions, 'session'),
+            speakers: this.localizeCollection(speakers, localized?.speakers, 'speaker')
         };
     }
 
