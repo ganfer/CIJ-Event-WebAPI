@@ -8,12 +8,16 @@ TARGETS = {"de-DE": "de", "fr-FR": "fr"}
 
 async def translate_node(translator, source, existing, language, path=()):
     if isinstance(source, dict):
-        result = dict(existing) if isinstance(existing, dict) else {}
+        # Rebuild dictionaries from the current source structure. Existing values
+        # are reused only for keys that still exist in the source, which removes
+        # stale descriptions, sessions, speakers, and nested fields automatically.
+        existing_dict = existing if isinstance(existing, dict) else {}
+        result = {}
         for key, value in source.items():
             result[key] = await translate_node(
                 translator,
                 value,
-                result.get(key),
+                existing_dict.get(key),
                 language,
                 (*path, key),
             )
