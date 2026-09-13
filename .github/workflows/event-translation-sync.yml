@@ -1,0 +1,113 @@
+name: Event Translation Sync
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * *'
+      timezone: 'Europe/Berlin'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: event-translation-sync
+  cancel-in-progress: false
+
+jobs:
+  translate:
+    name: Sync and translate event content
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install translator
+        run: pip install 'googletrans==4.0.2'
+
+      - name: Sync English source from Events API
+        env:
+          EVENTS_BASE_URL: ${{ secrets.EVENTS_BASE_URL }}
+          EVENTS_ORG_ID: ${{ secrets.EVENTS_ORG_ID }}
+          EVENTS_API_TOKEN: ${{ secrets.EVENTS_API_TOKEN }}
+          EVENTS_WEBAPP_ID: ${{ secrets.EVENTS_WEBAPP_ID }}
+        run: node scripts/sync-event-sources.mjs
+
+      - name: Translate event files with retries
+        shell: bash
+        run: |
+          set -uo pipefail
+          attempts=3
+          delays=(0 300 900)
+
+          for attempt in $(seq 1 "$attempts"); do
+            delay="${delays[$((attempt-1))]}"
+            if [ "$delay" -gt 0 ]; then
+              echo "Waiting ${delay} seconds before attempt ${attempt}..."
+              sleep "$delay"
+            fi
+
+            echo "Translation attempt ${attempt}/${attempts}"
+            failed=0
+
+            while IFS= read -r source_file; do
+              event_key="$(basename "$source_file" .source.json)"
+              output_file="public/translations/events/${event_key}.json"
+              if ! python scripts/translate-event-content.py "$source_file" "$output_file"; then
+                failed=1
+                break
+              fi
+            done < <(find public/translations/events -maxdepth 1 -type f -name '*.source.json' -print | sort)
+
+            if [ "$failed" -eq 0 ]; then
+              break
+            fi
+
+            if [ "$attempt" -eq "$attempts" ]; then
+              echo "Translation failed after ${attempts} attempts."
+              exit 1
+            fi
+          done
+
+      - name: Run project checks
+        run: npm test
+
+      - name: Validate event translations
+        env:
+          EVENTS_BASE_URL: ${{ secrets.EVENTS_BASE_URL }}
+          EVENTS_ORG_ID: ${{ secrets.EVENTS_ORG_ID }}
+          EVENTS_API_TOKEN: ${{ secrets.EVENTS_API_TOKEN }}
+          EVENTS_WEBAPP_ID: ${{ secrets.EVENTS_WEBAPP_ID }}
+        run: npm run check:translations
+
+      - name: Build static site
+        run: npm run build
+
+      - name: Commit synchronized translations
+        shell: bash
+        run: |
+          if git diff --quiet -- public/translations/events; then
+            echo "No translation changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/translations/events
+          git commit -m "content: sync event translations"
+          git push

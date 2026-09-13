@@ -4,44 +4,18 @@
  *
  * Note: Config values are loaded from config.js.
  */
-
-/**
- * EventsAPI - A wrapper around the Dynamics 365 Events API
- */
 class EventsAPI {
-    /**
-     * Initialize the API with configuration values.
-     */
     constructor() {
         d365events.init(CONFIG.BASE_URL, CONFIG.TOKEN, CONFIG.ORG_ID);
         this.service = d365events.service;
     }
 
-    /**
-     * Get all published events.
-     * @param {string|null} businessUnitId - Optional business unit ID to filter events.
-     * @param {string|null} webappId - Optional webapp ID parameter.
-     * @returns {Promise<Array>} Promise resolving to an array of event objects.
-     */
     async getAllEvents(businessUnitId = null, webappId = null) {
         try {
             this.clearError();
-
-            const options = {
-                path: {
-                    organizationId: CONFIG.ORG_ID
-                },
-                query: {}
-            };
-
-            if (businessUnitId) {
-                options.query.businessUnitId = businessUnitId;
-            }
-
-            if (webappId) {
-                options.query.webappId = webappId;
-            }
-
+            const options = { path: { organizationId: CONFIG.ORG_ID }, query: {} };
+            if (businessUnitId) options.query.businessUnitId = businessUnitId;
+            if (webappId) options.query.webappId = webappId;
             const response = await this.service.publicApiGetEvents(options);
             this.checkResponseStatus(response);
             return response.data || [];
@@ -51,50 +25,45 @@ class EventsAPI {
         }
     }
 
-    /**
-     * Get a single event by its readable event ID.
-     * @param {string} eventId - The readable event ID.
-     * @returns {Promise<Object|null>} Promise resolving to an event object.
-     */
     async getEventById(eventId) {
         try {
             this.clearError();
-
             const response = await this.service.publicApiGetEvent(this.buildEventOptions(eventId));
             this.checkResponseStatus(response);
-            return response.data || null;
+            const event = response.data || null;
+            if (!event || !window.eventTranslations) return event;
+            return window.eventTranslations.localize(event);
         } catch (error) {
             this.handleError(error, 'errorLoadingEventDetails');
             return null;
         }
     }
 
-    /**
-     * Get sessions that belong to an event.
-     * Optional detail resources fail silently so the core event page remains usable.
-     * @param {string} eventId - The readable event ID.
-     * @returns {Promise<Array>} Event sessions.
-     */
     async getEventSessions(eventId) {
-        return this.getOptionalEventCollection('publicApiGetEventSessions', eventId, 'sessions');
+        const sessions = await this.getOptionalEventCollection('publicApiGetEventSessions', eventId, 'sessions');
+        return this.localizeEventCollection(eventId, sessions, 'session');
     }
 
-    /**
-     * Get speakers that belong to an event.
-     * Optional detail resources fail silently so the core event page remains usable.
-     * @param {string} eventId - The readable event ID.
-     * @returns {Promise<Array>} Event speakers.
-     */
     async getEventSpeakers(eventId) {
-        return this.getOptionalEventCollection('publicApiGetEventSpeakers', eventId, 'speakers');
+        const speakers = await this.getOptionalEventCollection('publicApiGetEventSpeakers', eventId, 'speakers');
+        return this.localizeEventCollection(eventId, speakers, 'speaker');
     }
 
-    /**
-     * Build path options shared by event-specific API calls.
-     * @private
-     * @param {string} eventId - The readable event ID.
-     * @returns {Object} Request options.
-     */
+    async localizeEventCollection(eventId, items, type) {
+        if (!window.eventTranslations) return items;
+        const eventRef = { readableEventId: eventId };
+        const translation = await window.eventTranslations.load(eventRef);
+        const localized = window.eventTranslations.getLocalizedContent(
+            translation,
+            window.i18n?.currentLocale || navigator.language || 'en-US'
+        );
+        return window.eventTranslations.localizeCollection(
+            items,
+            type === 'session' ? localized?.sessions : localized?.speakers,
+            type
+        );
+    }
+
     buildEventOptions(eventId) {
         return {
             path: {
@@ -104,14 +73,6 @@ class EventsAPI {
         };
     }
 
-    /**
-     * Load an optional collection from an event-specific endpoint.
-     * @private
-     * @param {string} serviceMethod - Method name exposed by PublicApi.bundle.js.
-     * @param {string} eventId - The readable event ID.
-     * @param {string} resourceName - Friendly resource name for diagnostics.
-     * @returns {Promise<Array>} Collection returned by the endpoint.
-     */
     async getOptionalEventCollection(serviceMethod, eventId, resourceName) {
         try {
             const method = this.service[serviceMethod];
@@ -119,7 +80,6 @@ class EventsAPI {
                 console.warn(`Events API method ${serviceMethod} is not available.`);
                 return [];
             }
-
             const response = await method(this.buildEventOptions(eventId));
             this.checkResponseStatus(response);
             return Array.isArray(response.data) ? response.data : [];
@@ -129,19 +89,9 @@ class EventsAPI {
         }
     }
 
-    /**
-     * Check the HTTP response status and throw errors for non-success status codes.
-     * @private
-     * @param {Object} response - The API response object.
-     * @throws {Error} Throws for non-success HTTP status codes.
-     */
     checkResponseStatus(response) {
-        if (!response || !response.response) {
-            throw new Error('Invalid response format');
-        }
-
+        if (!response || !response.response) throw new Error('Invalid response format');
         const { status, statusText } = response.response;
-
         if (status < 200 || status >= 300) {
             const error = new Error(`HTTP ${status}: ${statusText}`);
             error.status = status;
@@ -151,43 +101,23 @@ class EventsAPI {
         }
     }
 
-    /**
-     * Handle API errors.
-     * @private
-     * @param {Error} error - The error object.
-     * @param {string} errorKey - Key for the error message in translations.
-     */
     handleError(error, errorKey) {
         console.error('API Error:', error);
         this.clearError();
-
         const errorElement = document.createElement('div');
         errorElement.id = 'event-portal-api-error';
         errorElement.setAttribute('role', 'alert');
-
         const mainElement = document.querySelector('main');
-        if (mainElement) {
-            mainElement.insertBefore(errorElement, mainElement.firstChild);
-        } else {
-            document.body.insertBefore(errorElement, document.body.firstChild);
-        }
-
+        if (mainElement) mainElement.insertBefore(errorElement, mainElement.firstChild);
+        else document.body.insertBefore(errorElement, document.body.firstChild);
         let errorMessage = `${__(errorKey)}`;
-        if (error.status) {
-            errorMessage += ` (HTTP ${error.status})`;
-        }
-
+        if (error.status) errorMessage += ` (HTTP ${error.status})`;
         errorElement.textContent = errorMessage;
     }
 
-    /**
-     * Clear any displayed API error message.
-     */
     clearError() {
         const errorElement = document.getElementById('event-portal-api-error');
-        if (errorElement) {
-            errorElement.remove();
-        }
+        if (errorElement) errorElement.remove();
     }
 }
 

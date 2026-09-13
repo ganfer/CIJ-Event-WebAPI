@@ -33,6 +33,15 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Check translations for published events
+        env:
+          EVENTS_BASE_URL: ${{ secrets.EVENTS_BASE_URL }}
+          EVENTS_ORG_ID: ${{ secrets.EVENTS_ORG_ID }}
+          EVENTS_API_TOKEN: ${{ secrets.EVENTS_API_TOKEN }}
+          EVENTS_WEBAPP_ID: ${{ secrets.EVENTS_WEBAPP_ID }}
+          EVENT_TRANSLATION_REQUIRED_LOCALES: de-DE,en-US,fr-FR
+        run: npm run check:translations
+
       - name: Build static site
         run: npm run build
 

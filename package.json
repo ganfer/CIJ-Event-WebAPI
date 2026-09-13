@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "check": "node scripts/check-project.mjs",
+    "check:translations": "node scripts/check-event-translations.mjs",
     "build": "node scripts/build.mjs",
     "test": "npm run check && npm run test:theme",
     "test:theme": "node scripts/check-theme.mjs",

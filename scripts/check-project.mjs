@@ -59,7 +59,8 @@ for (const file of authoredJavaScript) {
 const jsonFiles = [
   'package.json',
   'package-lock.json',
-  ...walk('public/locales', (file) => file.endsWith('.json'))
+  ...walk('public/locales', (file) => file.endsWith('.json')),
+  ...walk('public/translations/events', (file) => file.endsWith('.json'))
 ];
 
 for (const file of jsonFiles) {
