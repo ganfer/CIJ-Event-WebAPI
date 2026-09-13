@@ -1,14 +1,59 @@
 {
   "de-DE": {
     "title": "Beispielveranstaltung",
-    "description": "<p>Dies ist die deutsche Beschreibung der Veranstaltung.</p>"
+    "description": "<p>Dies ist die deutsche Beschreibung der Veranstaltung.</p>",
+    "sessions": {
+      "<session-id>": {
+        "title": "Beispielsession",
+        "summary": "Kurze Zusammenfassung",
+        "description": "Ausführliche Beschreibung",
+        "objectives": "Ziele der Session"
+      }
+    },
+    "speakers": {
+      "<speaker-id>": {
+        "name": "Max Mustermann",
+        "title": "Solution Architect",
+        "about": "Kurzbiografie des Speakers"
+      }
+    }
   },
   "en-US": {
     "title": "Example event",
-    "description": "<p>This is the English event description.</p>"
+    "description": "<p>This is the English event description.</p>",
+    "sessions": {
+      "<session-id>": {
+        "title": "Example session",
+        "summary": "Short summary",
+        "description": "Detailed description",
+        "objectives": "Session objectives"
+      }
+    },
+    "speakers": {
+      "<speaker-id>": {
+        "name": "Max Mustermann",
+        "title": "Solution Architect",
+        "about": "Short speaker biography"
+      }
+    }
   },
   "fr-FR": {
     "title": "Événement exemple",
-    "description": "<p>Ceci est la description française de l’événement.</p>"
+    "description": "<p>Ceci est la description française de l’événement.</p>",
+    "sessions": {
+      "<session-id>": {
+        "title": "Session exemple",
+        "summary": "Résumé court",
+        "description": "Description détaillée",
+        "objectives": "Objectifs de la session"
+      }
+    },
+    "speakers": {
+      "<speaker-id>": {
+        "name": "Max Mustermann",
+        "title": "Architecte de solutions",
+        "about": "Courte biographie de l’intervenant"
+      }
+    }
   }
 }
