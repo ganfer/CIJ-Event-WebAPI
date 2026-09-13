@@ -27,10 +27,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run repository checks
+        run: npm test
+
+      - name: Build static site
+        run: npm run build
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Prepare static site
+      - name: Generate production configuration
         env:
           EVENTS_BASE_URL: ${{ secrets.EVENTS_BASE_URL }}
           EVENTS_ORG_ID: ${{ secrets.EVENTS_ORG_ID }}
@@ -38,11 +53,6 @@ jobs:
           EVENTS_WEBAPP_ID: ${{ secrets.EVENTS_WEBAPP_ID }}
         run: |
           set -euo pipefail
-
-          rm -rf _site
-          mkdir -p _site
-          cp -a public/. _site/
-          touch _site/.nojekyll
 
           node <<'NODE'
           const fs = require('fs');
