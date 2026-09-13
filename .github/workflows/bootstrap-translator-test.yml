@@ -1,0 +1,35 @@
+name: Bootstrap Translator Test
+
+on:
+  push:
+    branches:
+      - chore/bootstrap-portal-locales-v2
+
+jobs:
+  test-translator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install deep-translator
+        run: pip install 'deep-translator==1.11.4'
+      - name: Test translations
+        shell: bash
+        run: |
+          python - <<'PY'
+          from deep_translator import GoogleTranslator
+          samples = {
+              'fr': 'At a glance',
+              'es': 'Go to registration',
+              'ja': 'Event details',
+              'ar': 'Date & time',
+          }
+          for lang, text in samples.items():
+              translated = GoogleTranslator(source='en', target=lang).translate(text)
+              print(f'{lang}: {text} -> {translated}')
+              if not translated or translated.strip() == text:
+                  raise SystemExit(f'unchanged translation for {lang}')
+          PY
