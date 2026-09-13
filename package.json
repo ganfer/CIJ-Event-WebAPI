@@ -5,8 +5,14 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "check": "node scripts/check-project.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "npm run check && npm run test:theme",
     "test:theme": "node scripts/check-theme.mjs",
     "install-deps": "npm install"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "dependencies": {
     "express": "^4.22.2"
