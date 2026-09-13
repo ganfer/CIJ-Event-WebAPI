@@ -10,6 +10,7 @@
             this.container = null;
             this.observer = null;
             this.applyTimer = null;
+            this.retryTimers = [];
         }
 
         safeFileKey(value) {
@@ -35,25 +36,34 @@
             }
         }
 
-        canonicalFieldKey(field) {
-            const name = String(field?.getAttribute?.('name') || '').trim();
-            if (name) return name.toLowerCase();
-
-            const id = String(field?.id || '').trim();
-            if (!id) return '';
-            return id
+        normalizeFieldKey(value) {
+            return String(value || '')
+                .trim()
+                .toLowerCase()
+                .replace(/^\{+|\}+$/g, '')
                 .replace(/[-_][0-9]{6,}$/i, '')
-                .replace(/[-_][0-9a-f]{8}-[0-9a-f-]{27,}$/i, '')
-                .toLowerCase();
+                .replace(/[-_][0-9a-f]{8}-[0-9a-f-]{27,}$/i, '');
+        }
+
+        fieldKeys(field) {
+            const values = [
+                field?.getAttribute?.('name'),
+                field?.id,
+                field?.getAttribute?.('data-targetproperty'),
+                field?.getAttribute?.('data-logical-name'),
+                field?.getAttribute?.('data-field-name'),
+                field?.closest?.('[data-targetproperty]')?.getAttribute?.('data-targetproperty'),
+                field?.closest?.('[data-logical-name]')?.getAttribute?.('data-logical-name'),
+                field?.closest?.('[data-field-name]')?.getAttribute?.('data-field-name')
+            ];
+
+            return [...new Set(values.map(value => this.normalizeFieldKey(value)).filter(Boolean))];
         }
 
         getLocaleCandidates(locale) {
             const normalized = String(locale || 'en-US').replace('_', '-');
             const primary = normalized.split('-')[0].toLowerCase();
 
-            // A visitor who selected German/French/etc. must never silently fall
-            // back to English form labels. English fallbacks are only valid for
-            // English regional locales.
             if (primary === 'en') {
                 return [...new Set([normalized, 'en-US', 'en'])];
             }
@@ -132,7 +142,10 @@
                 '[class*="formFieldBlock"]',
                 '[data-editorblocktype="Field"]',
                 '[data-editorblocktype^="Field-"]',
-                '[data-editorblocktype="Consent"]'
+                '[data-editorblocktype="Consent"]',
+                '[data-targetproperty]',
+                '[data-logical-name]',
+                '[data-field-name]'
             ].join(', '));
 
             add(wrapper?.querySelector?.('label'));
@@ -171,54 +184,76 @@
 
         applyFields(content) {
             const fields = content?.fields;
-            if (!fields || !this.container) return;
+            if (!fields || !this.container) return 0;
 
+            let applied = 0;
             const controls = this.container.querySelectorAll('input[name], select[name], textarea[name], input[id], select[id], textarea[id]');
             controls.forEach(field => {
                 const type = String(field.getAttribute('type') || '').toLowerCase();
                 if (['hidden', 'submit', 'button', 'reset'].includes(type)) return;
 
-                const key = this.canonicalFieldKey(field);
-                if (!key) return;
+                const keys = this.fieldKeys(field);
+                const matchedKey = keys.find(key => fields[key] && typeof fields[key] === 'object');
+                if (!matchedKey) return;
 
-                const fieldTranslation = fields[key] || fields[key.toLowerCase()];
-                if (!fieldTranslation || typeof fieldTranslation !== 'object') return;
+                const fieldTranslation = fields[matchedKey];
 
                 if (fieldTranslation.placeholder && 'placeholder' in field) {
                     field.setAttribute('placeholder', fieldTranslation.placeholder);
+                    applied += 1;
                 }
 
                 if (fieldTranslation.label) {
-                    this.findLabels(field).forEach(label => this.replaceLabelText(label, fieldTranslation.label));
+                    const labels = this.findLabels(field);
+                    labels.forEach(label => this.replaceLabelText(label, fieldTranslation.label));
+                    if (labels.length > 0) applied += labels.length;
                 }
             });
+
+            return applied;
         }
 
         applyButtons(content) {
             const submit = content?.buttons?.submit;
-            if (!submit || !this.container) return;
+            if (!submit || !this.container) return 0;
 
+            let applied = 0;
             this.container.querySelectorAll('button[type="submit"], button:not([type])').forEach(button => {
                 button.textContent = submit;
+                applied += 1;
             });
 
             this.container.querySelectorAll('input[type="submit"]').forEach(button => {
                 button.value = submit;
+                applied += 1;
             });
+
+            return applied;
         }
 
         applyCurrent() {
-            if (!this.container || !this.translation) return;
+            if (!this.container || !this.translation) return 0;
             const locale = window.i18n?.currentLocale || navigator.language || 'en-US';
             const content = this.localizedContent(locale);
-            if (!content) return;
-            this.applyFields(content);
-            this.applyButtons(content);
+            if (!content) return 0;
+
+            const applied = this.applyFields(content) + this.applyButtons(content);
+            if (applied > 0) {
+                this.container.dataset.formTranslationLocale = locale;
+            }
+            return applied;
         }
 
-        scheduleApply() {
+        scheduleApply(delay = 25) {
             clearTimeout(this.applyTimer);
-            this.applyTimer = setTimeout(() => this.applyCurrent(), 25);
+            this.applyTimer = setTimeout(() => this.applyCurrent(), delay);
+        }
+
+        scheduleRetries() {
+            this.retryTimers.forEach(timer => clearTimeout(timer));
+            this.retryTimers = [50, 200, 500, 1000, 2000].map(delay =>
+                setTimeout(() => this.applyCurrent(), delay)
+            );
         }
 
         observe(container) {
@@ -227,7 +262,12 @@
 
             if (this.observer) this.observer.disconnect();
             this.observer = new MutationObserver(() => this.scheduleApply());
-            this.observer.observe(container, { childList: true, subtree: true });
+            this.observer.observe(container, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['name', 'id', 'aria-labelledby', 'data-targetproperty', 'data-logical-name', 'data-field-name']
+            });
             this.scheduleApply();
         }
 
@@ -236,7 +276,8 @@
             this.eventKey = eventKey || '';
             this.observe(container);
             await this.load();
-            this.scheduleApply();
+            this.scheduleApply(0);
+            this.scheduleRetries();
         }
     }
 
@@ -258,8 +299,17 @@
         const originalRefreshEventForm = refreshEventForm;
         refreshEventForm = function refreshTranslatedEventForm(...args) {
             const result = originalRefreshEventForm.apply(this, args);
-            manager.scheduleApply();
+            manager.scheduleApply(0);
+            manager.scheduleRetries();
             return result;
         };
     }
+
+    // event-details.js registered the original no-op refresh callback before this
+    // runtime layer was loaded. Register our own handler so the real Dynamics
+    // after-form-load event always reapplies the visitor's selected locale.
+    document.addEventListener('d365mkt-afterformload', () => {
+        manager.scheduleApply(0);
+        manager.scheduleRetries();
+    });
 })();
