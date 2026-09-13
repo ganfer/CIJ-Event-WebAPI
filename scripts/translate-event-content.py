@@ -122,8 +122,8 @@ async def main():
         and existing_meta.get("translationProvider") == "googletrans"
     )
 
-    # First resolve everything that does not require an external translation call.
-    # This makes cached content independent from failures in a newly added locale.
+    # Phase 1: resolve everything that does not require an external translation call.
+    # Cached translations stay usable even when a newly added locale cannot be translated.
     resolved = {}
     pending = []
 
@@ -147,42 +147,60 @@ async def main():
             pending.append(locale)
             print(f"{locale}: translation required")
 
+    failed_locales = []
+
+    # Phase 2: only call googletrans for missing or invalid locales. A failure is
+    # recorded as pending instead of aborting the entire synchronization run.
     if pending:
         print("Missing or invalid translations: " + ", ".join(pending))
-        async with Translator() as translator:
-            for locale in pending:
-                print(f"{locale}: translating with googletrans")
-                translated = await translate_node(
-                    translator,
-                    source,
-                    existing_result.get(locale),
-                    googletrans_language(locale),
-                    False,
-                )
+        try:
+            async with Translator() as translator:
+                for locale in pending:
+                    print(f"{locale}: translating with googletrans")
+                    try:
+                        translated = await translate_node(
+                            translator,
+                            source,
+                            existing_result.get(locale),
+                            googletrans_language(locale),
+                            False,
+                        )
 
-                # googletrans can occasionally return the source text without raising.
-                # Do not silently bless that response as valid cache.
-                if is_untranslated_copy(source, translated):
-                    raise RuntimeError(
-                        f"Translation for {locale} is identical to en-US; refusing to cache it."
-                    )
+                        if is_untranslated_copy(source, translated):
+                            raise RuntimeError("googletrans returned the unchanged en-US source")
 
-                resolved[locale] = translated
+                        resolved[locale] = translated
+                        print(f"{locale}: translation completed")
+                    except Exception as error:
+                        failed_locales.append(locale)
+                        print(f"::warning title=Event translation pending::{locale}: {error}")
+        except Exception as error:
+            # If the translator itself cannot be initialized, keep every unresolved
+            # locale pending and let the workflow continue with the valid cache.
+            unresolved = [locale for locale in pending if locale not in resolved]
+            for locale in unresolved:
+                if locale not in failed_locales:
+                    failed_locales.append(locale)
+            print(f"::warning title=googletrans unavailable::{error}")
     else:
         print("All non-English event translations are already cached; googletrans is not called.")
 
-    # Keep output order stable regardless of which locales required translation.
-    result = {locale: resolved[locale] for locale in locales}
+    # Keep output order stable while omitting locales that are explicitly pending.
+    result = {locale: resolved[locale] for locale in locales if locale in resolved}
     result["_meta"] = {
         "sourceLocale": "en-US",
         "translationProvider": "googletrans",
         "translationSchemaVersion": TRANSLATION_SCHEMA_VERSION,
         "sourceHash": current_source_hash,
+        "pendingLocales": failed_locales,
     }
 
     with open(output_path, "w", encoding="utf-8") as handle:
         json.dump(result, handle, ensure_ascii=False, indent=2)
         handle.write("\n")
+
+    if failed_locales:
+        print("Pending translations will be retried on the next sync: " + ", ".join(failed_locales))
 
 
 if __name__ == "__main__":
