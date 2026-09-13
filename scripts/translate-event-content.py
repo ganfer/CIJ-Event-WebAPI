@@ -4,7 +4,23 @@ import json
 import sys
 from googletrans import Translator
 
-TARGETS = {"de-DE": "de", "fr-FR": "fr"}
+# Keep this list aligned with supportedLocales in public/js/localization.js.
+TARGETS = {
+    "ar-SA": "ar", "bg-BG": "bg", "ca-ES": "ca", "cs-CZ": "cs",
+    "da-DK": "da", "de-DE": "de", "el-GR": "el", "es-ES": "es",
+    "et-EE": "et", "eu-ES": "eu", "fi-FI": "fi", "fr-CA": "fr",
+    "fr-FR": "fr", "gl-ES": "gl", "he-IL": "he", "hr-HR": "hr",
+    "hu-HU": "hu", "id-ID": "id", "it-IT": "it", "ja-JP": "ja",
+    "ko-KR": "ko", "lt-LT": "lt", "lv-LV": "lv", "nb-NO": "no",
+    "nl-NL": "nl", "pl-PL": "pl", "pt-BR": "pt", "pt-PT": "pt",
+    "ro-RO": "ro", "ru-RU": "ru", "sk-SK": "sk", "sl-SI": "sl",
+    "sr-Cyrl-CS": "sr", "sr-Latn-CS": "sr", "sv-SE": "sv",
+    "th-TH": "th", "tr-TR": "tr", "uk-UA": "uk", "vi-VN": "vi",
+    "zh-CN": "zh-cn", "zh-HK": "zh-tw", "zh-TW": "zh-tw",
+}
+
+# The source is en-US. Other English portal locales reuse the source content.
+ENGLISH_LOCALES = ("en-AU", "en-CA", "en-GB", "en-US")
 
 async def translate_node(translator, source, existing, language, path=()):
     if isinstance(source, dict):
@@ -46,7 +62,9 @@ async def main():
     except FileNotFoundError:
         result = {}
 
-    result["en-US"] = source
+    for locale in ENGLISH_LOCALES:
+        result[locale] = source
+
     async with Translator() as translator:
         for locale, language in TARGETS.items():
             result[locale] = await translate_node(
