@@ -1,0 +1,40 @@
+name: Bootstrap Portal Locales
+
+on:
+  push:
+    branches:
+      - chore/bootstrap-portal-locales
+    paths:
+      - '.github/workflows/bootstrap-portal-locales.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install translator
+        run: pip install 'googletrans==4.0.2'
+      - name: Fill missing portal locale keys
+        run: python scripts/translate-portal-ui.py
+      - name: Commit generated locale translations
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add public/locales
+          if git diff --cached --quiet -- public/locales; then
+            echo "No new portal locale translations were generated."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "content: bootstrap portal locale translations [skip ci]"
+          git push
