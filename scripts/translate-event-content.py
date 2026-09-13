@@ -122,46 +122,57 @@ async def main():
         and existing_meta.get("translationProvider") == "googletrans"
     )
 
-    # Rebuild from the currently available portal locales. Existing translations
-    # are only reused when they were produced by this schema from the exact same source.
-    # A locale that is still a byte-for-byte semantic copy of en-US is never trusted
-    # as machine-translation cache, even if its metadata otherwise looks current.
-    result = {}
+    # First resolve everything that does not require an external translation call.
+    # This makes cached content independent from failures in a newly added locale.
+    resolved = {}
+    pending = []
 
-    async with Translator() as translator:
-        for locale in locales:
-            if locale.lower().startswith("en-"):
-                result[locale] = source
-                print(f"{locale}: source copy")
-                continue
+    for locale in locales:
+        if locale.lower().startswith("en-"):
+            resolved[locale] = source
+            print(f"{locale}: source copy")
+            continue
 
-            existing_locale = existing_result.get(locale)
-            reuse_existing = (
-                cache_is_valid
-                and isinstance(existing_locale, dict)
-                and not is_untranslated_copy(source, existing_locale)
-            )
+        existing_locale = existing_result.get(locale)
+        reuse_existing = (
+            cache_is_valid
+            and isinstance(existing_locale, dict)
+            and not is_untranslated_copy(source, existing_locale)
+        )
 
-            if reuse_existing:
-                print(f"{locale}: reusing cached translation")
-            else:
+        if reuse_existing:
+            resolved[locale] = existing_locale
+            print(f"{locale}: reusing cached translation")
+        else:
+            pending.append(locale)
+            print(f"{locale}: translation required")
+
+    if pending:
+        print("Missing or invalid translations: " + ", ".join(pending))
+        async with Translator() as translator:
+            for locale in pending:
                 print(f"{locale}: translating with googletrans")
-
-            result[locale] = await translate_node(
-                translator,
-                source,
-                existing_locale,
-                googletrans_language(locale),
-                reuse_existing,
-            )
-
-            # googletrans can occasionally return the source text without raising.
-            # Do not silently bless that response as valid cache.
-            if is_untranslated_copy(source, result[locale]):
-                raise RuntimeError(
-                    f"Translation for {locale} is identical to en-US; refusing to cache it."
+                translated = await translate_node(
+                    translator,
+                    source,
+                    existing_result.get(locale),
+                    googletrans_language(locale),
+                    False,
                 )
 
+                # googletrans can occasionally return the source text without raising.
+                # Do not silently bless that response as valid cache.
+                if is_untranslated_copy(source, translated):
+                    raise RuntimeError(
+                        f"Translation for {locale} is identical to en-US; refusing to cache it."
+                    )
+
+                resolved[locale] = translated
+    else:
+        print("All non-English event translations are already cached; googletrans is not called.")
+
+    # Keep output order stable regardless of which locales required translation.
+    result = {locale: resolved[locale] for locale in locales}
     result["_meta"] = {
         "sourceLocale": "en-US",
         "translationProvider": "googletrans",
