@@ -35,6 +35,11 @@ function firstId(values) {
   return value ? value.trim() : '';
 }
 
+function firstText(values) {
+  const value = values.find((item) => typeof item === 'string' && item.trim());
+  return value ? value.trim() : '';
+}
+
 function eventKey(event) {
   return firstId([event?.readableEventId, event?.eventId, event?.id, event?.eventID]);
 }
@@ -57,12 +62,43 @@ function compact(object) {
   }));
 }
 
-function buildSource(event, sessions, speakers) {
+function eventTitle(event) {
+  return firstText([
+    event?.eventName,
+    event?.name,
+    event?.title,
+    event?.eventTitle
+  ]);
+}
+
+function eventDescription(event) {
+  return firstText([
+    event?.eventDescription,
+    event?.description,
+    event?.eventDescriptionHtml,
+    event?.descriptionHtml,
+    event?.summary
+  ]);
+}
+
+function buildSource(event, sessions, speakers, key) {
+  const title = eventTitle(event);
+  const description = eventDescription(event);
+
+  if (!title) {
+    throw new Error(`${key}: event title could not be resolved from the Events API payload.`);
+  }
+
+  if (!description) {
+    const availableFields = Object.keys(event || {}).sort().join(', ');
+    throw new Error(`${key}: event description could not be resolved from the Events API payload. Available event fields: ${availableFields}`);
+  }
+
   const sessionMap = {};
   for (const session of sessions) {
-    const key = entityKey(session, 'session');
-    if (!key) continue;
-    sessionMap[key] = compact({
+    const sessionKey = entityKey(session, 'session');
+    if (!sessionKey) continue;
+    sessionMap[sessionKey] = compact({
       title: text(session.name),
       summary: text(session.sessionSummary),
       description: text(session.detailedDescription),
@@ -72,9 +108,9 @@ function buildSource(event, sessions, speakers) {
 
   const speakerMap = {};
   for (const speaker of speakers) {
-    const key = entityKey(speaker, 'speaker');
-    if (!key) continue;
-    speakerMap[key] = compact({
+    const speakerKey = entityKey(speaker, 'speaker');
+    if (!speakerKey) continue;
+    speakerMap[speakerKey] = compact({
       name: text(speaker.name),
       title: text(speaker.title),
       about: text(speaker.about)
@@ -82,8 +118,8 @@ function buildSource(event, sessions, speakers) {
   }
 
   return compact({
-    title: text(event.eventName) || text(event.name),
-    description: text(event.description),
+    title,
+    description,
     sessions: sessionMap,
     speakers: speakerMap
   });
@@ -107,7 +143,7 @@ for (const listedEvent of events) {
     getJson(`${root}/speakers`, `${key} speakers`)
   ]);
   const event = eventPayload?.data && !Array.isArray(eventPayload.data) ? eventPayload.data : eventPayload;
-  const source = buildSource(event, asArray(sessionsPayload, `${key} sessions`), asArray(speakersPayload, `${key} speakers`));
+  const source = buildSource(event, asArray(sessionsPayload, `${key} sessions`), asArray(speakersPayload, `${key} speakers`), key);
   await fs.writeFile(path.join(outputDir, `${key}.source.json`), `${JSON.stringify(source, null, 2)}\n`, 'utf8');
   console.log(`Source synced: ${key}`);
 }
