@@ -6,6 +6,7 @@ const orgId = process.env.EVENTS_ORG_ID;
 const token = process.env.EVENTS_API_TOKEN;
 const webappId = process.env.EVENTS_WEBAPP_ID || '';
 const outputDir = path.join(process.cwd(), 'public', 'translations', 'events');
+const formOutputDir = path.join(process.cwd(), 'public', 'translation', 'forms');
 
 if (!orgId || !token) {
   throw new Error('EVENTS_ORG_ID and EVENTS_API_TOKEN are required.');
@@ -120,7 +121,126 @@ function buildSource(event, sessions, speakers, key) {
   });
 }
 
+function decodeHtml(value) {
+  return String(value || '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16)));
+}
+
+function plainText(markup) {
+  return decodeHtml(String(markup || '').replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
+}
+
+function parseAttributes(fragment) {
+  const attributes = {};
+  const pattern = /([\w:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/g;
+  let match;
+  while ((match = pattern.exec(fragment || '')) !== null) {
+    attributes[match[1].toLowerCase()] = decodeHtml(match[2] ?? match[3] ?? match[4] ?? '');
+  }
+  return attributes;
+}
+
+function findAttribute(markup, names) {
+  const escaped = names.map(name => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+  const pattern = new RegExp(`\\b(?:${escaped})\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i');
+  const match = pattern.exec(markup || '');
+  return match ? decodeHtml(match[1] ?? match[2] ?? match[3] ?? '').trim() : '';
+}
+
+function safeFileKey(value) {
+  return String(value || '').trim().replace(/[^A-Za-z0-9._-]+/g, '_').replace(/^_+|_+$/g, '');
+}
+
+function canonicalFieldKey(attributes) {
+  const name = String(attributes.name || '').trim();
+  if (name) return name.toLowerCase();
+  const id = String(attributes.id || '').trim();
+  if (!id) return '';
+  return id
+    .replace(/[-_][0-9]{6,}$/i, '')
+    .replace(/[-_][0-9a-f]{8}-[0-9a-f-]{27,}$/i, '')
+    .toLowerCase();
+}
+
+function extractFormKey(embedHtml, fallbackEventKey) {
+  const explicit = findAttribute(embedHtml, ['data-form-id', 'data-form-block-id', 'form-id']);
+  return safeFileKey(explicit || fallbackEventKey);
+}
+
+async function resolveFormHtml(embedHtml, label) {
+  const cachedUrl = findAttribute(embedHtml, ['data-cached-form-url']);
+  if (!cachedUrl) return embedHtml;
+
+  try {
+    const response = await fetch(cachedUrl, { headers: { Accept: 'text/html,*/*' } });
+    if (!response.ok) {
+      console.warn(`${label}: cached form returned HTTP ${response.status}; using embed HTML.`);
+      return embedHtml;
+    }
+    return await response.text();
+  } catch (error) {
+    console.warn(`${label}: cached form could not be loaded (${error.message}); using embed HTML.`);
+    return embedHtml;
+  }
+}
+
+function buildFormSource(formHtml) {
+  const labelsByFor = new Map();
+  for (const match of formHtml.matchAll(/<label\b([^>]*)>([\s\S]*?)<\/label>/gi)) {
+    const attributes = parseAttributes(match[1]);
+    const target = String(attributes.for || '').trim();
+    const label = plainText(match[2]);
+    if (target && label) labelsByFor.set(target, label);
+  }
+
+  const fields = {};
+  for (const match of formHtml.matchAll(/<(input|select|textarea)\b([^>]*)>/gi)) {
+    const attributes = parseAttributes(match[2]);
+    const type = String(attributes.type || '').toLowerCase();
+    if (['hidden', 'submit', 'button', 'reset'].includes(type)) continue;
+
+    const key = canonicalFieldKey(attributes);
+    if (!key || fields[key]) continue;
+
+    const id = String(attributes.id || '').trim();
+    const label = (id && labelsByFor.get(id)) || attributes['aria-label'] || attributes['data-label'] || '';
+    const placeholder = attributes.placeholder || '';
+    const field = compact({ label: plainText(label), placeholder: plainText(placeholder) });
+    if (Object.keys(field).length > 0) fields[key] = field;
+  }
+
+  let submit = '';
+  for (const match of formHtml.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/gi)) {
+    const attributes = parseAttributes(match[1]);
+    const type = String(attributes.type || 'submit').toLowerCase();
+    if (type === 'submit') {
+      submit = plainText(match[2]);
+      if (submit) break;
+    }
+  }
+
+  if (!submit) {
+    for (const match of formHtml.matchAll(/<input\b([^>]*)>/gi)) {
+      const attributes = parseAttributes(match[1]);
+      if (String(attributes.type || '').toLowerCase() === 'submit') {
+        submit = plainText(attributes.value || '');
+        if (submit) break;
+      }
+    }
+  }
+
+  return compact({ fields, buttons: compact({ submit }) });
+}
+
 await fs.mkdir(outputDir, { recursive: true });
+await fs.mkdir(formOutputDir, { recursive: true });
 const publishedPath = `/api/v1.0/orgs/${encodeURIComponent(orgId)}/eventmanagement/events/published`;
 const publishedUrl = apiUrl(publishedPath);
 if (webappId) publishedUrl.searchParams.set('webappId', webappId);
@@ -141,6 +261,19 @@ for (const listedEvent of events) {
   const source = buildSource(event, asArray(sessionsPayload, `${key} sessions`), asArray(speakersPayload, `${key} speakers`), key);
   await fs.writeFile(path.join(outputDir, `${key}.source.json`), `${JSON.stringify(source, null, 2)}\n`, 'utf8');
   console.log(`Source synced: ${key}`);
+
+  const registrationForm = firstText([event?.registrationForm, event?.eventRegistrationForm]);
+  if (registrationForm) {
+    const formKey = extractFormKey(registrationForm, key);
+    const formHtml = await resolveFormHtml(registrationForm, `${key} registration form`);
+    const formSource = buildFormSource(formHtml);
+    if (formKey && Object.keys(formSource).length > 0) {
+      await fs.writeFile(path.join(formOutputDir, `${formKey}.source.json`), `${JSON.stringify(formSource, null, 2)}\n`, 'utf8');
+      console.log(`Form source synced: ${formKey}`);
+    } else {
+      console.warn(`${key}: registration form has no extractable labels, placeholders, or submit text.`);
+    }
+  }
 }
 
 console.log(`Event source sync complete: ${events.length} published event(s).`);
