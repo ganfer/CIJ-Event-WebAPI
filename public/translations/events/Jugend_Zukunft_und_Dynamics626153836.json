@@ -1,12 +1,207 @@
 {
-  "en-US": {
-    "title": "Jugend, Zukunft und Dynamics"
+  "ar-SA": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "bg-BG": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "ca-ES": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "cs-CZ": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "da-DK": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
   },
   "de-DE": {
-    "title": "Jugend, Zukunft und Dynamik"
+    "title": "Jugend, Zukunft und Dynamik",
+    "description": "This event is for demonstration purposes"
+  },
+  "el-GR": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "en-AU": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "en-CA": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "en-GB": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "en-US": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "es-ES": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "et-EE": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "eu-ES": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "fi-FI": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "fr-CA": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
   },
   "fr-FR": {
-    "title": "Jugend, Zukunft et Dynamics"
+    "title": "Jugend, Zukunft et Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "gl-ES": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "he-IL": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "hr-HR": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "hu-HU": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "id-ID": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "it-IT": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "ja-JP": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "ko-KR": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "lt-LT": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "lv-LV": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "nb-NO": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "nl-NL": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "pl-PL": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "pt-BR": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "pt-PT": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "ro-RO": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "ru-RU": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "sk-SK": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "sl-SI": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "sr-Cyrl-CS": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "sr-Cyrl-RS": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "sr-Latn-CS": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "sr-Latn-RS": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "sv-SE": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "th-TH": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "tr-TR": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "uk-UA": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "vi-VN": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "zh-CN": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "zh-HK": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "zh-Hans-CN": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "zh-Hant-HK": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "zh-Hant-TW": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
+  },
+  "zh-TW": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
   },
   "_meta": {
     "sourceLocale": "en-US",
