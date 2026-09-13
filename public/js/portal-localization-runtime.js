@@ -4,9 +4,8 @@
     const manager = window.i18n;
     if (!manager) return;
 
-    const basePath = 'translation/portal/';
-    const fallbackLocale = 'en-US';
-    const cache = new Map();
+    const fallbackLocale = manager.defaultLocale || 'en-US';
+    let fallbackTranslations = {};
     let observer = null;
     let applyTimer = null;
 
@@ -22,39 +21,31 @@
         return result;
     }
 
-    async function loadPortalCopy(locale) {
-        const normalized = manager.normalizeLocale ? manager.normalizeLocale(locale) : locale;
-        if (cache.has(normalized)) return cache.get(normalized);
+    async function loadFallbackTranslations() {
+        if (Object.keys(fallbackTranslations).length > 0) return fallbackTranslations;
 
         try {
-            const response = await fetch(`${basePath}${encodeURIComponent(normalized)}.json`, { cache: 'no-cache' });
-            if (!response.ok) {
-                cache.set(normalized, null);
-                return null;
-            }
-            const copy = await response.json();
-            cache.set(normalized, copy && typeof copy === 'object' ? copy : null);
-            return cache.get(normalized);
+            const response = await fetch(`locales/translation.${encodeURIComponent(fallbackLocale)}.json`, { cache: 'no-cache' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const source = await response.json();
+            fallbackTranslations = Object.fromEntries(
+                Object.entries(source || {}).filter(([key, value]) => !key.startsWith('_') && typeof value === 'string')
+            );
         } catch (error) {
-            console.warn(`Could not load supplemental portal translations for ${normalized}:`, error);
-            cache.set(normalized, null);
-            return null;
+            console.warn(`Could not load fallback locale ${fallbackLocale}:`, error);
+            fallbackTranslations = {};
         }
+
+        return fallbackTranslations;
     }
 
-    function supplementalValue(key) {
-        const locale = manager.currentLocale || fallbackLocale;
-        const localized = cache.get(locale);
-        if (localized && typeof localized[key] === 'string') return localized[key];
-        const fallback = cache.get(fallbackLocale);
-        if (fallback && typeof fallback[key] === 'string') return fallback[key];
-        return null;
-    }
+    manager.translate = function translateWithStandardFallback(key, params = {}) {
+        const translated = originalTranslate(key, params);
+        if (translated !== key) return translated;
 
-    manager.translate = function translateWithPortalCopy(key, params = {}) {
-        const supplemental = supplementalValue(key);
-        if (supplemental !== null) return applyParams(supplemental, params);
-        return originalTranslate(key, params);
+        const fallback = fallbackTranslations[key];
+        if (typeof fallback === 'string') return applyParams(fallback, params);
+        return translated;
     };
     window.__ = (key, params) => manager.translate(key, params);
 
@@ -72,6 +63,7 @@
             const preference = button.dataset.themeChoice || 'system';
             const label = button.querySelector('.event-portal-theme-option-label');
             if (label) label.textContent = manager.translate(themeKey(preference));
+
             const titleKey = preference === 'light'
                 ? 'useLightTheme'
                 : preference === 'dark'
@@ -85,6 +77,7 @@
         const resolved = root.dataset.theme || 'light';
         const resolvedLabel = manager.translate(themeKey(resolved));
         const preferenceLabel = manager.translate(themeKey(preference));
+
         document.querySelectorAll('[data-theme-status]').forEach(status => {
             status.textContent = preference === 'system'
                 ? manager.translate('themeStatusSystem', { resolved: resolvedLabel })
@@ -113,6 +106,7 @@
                 image.alt = manager.translate('genericEventImageAlt');
                 return;
             }
+
             if (image.dataset.portalI18nAltKey === 'eventImageAlt') {
                 image.alt = manager.translate('eventImageAlt', { eventName: image.dataset.portalEventName || '' });
                 return;
@@ -124,6 +118,7 @@
                 image.alt = manager.translate('genericEventImageAlt');
                 return;
             }
+
             if (/ event image$/i.test(alt)) {
                 const eventName = alt.replace(/ event image$/i, '').trim();
                 image.dataset.portalI18nAltKey = 'eventImageAlt';
@@ -143,9 +138,8 @@
         applyTimer = setTimeout(applyRuntimeCopy, 20);
     }
 
-    manager.setLocale = async function setLocaleWithPortalCopy(locale) {
-        const normalized = manager.normalizeLocale ? manager.normalizeLocale(locale) : locale;
-        await Promise.all([loadPortalCopy(fallbackLocale), loadPortalCopy(normalized)]);
+    manager.setLocale = async function setLocaleWithStandardFallback(locale) {
+        await loadFallbackTranslations();
         const result = await originalSetLocale(locale);
         applyRuntimeCopy();
         window.dispatchEvent(new CustomEvent('eventportal:localechange', {
@@ -154,8 +148,8 @@
         return result;
     };
 
-    manager.init = async function initWithPortalCopy() {
-        await loadPortalCopy(fallbackLocale);
+    manager.init = async function initWithStandardFallback() {
+        await loadFallbackTranslations();
         return originalInit();
     };
 
