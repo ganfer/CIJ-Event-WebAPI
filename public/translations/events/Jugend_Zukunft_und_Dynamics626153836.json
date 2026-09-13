@@ -4,11 +4,14 @@
     "description": "<p>Jugend, Zukunft und Dynamics</p>"
   },
   "en-US": {
-    "title": "Youth, Future and Dynamics",
-    "description": "<p>Youth, Future and Dynamics</p>"
+    "title": "Jugend, Zukunft und Dynamics"
   },
   "fr-FR": {
     "title": "Jeunesse, avenir et Dynamics",
     "description": "<p>Jeunesse, avenir et Dynamics</p>"
+  },
+  "_meta": {
+    "sourceLocale": "en-US",
+    "translationProvider": "googletrans"
   }
 }
