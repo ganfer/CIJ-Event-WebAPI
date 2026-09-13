@@ -104,16 +104,63 @@
             return null;
         }
 
+        getRoots() {
+            if (!this.container) return [];
+
+            const roots = [this.container];
+            const seen = new Set(roots);
+
+            for (let index = 0; index < roots.length; index += 1) {
+                const root = roots[index];
+                root.querySelectorAll?.('*').forEach(element => {
+                    if (element.shadowRoot && !seen.has(element.shadowRoot)) {
+                        seen.add(element.shadowRoot);
+                        roots.push(element.shadowRoot);
+                    }
+                });
+            }
+
+            return roots;
+        }
+
+        queryAll(selector) {
+            const result = [];
+            const seen = new Set();
+
+            this.getRoots().forEach(root => {
+                root.querySelectorAll?.(selector).forEach(element => {
+                    if (!seen.has(element)) {
+                        seen.add(element);
+                        result.push(element);
+                    }
+                });
+            });
+
+            return result;
+        }
+
+        queryOne(selector, root = null) {
+            const searchRoots = root ? [root] : this.getRoots();
+            for (const searchRoot of searchRoots) {
+                const match = searchRoot.querySelector?.(selector);
+                if (match) return match;
+            }
+            return null;
+        }
+
         findLabels(field) {
             const labels = [];
             const add = (candidate) => {
                 if (candidate && !labels.includes(candidate)) labels.push(candidate);
             };
+            const root = field.getRootNode?.();
+            const localRoot = root?.querySelector ? root : this.container;
             const id = String(field.id || '').trim();
 
             if (id) {
                 try {
-                    add(this.container?.querySelector(`label[for="${CSS.escape(id)}"]`));
+                    add(localRoot?.querySelector?.(`label[for="${CSS.escape(id)}"]`));
+                    add(this.queryOne(`label[for="${CSS.escape(id)}"]`));
                 } catch (_) {
                     // Ignore malformed IDs and continue with structural lookup.
                 }
@@ -124,7 +171,8 @@
                 .filter(Boolean);
             labelledBy.forEach(labelId => {
                 try {
-                    add(this.container?.querySelector(`#${CSS.escape(labelId)}`));
+                    add(localRoot?.querySelector?.(`#${CSS.escape(labelId)}`));
+                    add(this.queryOne(`#${CSS.escape(labelId)}`));
                 } catch (_) {
                     // Ignore malformed IDs.
                 }
@@ -187,7 +235,7 @@
             if (!fields || !this.container) return 0;
 
             let applied = 0;
-            const controls = this.container.querySelectorAll('input[name], select[name], textarea[name], input[id], select[id], textarea[id]');
+            const controls = this.queryAll('input[name], select[name], textarea[name], input[id], select[id], textarea[id]');
             controls.forEach(field => {
                 const type = String(field.getAttribute('type') || '').toLowerCase();
                 if (['hidden', 'submit', 'button', 'reset'].includes(type)) return;
@@ -213,17 +261,90 @@
             return applied;
         }
 
+        standardAliases(key, sourceField = {}) {
+            const aliases = new Set([
+                String(sourceField.label || '').trim().toLowerCase(),
+                String(sourceField.placeholder || '').trim().toLowerCase()
+            ].filter(Boolean));
+
+            const standard = {
+                firstname: ['firstname', 'first name', 'enter your first name', 'given name'],
+                lastname: ['lastname', 'last name', 'enter your last name', 'surname', 'family name'],
+                emailaddress1: ['email', 'email address', 'e-mail', 'e-mail address', 'enter your email address']
+            };
+
+            (standard[key] || []).forEach(value => aliases.add(value));
+            return aliases;
+        }
+
+        applyVisibleText(content) {
+            if (!this.translation || !content || !this.container) return 0;
+
+            const source = this.translation['en-US'] || this.translation.en || {};
+            const sourceFields = source.fields || {};
+            const targetFields = content.fields || {};
+            let applied = 0;
+
+            for (const [key, targetField] of Object.entries(targetFields)) {
+                if (!targetField || typeof targetField !== 'object') continue;
+                const aliases = this.standardAliases(key, sourceFields[key] || {});
+                if (aliases.size === 0) continue;
+
+                this.queryAll('input[placeholder], textarea[placeholder], input[aria-label], textarea[aria-label], select[aria-label]').forEach(control => {
+                    const placeholder = String(control.getAttribute('placeholder') || '').trim().toLowerCase();
+                    const ariaLabel = String(control.getAttribute('aria-label') || '').trim().toLowerCase();
+
+                    if (targetField.placeholder && aliases.has(placeholder)) {
+                        control.setAttribute('placeholder', targetField.placeholder);
+                        applied += 1;
+                    }
+                    if (targetField.label && aliases.has(ariaLabel)) {
+                        control.setAttribute('aria-label', targetField.label);
+                        applied += 1;
+                    }
+                });
+
+                this.queryAll('label, legend, [data-field-label], [class*="labelText"], [class*="label-text"], span, p').forEach(element => {
+                    if (element.children.length > 0) return;
+                    const current = String(element.textContent || '').trim().toLowerCase();
+                    if (targetField.label && aliases.has(current)) {
+                        element.textContent = targetField.label;
+                        applied += 1;
+                    }
+                });
+            }
+
+            const submitAliases = new Set([
+                String(source?.buttons?.submit || '').trim().toLowerCase(),
+                'submit',
+                'register',
+                'register now'
+            ].filter(Boolean));
+            const submit = content?.buttons?.submit;
+            if (submit) {
+                this.queryAll('button, input[type="submit"]').forEach(button => {
+                    const current = String(button.tagName === 'INPUT' ? button.value : button.textContent || '').trim().toLowerCase();
+                    if (!submitAliases.has(current)) return;
+                    if (button.tagName === 'INPUT') button.value = submit;
+                    else button.textContent = submit;
+                    applied += 1;
+                });
+            }
+
+            return applied;
+        }
+
         applyButtons(content) {
             const submit = content?.buttons?.submit;
             if (!submit || !this.container) return 0;
 
             let applied = 0;
-            this.container.querySelectorAll('button[type="submit"], button:not([type])').forEach(button => {
+            this.queryAll('button[type="submit"], button:not([type])').forEach(button => {
                 button.textContent = submit;
                 applied += 1;
             });
 
-            this.container.querySelectorAll('input[type="submit"]').forEach(button => {
+            this.queryAll('input[type="submit"]').forEach(button => {
                 button.value = submit;
                 applied += 1;
             });
@@ -237,9 +358,10 @@
             const content = this.localizedContent(locale);
             if (!content) return 0;
 
-            const applied = this.applyFields(content) + this.applyButtons(content);
+            const applied = this.applyFields(content) + this.applyVisibleText(content) + this.applyButtons(content);
             if (applied > 0) {
                 this.container.dataset.formTranslationLocale = locale;
+                this.container.dataset.formTranslationApplied = String(applied);
             }
             return applied;
         }
@@ -251,7 +373,7 @@
 
         scheduleRetries() {
             this.retryTimers.forEach(timer => clearTimeout(timer));
-            this.retryTimers = [50, 200, 500, 1000, 2000].map(delay =>
+            this.retryTimers = [50, 200, 500, 1000, 2000, 4000].map(delay =>
                 setTimeout(() => this.applyCurrent(), delay)
             );
         }
@@ -266,7 +388,7 @@
                 childList: true,
                 subtree: true,
                 attributes: true,
-                attributeFilter: ['name', 'id', 'aria-labelledby', 'data-targetproperty', 'data-logical-name', 'data-field-name']
+                attributeFilter: ['name', 'id', 'aria-labelledby', 'aria-label', 'placeholder', 'data-targetproperty', 'data-logical-name', 'data-field-name']
             });
             this.scheduleApply();
         }
@@ -305,9 +427,6 @@
         };
     }
 
-    // event-details.js registered the original no-op refresh callback before this
-    // runtime layer was loaded. Register our own handler so the real Dynamics
-    // after-form-load event always reapplies the visitor's selected locale.
     document.addEventListener('d365mkt-afterformload', () => {
         manager.scheduleApply(0);
         manager.scheduleRetries();
