@@ -40,9 +40,6 @@ jobs:
       - name: Install translator
         run: pip install 'googletrans==4.0.2'
 
-      - name: Diagnose googletrans
-        run: python scripts/diagnose-googletrans.py
-
       - name: Sync English source from Events API
         env:
           EVENTS_BASE_URL: ${{ secrets.EVENTS_BASE_URL }}
