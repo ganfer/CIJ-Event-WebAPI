@@ -23,10 +23,57 @@ LANGUAGE_OVERRIDES = {
     "zh-TW": "zh-TW",
 }
 
+# A few UI terms are legitimately identical to English in their target language,
+# so an "unchanged" result is not an error. Keep these explicit and reviewable.
+MANUAL_OVERRIDES = {
+    "ca-ES": {"agenda": "Agenda"},
+    "cs-CZ": {"agenda": "Program"},
+    "da-DK": {"themeSystem": "System", "sessionFallback": "Session"},
+    "eu-ES": {"agenda": "Agenda"},
+    "fi-FI": {"agenda": "Ohjelma"},
+    "fr-CA": {"sessionFallback": "Session"},
+    "fr-FR": {"sessionFallback": "Session"},
+    "id-ID": {"agenda": "Agenda"},
+    "nb-NO": {"themeSystem": "System"},
+    "nl-NL": {"agenda": "Agenda"},
+    "pt-BR": {"agenda": "Agenda"},
+    "pt-PT": {"agenda": "Agenda"},
+    "ro-RO": {"agenda": "Agendă"},
+    "sk-SK": {"agenda": "Program"},
+    "sv-SE": {"themeSystem": "System", "sessionFallback": "Session"},
+    "sr-Cyrl-CS": {
+        "themeStatusSystem": "Тема: системска ({{resolved}})",
+        "themeStatus": "Тема: {{theme}}",
+        "eventImageAlt": "Слика догађаја: {{eventName}}",
+    },
+    "sr-Cyrl-RS": {
+        "themeStatusSystem": "Тема: системска ({{resolved}})",
+        "themeStatus": "Тема: {{theme}}",
+        "eventImageAlt": "Слика догађаја: {{eventName}}",
+    },
+}
+
+SERBIAN_LATIN_MAP = {
+    "А": "A", "Б": "B", "В": "V", "Г": "G", "Д": "D", "Ђ": "Đ", "Е": "E", "Ж": "Ž", "З": "Z",
+    "И": "I", "Ј": "J", "К": "K", "Л": "L", "Љ": "Lj", "М": "M", "Н": "N", "Њ": "Nj", "О": "O",
+    "П": "P", "Р": "R", "С": "S", "Т": "T", "Ћ": "Ć", "У": "U", "Ф": "F", "Х": "H", "Ц": "C",
+    "Ч": "Č", "Џ": "Dž", "Ш": "Š",
+    "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "ђ": "đ", "е": "e", "ж": "ž", "з": "z",
+    "и": "i", "ј": "j", "к": "k", "л": "l", "љ": "lj", "м": "m", "н": "n", "њ": "nj", "о": "o",
+    "п": "p", "р": "r", "с": "s", "т": "t", "ћ": "ć", "у": "u", "ф": "f", "х": "h", "ц": "c",
+    "ч": "č", "џ": "dž", "ш": "š",
+}
+
 
 def read_json(path):
     with path.open(encoding="utf-8") as handle:
         return json.load(handle)
+
+
+def write_json(path, document):
+    with path.open("w", encoding="utf-8") as handle:
+        json.dump(document, handle, ensure_ascii=False, indent=2)
+        handle.write("\n")
 
 
 def language(locale):
@@ -36,12 +83,18 @@ def language(locale):
     return LANGUAGE_OVERRIDES.get(primary, primary)
 
 
+def transliterate_serbian(text):
+    return "".join(SERBIAN_LATIN_MAP.get(char, char) for char in text)
+
+
 def protect(text, prefix=""):
     mapping = {}
+
     def repl(match):
         token = f"ZXQ{prefix}PH{len(mapping)}QXZ"
         mapping[token] = match.group(0)
         return token
+
     return PLACEHOLDER_PATTERN.sub(repl, text), mapping
 
 
@@ -156,18 +209,43 @@ def main():
             for key in missing:
                 document[key] = source[key]
             print(f"{locale}: copied {len(missing)} key(s) from en-US")
+        elif locale.startswith("sr-Latn-"):
+            cyrl_locale = locale.replace("sr-Latn-", "sr-Cyrl-")
+            cyrl_path = LOCALES_DIR / f"translation.{cyrl_locale}.json"
+            cyrl_document = read_json(cyrl_path)
+            for key in missing:
+                value = cyrl_document.get(key)
+                if not isinstance(value, str) or not value.strip():
+                    failures.append(f"{locale}/{key}: missing Cyrillic source value")
+                    continue
+                document[key] = transliterate_serbian(value)
+            print(f"{locale}: transliterated {len(missing)} key(s) from {cyrl_locale}")
         else:
             target = language(locale)
             print(f"{locale}: translating {len(missing)} key(s) -> {target}")
             translated, failed = translate_locale(source, missing, target)
             document.update(translated)
+
+            manual = MANUAL_OVERRIDES.get(locale, {})
+            for key, value in manual.items():
+                if key in missing:
+                    document[key] = value
+
+            failed_keys = {key for key, _ in failed}
+            overridden_keys = failed_keys.intersection(manual)
             for key, error in failed:
+                if key in overridden_keys:
+                    print(f"{locale}/{key}: resolved by reviewed manual override")
+                    continue
                 failures.append(f"{locale}/{key}: {error}")
                 print(f"::warning title=Bootstrap translation pending::{locale}/{key}: {error}")
 
-        with path.open("w", encoding="utf-8") as handle:
-            json.dump(document, handle, ensure_ascii=False, indent=2)
-            handle.write("\n")
+        # Apply reviewed overrides even if Google happened to return a value.
+        for key, value in MANUAL_OVERRIDES.get(locale, {}).items():
+            if key in missing:
+                document[key] = value
+
+        write_json(path, document)
 
     if failures:
         print("Bootstrap failures:")
