@@ -35,7 +35,7 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "content: bootstrap portal locale translations [skip ci]"
+          git commit -m "content: review portal locale terminology [skip ci]"
           git push
 
-# Final one-time bootstrap run; remove this workflow after verification.
+# Reviewed terminology pass; remove this workflow after verification.
