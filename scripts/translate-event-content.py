@@ -45,6 +45,29 @@ def source_hash(source):
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def translatable_strings(node, path=()):
+    """Return translatable text while excluding identity fields such as speaker names."""
+    values = []
+    if isinstance(node, dict):
+        for key, value in node.items():
+            values.extend(translatable_strings(value, (*path, key)))
+        return values
+
+    if len(path) >= 3 and path[-3] == "speakers" and path[-1] == "name":
+        return values
+
+    if isinstance(node, str) and node.strip():
+        values.append(node)
+    return values
+
+
+def is_untranslated_copy(source, localized):
+    """True when every translatable localized string is still identical to en-US."""
+    source_values = translatable_strings(source)
+    localized_values = translatable_strings(localized)
+    return bool(source_values) and source_values == localized_values
+
+
 async def translate_node(translator, source, existing, language, reuse_existing, path=()):
     if isinstance(source, dict):
         existing_dict = existing if isinstance(existing, dict) else {}
@@ -101,6 +124,8 @@ async def main():
 
     # Rebuild from the currently available portal locales. Existing translations
     # are only reused when they were produced by this schema from the exact same source.
+    # A locale that is still a byte-for-byte semantic copy of en-US is never trusted
+    # as machine-translation cache, even if its metadata otherwise looks current.
     result = {}
 
     async with Translator() as translator:
@@ -109,14 +134,27 @@ async def main():
                 result[locale] = source
                 continue
 
-            reuse_existing = cache_is_valid and isinstance(existing_result.get(locale), dict)
+            existing_locale = existing_result.get(locale)
+            reuse_existing = (
+                cache_is_valid
+                and isinstance(existing_locale, dict)
+                and not is_untranslated_copy(source, existing_locale)
+            )
             result[locale] = await translate_node(
                 translator,
                 source,
-                existing_result.get(locale),
+                existing_locale,
                 googletrans_language(locale),
                 reuse_existing,
             )
+
+            # googletrans can occasionally return the source text without raising.
+            # Do not silently bless that response as valid cache. Raising here lets
+            # the workflow retry instead of committing another poisoned translation file.
+            if is_untranslated_copy(source, result[locale]):
+                raise RuntimeError(
+                    f"Translation for {locale} is identical to en-US; refusing to cache it."
+                )
 
     result["_meta"] = {
         "sourceLocale": "en-US",
