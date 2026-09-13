@@ -36,19 +36,19 @@ def google_language(locale):
     return GOOGLETRANS_LANGUAGE_OVERRIDES.get(language, language)
 
 
-def read_json(path, default=None):
+def read_json(path):
     try:
         with path.open(encoding="utf-8") as handle:
             return json.load(handle)
     except FileNotFoundError:
-        return {} if default is None else default
+        return {}
 
 
-def protect_placeholders(text):
+def protect_placeholders(text, offset=0):
     replacements = {}
 
     def replace(match):
-        token = f"ZXQPLACEHOLDER{len(replacements)}QXZ"
+        token = f"ZXQPLACEHOLDER{offset + len(replacements)}QXZ"
         replacements[token] = match.group(0)
         return token
 
@@ -64,13 +64,35 @@ def restore_placeholders(text, replacements):
     return result
 
 
-async def translate_value(translator, value, destination):
-    protected, replacements = protect_placeholders(value)
-    translated = (await translator.translate(protected, src="en", dest=destination)).text
-    translated = restore_placeholders(translated, replacements)
-    if translated.strip() == value.strip():
-        raise RuntimeError("googletrans returned unchanged source text")
-    return translated
+async def translate_missing(translator, source, keys, destination):
+    protected_values = []
+    replacements = []
+    placeholder_offset = 0
+
+    for key in keys:
+        protected, mapping = protect_placeholders(source[key], placeholder_offset)
+        placeholder_offset += len(mapping)
+        protected_values.append(protected)
+        replacements.append(mapping)
+
+    raw_results = await translator.translate(protected_values, src="en", dest=destination)
+    if not isinstance(raw_results, list):
+        raw_results = [raw_results]
+    if len(raw_results) != len(keys):
+        raise RuntimeError(f"googletrans returned {len(raw_results)} result(s) for {len(keys)} input(s)")
+
+    translated = {}
+    failed = []
+    for key, source_value, result, mapping in zip(keys, [source[key] for key in keys], raw_results, replacements):
+        try:
+            value = restore_placeholders(result.text, mapping)
+            if value.strip() == source_value.strip():
+                raise RuntimeError("googletrans returned unchanged source text")
+            translated[key] = value
+        except Exception as error:
+            failed.append((key, error))
+
+    return translated, failed
 
 
 async def main():
@@ -97,7 +119,7 @@ async def main():
 
             existing = read_json(output_path)
             missing = [
-                key for key, value in source.items()
+                key for key in source
                 if not isinstance(existing.get(key), str) or not existing[key].strip()
             ]
 
@@ -105,28 +127,29 @@ async def main():
                 print(f"portal {locale}: all keys already translated")
                 continue
 
-            print(f"portal {locale}: translating {len(missing)} missing key(s)")
+            print(f"portal {locale}: translating {len(missing)} missing key(s) in one batch")
             updated = dict(existing)
-            failed = False
 
-            for key in missing:
-                try:
-                    updated[key] = await translate_value(
-                        translator,
-                        source[key],
-                        google_language(locale),
-                    )
-                except Exception as error:
-                    failed = True
+            try:
+                translated, failed = await translate_missing(
+                    translator,
+                    source,
+                    missing,
+                    google_language(locale),
+                )
+                updated.update(translated)
+                for key, error in failed:
                     print(f"::warning title=Portal UI translation pending::{locale}/{key}: {error}")
+                if failed:
+                    pending.append(locale)
+            except Exception as error:
+                pending.append(locale)
+                print(f"::warning title=Portal UI translation pending::{locale}: {error}")
 
             if updated != existing:
                 with output_path.open("w", encoding="utf-8") as handle:
                     json.dump(updated, handle, ensure_ascii=False, indent=2)
                     handle.write("\n")
-
-            if failed:
-                pending.append(locale)
 
     if pending:
         print("Pending portal UI translations will be retried on the next sync: " + ", ".join(sorted(set(pending))))
