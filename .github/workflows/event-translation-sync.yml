@@ -58,6 +58,21 @@ jobs:
             python scripts/translate-event-content.py "$source_file" "$output_file"
           done < <(find public/translations/events -maxdepth 1 -type f -name '*.source.json' -print | sort)
 
+      - name: Translate registration form files
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -d public/translation/forms ]; then
+            echo "No registration form translation sources found."
+            exit 0
+          fi
+
+          while IFS= read -r source_file; do
+            form_key="$(basename "$source_file" .source.json)"
+            output_file="public/translation/forms/${form_key}.json"
+            python scripts/translate-form-content.py "$source_file" "$output_file"
+          done < <(find public/translation/forms -maxdepth 1 -type f -name '*.source.json' -print | sort)
+
       - name: Run project checks
         run: npm test
 
@@ -75,14 +90,14 @@ jobs:
       - name: Commit synchronized translations
         shell: bash
         run: |
-          git add public/translations/events
+          git add public/translations/events public/translation/forms
 
-          if git diff --cached --quiet -- public/translations/events; then
+          if git diff --cached --quiet -- public/translations/events public/translation/forms; then
             echo "No translation changes to commit."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "content: sync event translations"
+          git commit -m "content: sync event and form translations"
           git push

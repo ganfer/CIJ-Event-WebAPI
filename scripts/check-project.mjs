@@ -32,6 +32,7 @@ const requiredFiles = [
   'public/js/api-wrapper.js',
   'public/js/event-grid.js',
   'public/js/event-details.js',
+  'public/js/form-translations.js',
   'public/lib/PublicApi.bundle.js',
   'package.json',
   'package-lock.json',
@@ -60,7 +61,8 @@ const jsonFiles = [
   'package.json',
   'package-lock.json',
   ...walk('public/locales', (file) => file.endsWith('.json')),
-  ...walk('public/translations/events', (file) => file.endsWith('.json'))
+  ...walk('public/translations/events', (file) => file.endsWith('.json')),
+  ...walk('public/translation/forms', (file) => file.endsWith('.json'))
 ];
 
 for (const file of jsonFiles) {
