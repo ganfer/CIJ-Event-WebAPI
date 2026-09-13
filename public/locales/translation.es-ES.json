@@ -73,5 +73,14 @@
   "lang_vi-VN": "Vietnamita (Vietnam)",
   "lang_zh-CN": "Chino (RPC)",
   "lang_zh-HK": "Chino (RAE de Hong Kong)",
-  "lang_zh-TW": "Chino (Taiwán)"
+  "lang_zh-TW": "Chino (Taiwán)",
+  "metaEventDetailsDescription": "Detalles del evento e inscripción.",
+  "colorTheme": "Tema de color",
+  "themeSystem": "Sistema",
+  "themeLight": "Luz",
+  "themeDark": "Oscuro",
+  "useSystemTheme": "Usar tema del sistema",
+  "useLightTheme": "Usar tema claro",
+  "useDarkTheme": "Usar tema oscuro",
+  "themeStatusSystem": "Tema: Sistema ({{resolved}})"
 }
