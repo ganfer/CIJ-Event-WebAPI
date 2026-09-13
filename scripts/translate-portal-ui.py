@@ -15,6 +15,9 @@ GOOGLETRANS_LANGUAGE_OVERRIDES = {
     "nb": "no",
     "zh-CN": "zh-cn",
     "zh-HK": "zh-tw",
+    "zh-Hans-CN": "zh-cn",
+    "zh-Hant-HK": "zh-tw",
+    "zh-Hant-TW": "zh-tw",
     "zh-TW": "zh-tw",
 }
 
@@ -51,11 +54,11 @@ def translatable_source(source):
     }
 
 
-def protect_placeholders(text, offset=0):
+def protect_placeholders(text):
     replacements = {}
 
     def replace(match):
-        token = f"ZXQPLACEHOLDER{offset + len(replacements)}QXZ"
+        token = f"ZXQPLACEHOLDER{len(replacements)}QXZ"
         replacements[token] = match.group(0)
         return token
 
@@ -72,27 +75,22 @@ def restore_placeholders(text, replacements):
 
 
 async def translate_missing(translator, source, keys, destination):
-    protected_values = []
-    replacements = []
-    placeholder_offset = 0
+    """Translate one UI string at a time.
 
-    for key in keys:
-        protected, mapping = protect_placeholders(source[key], placeholder_offset)
-        placeholder_offset += len(mapping)
-        protected_values.append(protected)
-        replacements.append(mapping)
-
-    raw_results = await translator.translate(protected_values, src="en", dest=destination)
-    if not isinstance(raw_results, list):
-        raw_results = [raw_results]
-    if len(raw_results) != len(keys):
-        raise RuntimeError(f"googletrans returned {len(raw_results)} result(s) for {len(keys)} input(s)")
-
+    googletrans' list/batch mode can return the unchanged English input for every
+    item while still reporting a successful request. Individual calls match the
+    strategy already used by the event-content translator and let us retain any
+    successful keys when one request fails.
+    """
     translated = {}
     failed = []
-    for key, source_value, result, mapping in zip(keys, [source[key] for key in keys], raw_results, replacements):
+
+    for key in keys:
+        source_value = source[key]
+        protected, replacements = protect_placeholders(source_value)
         try:
-            value = restore_placeholders(result.text, mapping)
+            result = await translator.translate(protected, src="en", dest=destination)
+            value = restore_placeholders(result.text, replacements)
             if value.strip() == source_value.strip():
                 raise RuntimeError("googletrans returned unchanged source text")
             translated[key] = value
@@ -135,7 +133,7 @@ async def main():
                     updated[key] = source[key]
                 print(f"portal {locale}: copied {len(missing)} missing key(s) from en-US")
             else:
-                print(f"portal {locale}: translating {len(missing)} missing key(s) in one batch")
+                print(f"portal {locale}: translating {len(missing)} missing key(s) individually")
                 try:
                     translated, failed = await translate_missing(
                         translator,
@@ -144,6 +142,7 @@ async def main():
                         google_language(locale),
                     )
                     updated.update(translated)
+                    print(f"portal {locale}: translated {len(translated)} key(s)")
                     for key, error in failed:
                         print(f"::warning title=Portal UI translation pending::{locale}/{key}: {error}")
                     if failed:
