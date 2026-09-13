@@ -3,7 +3,7 @@
  * without changing the Events API wrapper or registration behavior.
  */
 (() => {
-    if (!window.eventsAPI || !window.eventTranslations) return;
+    if (typeof eventsAPI === 'undefined' || !window.eventTranslations) return;
 
     const originalGetEventById = eventsAPI.getEventById.bind(eventsAPI);
     let sourceEvent = null;
