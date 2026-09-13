@@ -83,17 +83,38 @@ async def translate_missing(translator, source, keys, destination):
         protected_values.append(protected)
         replacements.append(mapping)
 
-    raw_results = await translator.translate(protected_values, src="en", dest=destination)
-    if not isinstance(raw_results, list):
-        raw_results = [raw_results]
-    if len(raw_results) != len(keys):
-        raise RuntimeError(f"googletrans returned {len(raw_results)} result(s) for {len(keys)} input(s)")
+    separators = [f"ZXQITEM{index}QXZ" for index in range(1, len(protected_values))]
+    combined_parts = []
+    for index, value in enumerate(protected_values):
+        if index:
+            combined_parts.append(f"\n{separators[index - 1]}\n")
+        combined_parts.append(value)
+    combined = "".join(combined_parts)
+
+    result = await translator.translate(combined, src="en", dest=destination)
+    translated_text = result.text
+
+    segments = [translated_text]
+    for separator in separators:
+        next_segments = []
+        for segment in segments:
+            if separator in segment:
+                left, right = segment.split(separator, 1)
+                next_segments.extend([left, right])
+            else:
+                next_segments.append(segment)
+        segments = next_segments
+
+    if len(segments) != len(keys):
+        raise RuntimeError(
+            f"googletrans changed batch separators: expected {len(keys)} segments, got {len(segments)}"
+        )
 
     translated = {}
     failed = []
-    for key, source_value, result, mapping in zip(keys, [source[key] for key in keys], raw_results, replacements):
+    for key, source_value, value, mapping in zip(keys, [source[key] for key in keys], segments, replacements):
         try:
-            value = restore_placeholders(result.text, mapping)
+            value = restore_placeholders(value.strip(), mapping)
             if value.strip() == source_value.strip():
                 raise RuntimeError("googletrans returned unchanged source text")
             translated[key] = value
@@ -136,7 +157,7 @@ async def main():
                     updated[key] = source[key]
                 print(f"portal {locale}: copied {len(missing)} missing key(s) from en-US")
             else:
-                print(f"portal {locale}: translating {len(missing)} missing key(s) in one batch")
+                print(f"portal {locale}: translating {len(missing)} missing key(s) in one text batch")
                 try:
                     translated, failed = await asyncio.wait_for(
                         translate_missing(
