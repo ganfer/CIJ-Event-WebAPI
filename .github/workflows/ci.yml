@@ -39,7 +39,7 @@ jobs:
           EVENTS_ORG_ID: ${{ secrets.EVENTS_ORG_ID }}
           EVENTS_API_TOKEN: ${{ secrets.EVENTS_API_TOKEN }}
           EVENTS_WEBAPP_ID: ${{ secrets.EVENTS_WEBAPP_ID }}
-          EVENT_TRANSLATION_REQUIRED_LOCALES: de-DE,en-US,fr-FR
+          EVENT_TRANSLATION_REQUIRED_LOCALES: en-US,de-DE,it-IT,fr-FR,es-ES,pt-PT,pl-PL,cs-CZ
         run: npm run check:translations
 
       - name: Build static site

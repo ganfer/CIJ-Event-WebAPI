@@ -5,6 +5,10 @@ import { spawnSync } from 'node:child_process';
 const root = process.cwd();
 const failures = [];
 let checks = 0;
+const supportedLocales = [
+  'en-US', 'de-DE', 'it-IT', 'fr-FR',
+  'es-ES', 'pt-PT', 'pl-PL', 'cs-CZ'
+];
 
 function check(condition, message) {
   checks += 1;
@@ -71,6 +75,63 @@ for (const file of jsonFiles) {
     check(true, `JSON is valid: ${relative(file)}`);
   } catch (error) {
     check(false, `JSON is valid: ${relative(file)} (${error.message})`);
+  }
+}
+
+const localeFiles = walk('public/locales', (file) => file.endsWith('.json'));
+const discoveredLocales = localeFiles
+  .map((file) => path.basename(file).match(/^translation\.(.+)\.json$/)?.[1])
+  .filter(Boolean);
+check(
+  JSON.stringify([...discoveredLocales].sort()) === JSON.stringify([...supportedLocales].sort()),
+  `locale files match the supported locale set: ${supportedLocales.join(', ')}`
+);
+
+const expectedLanguageKeys = supportedLocales.map((locale) => `lang_${locale}`).sort();
+for (const file of localeFiles) {
+  const translations = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const languageKeys = Object.keys(translations).filter((key) => key.startsWith('lang_')).sort();
+  check(
+    JSON.stringify(languageKeys) === JSON.stringify(expectedLanguageKeys),
+    `${relative(file)} contains language labels for exactly the supported locales`
+  );
+
+  for (const key of expectedLanguageKeys) {
+    const label = translations[key];
+    check(
+      typeof label === 'string' && label.trim() && !/[()]/.test(label),
+      `${relative(file)} ${key} is a language-only label without a country/region suffix`
+    );
+  }
+}
+
+const localizationSource = fs.readFileSync('public/js/localization.js', 'utf8');
+const supportedLocalesBlock = localizationSource.match(/this\.supportedLocales\s*=\s*\[([\s\S]*?)\];/)?.[1] || '';
+const configuredLocales = [...supportedLocalesBlock.matchAll(/['"]([^'"]+)['"]/g)].map((match) => match[1]);
+check(
+  JSON.stringify(configuredLocales) === JSON.stringify(supportedLocales),
+  'localization.js exposes the supported locales in the documented switcher order'
+);
+
+const serverSource = fs.readFileSync('server.js', 'utf8');
+const allowedLocalesBlock = serverSource.match(/const allowedLocales\s*=\s*\[([\s\S]*?)\];/)?.[1] || '';
+const serverLocales = [...allowedLocalesBlock.matchAll(/['"]([^'"]+)['"]/g)].map((match) => match[1]);
+check(
+  JSON.stringify(serverLocales) === JSON.stringify(supportedLocales),
+  'server.js allows exactly the supported locales in the documented switcher order'
+);
+
+for (const directory of ['public/translations/events', 'public/translation/forms']) {
+  for (const file of walk(directory, (candidate) => candidate.endsWith('.json') && !candidate.endsWith('.source.json'))) {
+    const translation = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const unexpectedLocales = Object.keys(translation)
+      .filter((key) => /^[a-z]{2}(?:-[A-Za-z0-9]+)+$/.test(key) && !supportedLocales.includes(key));
+    check(unexpectedLocales.length === 0, `${relative(file)} contains no unsupported locale sections`);
+
+    const unexpectedPending = Array.isArray(translation?._meta?.pendingLocales)
+      ? translation._meta.pendingLocales.filter((locale) => !supportedLocales.includes(locale))
+      : [];
+    check(unexpectedPending.length === 0, `${relative(file)} contains no unsupported pending locales`);
   }
 }
 

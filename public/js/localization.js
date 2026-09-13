@@ -25,20 +25,12 @@ class LocalizationManager {
 
         // List of supported localizations
         this.supportedLocales = [
-            'ar-SA', 'bg-BG', 'ca-ES', 'cs-CZ', 'da-DK',
-            'de-DE', 'el-GR', 'en-AU', 'en-CA', 'en-GB',
-            'en-US', 'es-ES', 'et-EE', 'eu-ES', 'fi-FI',
-            'fr-CA', 'fr-FR', 'gl-ES', 'he-IL', 'hr-HR',
-            'hu-HU', 'id-ID', 'it-IT', 'ja-JP', 'ko-KR',
-            'lt-LT', 'lv-LV', 'nb-NO', 'nl-NL', 'pl-PL',
-            'pt-BR', 'pt-PT', 'ro-RO', 'ru-RU', 'sk-SK',
-            'sl-SI', 'sr-Cyrl-CS', 'sr-Latn-CS', 'sv-SE',
-            'th-TH', 'tr-TR', 'uk-UA', 'vi-VN', 'zh-CN',
-            'zh-HK', 'zh-TW'
+            'en-US', 'de-DE', 'it-IT', 'fr-FR',
+            'es-ES', 'pt-PT', 'pl-PL', 'cs-CZ'
         ];
 
         // List of RTL locales that need right-to-left text direction
-        this.rtlLocales = ['ar-SA', 'he-IL'];
+        this.rtlLocales = [];
 
         // Language change handler
         this.languageChangeHandler = null;
@@ -342,18 +334,6 @@ class LocalizationManager {
                 // Capitalize first letter
                 displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
 
-                // Add the region name if available
-                const region = localeCode.split('-')[1];
-                if (region) {
-                    try {
-                        const regionName = new Intl.DisplayNames([localeCode], { type: 'region' })
-                            .of(region);
-                        displayName = `${displayName} (${regionName})`;
-                    } catch (e) {
-                        // If region display fails, just use the code
-                        displayName = `${displayName} (${region})`;
-                    }
-                }
             } catch (e) {
                 // Fallback if Intl.DisplayNames is not supported
                 displayName = localeCode;

@@ -10,16 +10,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const allowedLocales = [
-    'ar-SA', 'bg-BG', 'ca-ES', 'cs-CZ', 'da-DK',
-    'de-DE', 'el-GR', 'en-AU', 'en-CA', 'en-GB',
-    'en-US', 'es-ES', 'et-EE', 'eu-ES', 'fi-FI',
-    'fr-CA', 'fr-FR', 'gl-ES', 'he-IL', 'hr-HR',
-    'hu-HU', 'id-ID', 'it-IT', 'ja-JP', 'ko-KR',
-    'lt-LT', 'lv-LV', 'nb-NO', 'nl-NL', 'pl-PL',
-    'pt-BR', 'pt-PT', 'ro-RO', 'ru-RU', 'sk-SK',
-    'sl-SI', 'sr-Cyrl-CS', 'sr-Latn-CS', 'sv-SE',
-    'th-TH', 'tr-TR', 'uk-UA', 'vi-VN', 'zh-CN',
-    'zh-HK', 'zh-TW'
+    'en-US', 'de-DE', 'it-IT', 'fr-FR',
+    'es-ES', 'pt-PT', 'pl-PL', 'cs-CZ'
 ];
 
 // Serve static files from the public directory

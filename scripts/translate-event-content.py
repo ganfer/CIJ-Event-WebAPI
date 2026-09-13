@@ -11,19 +11,6 @@ LOCALES_DIR = Path("public/locales")
 LOCALE_FILE_PATTERN = re.compile(r"^translation\.(.+)\.json$")
 TRANSLATION_SCHEMA_VERSION = 2
 
-# googletrans expects language codes, while the portal uses regional locales.
-# Most locales map to their primary language automatically; only exceptions live here.
-GOOGLETRANS_LANGUAGE_OVERRIDES = {
-    "nb": "no",
-    "zh-CN": "zh-cn",
-    "zh-HK": "zh-tw",
-    "zh-Hans-CN": "zh-cn",
-    "zh-Hant-HK": "zh-tw",
-    "zh-Hant-TW": "zh-tw",
-    "zh-TW": "zh-tw",
-}
-
-
 def discover_portal_locales():
     locales = []
     for file in LOCALES_DIR.glob("translation.*.json"):
@@ -34,10 +21,7 @@ def discover_portal_locales():
 
 
 def googletrans_language(locale):
-    if locale in GOOGLETRANS_LANGUAGE_OVERRIDES:
-        return GOOGLETRANS_LANGUAGE_OVERRIDES[locale]
-    language = locale.split("-", 1)[0].lower()
-    return GOOGLETRANS_LANGUAGE_OVERRIDES.get(language, language)
+    return locale.split("-", 1)[0].lower()
 
 
 def source_hash(source):

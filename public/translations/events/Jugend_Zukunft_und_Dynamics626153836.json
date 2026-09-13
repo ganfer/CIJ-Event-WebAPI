@@ -1,211 +1,41 @@
 {
-  "bg-BG": {
-    "title": "Младост, бъдеще и динамика",
-    "description": "Това събитие е с демонстрационна цел"
-  },
-  "ca-ES": {
-    "title": "Joventut, Futur i Dinàmica",
-    "description": "Aquest esdeveniment té finalitats demostratives"
-  },
-  "cs-CZ": {
-    "title": "Mládí, budoucnost a dynamika",
-    "description": "Tato akce je pro demonstrační účely"
-  },
-  "da-DK": {
-    "title": "Ungdom, Fremtid og Dynamik",
-    "description": "Dette arrangement er til demonstrationsformål"
+  "en-US": {
+    "title": "Youth, Future and Dynamics",
+    "description": "This event is for demonstration purposes"
   },
   "de-DE": {
     "title": "Jugend, Zukunft und Dynamik",
     "description": "Diese Veranstaltung dient Demonstrationszwecken"
   },
-  "el-GR": {
-    "title": "Νεολαία, Μέλλον και Δυναμική",
-    "description": "Αυτή η εκδήλωση είναι για λόγους επίδειξης"
-  },
-  "en-AU": {
-    "title": "Youth, Future and Dynamics",
-    "description": "This event is for demonstration purposes"
-  },
-  "en-CA": {
-    "title": "Youth, Future and Dynamics",
-    "description": "This event is for demonstration purposes"
-  },
-  "en-GB": {
-    "title": "Youth, Future and Dynamics",
-    "description": "This event is for demonstration purposes"
-  },
-  "en-US": {
-    "title": "Youth, Future and Dynamics",
-    "description": "This event is for demonstration purposes"
-  },
-  "es-ES": {
-    "title": "Juventud, Futuro y Dinámica",
-    "description": "Este evento es para fines de demostración."
-  },
-  "et-EE": {
-    "title": "Noored, tulevik ja dünaamika",
-    "description": "See üritus on demonstratsiooni eesmärgil"
-  },
-  "eu-ES": {
-    "title": "Gazteria, Etorkizuna eta Dinamika",
-    "description": "Ekitaldi hau erakustaldietarako da"
-  },
-  "fi-FI": {
-    "title": "Nuoriso, tulevaisuus ja dynamiikka",
-    "description": "Tämä tapahtuma on esittelytarkoituksessa"
-  },
-  "fr-CA": {
-    "title": "Jeunesse, avenir et dynamique",
-    "description": "Cet événement est à des fins de démonstration"
+  "it-IT": {
+    "title": "Giovani, futuro e dinamiche",
+    "description": "Questo evento è a scopo dimostrativo"
   },
   "fr-FR": {
     "title": "Jeunesse, avenir et dynamique",
     "description": "Cet événement est à des fins de démonstration"
   },
-  "gl-ES": {
-    "title": "Xuventude, Futuro e Dinámica",
-    "description": "Este evento é para fins de demostración"
-  },
-  "he-IL": {
-    "title": "נוער, עתיד ודינמיקה",
-    "description": "אירוע זה מיועד למטרות הדגמה"
-  },
-  "hr-HR": {
-    "title": "Mladost, budućnost i dinamika",
-    "description": "Ovaj događaj je u demonstracijske svrhe"
-  },
-  "hu-HU": {
-    "title": "Ifjúság, jövő és dinamika",
-    "description": "Ez a rendezvény demonstrációs célokat szolgál"
-  },
-  "id-ID": {
-    "title": "Pemuda, Masa Depan dan Dinamika",
-    "description": "Acara ini untuk tujuan demonstrasi"
-  },
-  "it-IT": {
-    "title": "Giovani, futuro e dinamiche",
-    "description": "Questo evento è a scopo dimostrativo"
-  },
-  "ja-JP": {
-    "title": "若者、未来、そしてダイナミクス",
-    "description": "このイベントはデモンストレーションを目的としています"
-  },
-  "ko-KR": {
-    "title": "젊음, 미래 그리고 역동성",
-    "description": "본 이벤트는 시연용입니다."
-  },
-  "lt-LT": {
-    "title": "Jaunystė, ateitis ir dinamika",
-    "description": "Šis renginys skirtas demonstraciniams tikslams"
-  },
-  "lv-LV": {
-    "title": "Jaunība, nākotne un dinamika",
-    "description": "Šis pasākums ir demonstrācijas nolūkos"
-  },
-  "nb-NO": {
-    "title": "Ungdom, fremtid og dynamikk",
-    "description": "Dette arrangementet er for demonstrasjonsformål"
-  },
-  "nl-NL": {
-    "title": "Jeugd, toekomst en dynamiek",
-    "description": "Dit evenement is bedoeld voor demonstratiedoeleinden"
-  },
-  "pl-PL": {
-    "title": "Młodość, przyszłość i dynamika",
-    "description": "To wydarzenie ma charakter demonstracyjny"
-  },
-  "pt-BR": {
-    "title": "Juventude, Futuro e Dinâmica",
-    "description": "Este evento é para fins de demonstração"
+  "es-ES": {
+    "title": "Juventud, Futuro y Dinámica",
+    "description": "Este evento es para fines de demostración."
   },
   "pt-PT": {
     "title": "Juventude, Futuro e Dinâmica",
     "description": "Este evento é para fins de demonstração"
   },
-  "ro-RO": {
-    "title": "Tineret, viitor și dinamică",
-    "description": "Acest eveniment are scop demonstrativ"
+  "pl-PL": {
+    "title": "Młodość, przyszłość i dynamika",
+    "description": "To wydarzenie ma charakter demonstracyjny"
   },
-  "ru-RU": {
-    "title": "Молодежь, будущее и динамика",
-    "description": "Это мероприятие носит демонстрационный характер"
-  },
-  "sk-SK": {
-    "title": "Mládež, budúcnosť a dynamika",
-    "description": "Toto podujatie slúži na demonštračné účely"
-  },
-  "sl-SI": {
-    "title": "Mladost, prihodnost in dinamika",
-    "description": "Ta dogodek je v predstavitvene namene"
-  },
-  "sr-Cyrl-CS": {
-    "title": "Младост, будућност и динамика",
-    "description": "Овај догађај је у сврху демонстрације"
-  },
-  "sr-Cyrl-RS": {
-    "title": "Младост, будућност и динамика",
-    "description": "Овај догађај је у сврху демонстрације"
-  },
-  "sr-Latn-CS": {
-    "title": "Младост, будућност и динамика",
-    "description": "Овај догађај је у сврху демонстрације"
-  },
-  "sr-Latn-RS": {
-    "title": "Младост, будућност и динамика",
-    "description": "Овај догађај је у сврху демонстрације"
-  },
-  "sv-SE": {
-    "title": "Ungdom, framtid och dynamik",
-    "description": "Detta evenemang är för demonstrationssyfte"
-  },
-  "th-TH": {
-    "title": "เยาวชน อนาคต และพลวัต",
-    "description": "กิจกรรมนี้มีวัตถุประสงค์เพื่อการสาธิต"
-  },
-  "tr-TR": {
-    "title": "Gençlik, Gelecek ve Dinamikler",
-    "description": "Bu etkinlik tanıtım amaçlıdır"
-  },
-  "uk-UA": {
-    "title": "Молодь, майбутнє та динаміка",
-    "description": "Ця подія має демонстраційний характер"
-  },
-  "vi-VN": {
-    "title": "Tuổi trẻ, Tương lai và Động lực",
-    "description": "Sự kiện này nhằm mục đích trình diễn"
-  },
-  "zh-CN": {
-    "title": "青春、未来、活力",
-    "description": "此活动仅用于演示目的"
-  },
-  "zh-HK": {
-    "title": "青春、未來、活力",
-    "description": "此活動僅用於演示目的"
-  },
-  "zh-Hans-CN": {
-    "title": "青春、未来、活力",
-    "description": "此活动仅用于演示目的"
-  },
-  "zh-Hant-HK": {
-    "title": "青春、未來、活力",
-    "description": "此活動僅用於演示目的"
-  },
-  "zh-Hant-TW": {
-    "title": "青春、未來、活力",
-    "description": "此活動僅用於演示目的"
-  },
-  "zh-TW": {
-    "title": "青春、未來、活力",
-    "description": "此活動僅用於演示目的"
+  "cs-CZ": {
+    "title": "Mládí, budoucnost a dynamika",
+    "description": "Tato akce je pro demonstrační účely"
   },
   "_meta": {
     "sourceLocale": "en-US",
     "translationProvider": "googletrans",
     "translationSchemaVersion": 2,
     "sourceHash": "ca0d778f79c06545b339c5926ff1035ec36b983517cbf40ae5eebb77d19a0261",
-    "pendingLocales": [
-      "ar-SA"
-    ]
+    "pendingLocales": []
   }
 }
