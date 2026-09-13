@@ -132,6 +132,7 @@ async def main():
         for locale in locales:
             if locale.lower().startswith("en-"):
                 result[locale] = source
+                print(f"{locale}: source copy")
                 continue
 
             existing_locale = existing_result.get(locale)
@@ -140,6 +141,12 @@ async def main():
                 and isinstance(existing_locale, dict)
                 and not is_untranslated_copy(source, existing_locale)
             )
+
+            if reuse_existing:
+                print(f"{locale}: reusing cached translation")
+            else:
+                print(f"{locale}: translating with googletrans")
+
             result[locale] = await translate_node(
                 translator,
                 source,
@@ -149,8 +156,7 @@ async def main():
             )
 
             # googletrans can occasionally return the source text without raising.
-            # Do not silently bless that response as valid cache. Raising here lets
-            # the workflow retry instead of committing another poisoned translation file.
+            # Do not silently bless that response as valid cache.
             if is_untranslated_copy(source, result[locale]):
                 raise RuntimeError(
                     f"Translation for {locale} is identical to en-US; refusing to cache it."
