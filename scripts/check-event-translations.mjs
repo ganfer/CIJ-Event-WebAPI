@@ -61,6 +61,7 @@ if (!Array.isArray(events)) {
 
 const failures = [];
 let checked = 0;
+let pendingCount = 0;
 
 function getEventKey(event) {
   const candidates = [event?.readableEventId, event?.eventId, event?.id, event?.eventID];
@@ -93,12 +94,25 @@ for (const event of events) {
     continue;
   }
 
+  const pendingLocales = Array.isArray(translation?._meta?.pendingLocales)
+    ? translation._meta.pendingLocales.filter(locale => typeof locale === 'string')
+    : [];
+  const pendingSet = new Set(pendingLocales);
+
   const missingLocales = requiredLocales.filter(locale =>
     !(translation?.[locale] && typeof translation[locale] === 'object')
   );
+  const unexpectedMissing = missingLocales.filter(locale => !pendingSet.has(locale));
+  const expectedPending = missingLocales.filter(locale => pendingSet.has(locale));
 
-  if (missingLocales.length > 0) {
-    failures.push(`${label} (${key}): missing locale(s): ${missingLocales.join(', ')}.`);
+  if (unexpectedMissing.length > 0) {
+    failures.push(`${label} (${key}): missing locale(s) without pending marker: ${unexpectedMissing.join(', ')}.`);
+    continue;
+  }
+
+  if (expectedPending.length > 0) {
+    pendingCount += expectedPending.length;
+    console.warn(`⚠ ${label} (${key}) — pending locale(s): ${expectedPending.join(', ')}`);
     continue;
   }
 
@@ -111,4 +125,8 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`\nEvent translation check passed: ${checked}/${events.length} published event(s) have translation files for all ${requiredLocales.length} required locale(s).`);
+if (pendingCount > 0) {
+  console.warn(`\nEvent translation check passed with ${pendingCount} pending locale(s). Pending locales will be retried on a later sync.`);
+} else {
+  console.log(`\nEvent translation check passed: ${checked}/${events.length} published event(s) have translation files for all ${requiredLocales.length} required locale(s).`);
+}
