@@ -10,7 +10,6 @@ LOCALES_DIR = Path("public/locales")
 SOURCE_LOCALE = "en-US"
 LOCALE_PATTERN = re.compile(r"^translation\.(.+)\.json$")
 PLACEHOLDER_PATTERN = re.compile(r"{{[^{}]+}}")
-TRANSLATION_TIMEOUT_SECONDS = 30
 
 GOOGLETRANS_LANGUAGE_OVERRIDES = {
     "nb": "no",
@@ -83,38 +82,17 @@ async def translate_missing(translator, source, keys, destination):
         protected_values.append(protected)
         replacements.append(mapping)
 
-    separators = [f"ZXQITEM{index}QXZ" for index in range(1, len(protected_values))]
-    combined_parts = []
-    for index, value in enumerate(protected_values):
-        if index:
-            combined_parts.append(f"\n{separators[index - 1]}\n")
-        combined_parts.append(value)
-    combined = "".join(combined_parts)
-
-    result = await translator.translate(combined, src="en", dest=destination)
-    translated_text = result.text
-
-    segments = [translated_text]
-    for separator in separators:
-        next_segments = []
-        for segment in segments:
-            if separator in segment:
-                left, right = segment.split(separator, 1)
-                next_segments.extend([left, right])
-            else:
-                next_segments.append(segment)
-        segments = next_segments
-
-    if len(segments) != len(keys):
-        raise RuntimeError(
-            f"googletrans changed batch separators: expected {len(keys)} segments, got {len(segments)}"
-        )
+    raw_results = await translator.translate(protected_values, src="en", dest=destination)
+    if not isinstance(raw_results, list):
+        raw_results = [raw_results]
+    if len(raw_results) != len(keys):
+        raise RuntimeError(f"googletrans returned {len(raw_results)} result(s) for {len(keys)} input(s)")
 
     translated = {}
     failed = []
-    for key, source_value, value, mapping in zip(keys, [source[key] for key in keys], segments, replacements):
+    for key, source_value, result, mapping in zip(keys, [source[key] for key in keys], raw_results, replacements):
         try:
-            value = restore_placeholders(value.strip(), mapping)
+            value = restore_placeholders(result.text, mapping)
             if value.strip() == source_value.strip():
                 raise RuntimeError("googletrans returned unchanged source text")
             translated[key] = value
@@ -157,28 +135,19 @@ async def main():
                     updated[key] = source[key]
                 print(f"portal {locale}: copied {len(missing)} missing key(s) from en-US")
             else:
-                print(f"portal {locale}: translating {len(missing)} missing key(s) in one text batch")
+                print(f"portal {locale}: translating {len(missing)} missing key(s) in one batch")
                 try:
-                    translated, failed = await asyncio.wait_for(
-                        translate_missing(
-                            translator,
-                            source,
-                            missing,
-                            google_language(locale),
-                        ),
-                        timeout=TRANSLATION_TIMEOUT_SECONDS,
+                    translated, failed = await translate_missing(
+                        translator,
+                        source,
+                        missing,
+                        google_language(locale),
                     )
                     updated.update(translated)
                     for key, error in failed:
                         print(f"::warning title=Portal UI translation pending::{locale}/{key}: {error}")
                     if failed:
                         pending.append(locale)
-                except asyncio.TimeoutError:
-                    pending.append(locale)
-                    print(
-                        f"::warning title=Portal UI translation pending::"
-                        f"{locale}: googletrans timed out after {TRANSLATION_TIMEOUT_SECONDS}s"
-                    )
                 except Exception as error:
                     pending.append(locale)
                     print(f"::warning title=Portal UI translation pending::{locale}: {error}")
