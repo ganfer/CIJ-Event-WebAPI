@@ -17,10 +17,17 @@ test('fetchWithTimeout aborts a stalled request', async () => {
         options.signal.addEventListener('abort', () => reject(options.signal.reason), { once: true });
     });
 
-    await assert.rejects(
-        fetchWithTimeout('https://example.test', {}, 5, stalledFetch),
-        error => error?.name === 'TimeoutError'
-    );
+    // AbortSignal.timeout() intentionally uses an unref'ed Node timer. Keep this
+    // synthetic fetch test alive just as a real network request would.
+    const keepAlive = setTimeout(() => {}, 100);
+    try {
+        await assert.rejects(
+            fetchWithTimeout('https://example.test', {}, 5, stalledFetch),
+            error => error?.name === 'TimeoutError'
+        );
+    } finally {
+        clearTimeout(keepAlive);
+    }
 });
 
 test('API base validation rejects SSRF destinations', async () => {
