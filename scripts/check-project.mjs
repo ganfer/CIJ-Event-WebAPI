@@ -35,9 +35,16 @@ const requiredFiles = [
   'public/js/config.example.js',
   'public/js/api-wrapper.js',
   'public/js/event-grid.js',
+  'public/js/event-grid-translations.js',
   'public/js/event-details.js',
+  'public/js/event-details-translations.js',
+  'public/js/event-details-runtime-fix.js',
   'public/js/form-translations.js',
   'public/lib/PublicApi.bundle.js',
+  'scripts/lib/http.mjs',
+  'docs/START.md',
+  'docs/API.md',
+  'docs/SECURITY.md',
   'package.json',
   'package-lock.json',
   'server.js'
@@ -156,8 +163,26 @@ for (const htmlFile of htmlFiles) {
   }
 }
 
+const markdownFiles = ['README.md', ...walk('docs', (file) => file.endsWith('.md'))];
+for (const markdownFile of markdownFiles) {
+  const markdown = fs.readFileSync(markdownFile, 'utf8');
+  const markdownDirectory = path.dirname(markdownFile);
+  const references = [...markdown.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)]
+    .map((match) => match[1].split('#')[0])
+    .filter((reference) => reference && !/^(?:https?:|mailto:|#)/i.test(reference));
+
+  for (const reference of references) {
+    const resolved = path.normalize(path.join(markdownDirectory, reference));
+    check(fs.existsSync(resolved), `${relative(markdownFile)} local documentation link exists: ${reference}`);
+  }
+}
+
 const gitignore = fs.existsSync('.gitignore') ? fs.readFileSync('.gitignore', 'utf8') : '';
 check(/(?:^|\n)public\/js\/config\.js(?:\n|$)/.test(gitignore), '.gitignore excludes public/js/config.js');
+check(/(?:^|\n)_site\/(?:\n|$)/.test(gitignore), '.gitignore excludes generated _site/ output');
+
+const trackedConfig = spawnSync('git', ['ls-files', '--error-unmatch', 'public/js/config.js'], { encoding: 'utf8' });
+check(trackedConfig.status !== 0, 'public/js/config.js is not tracked by Git');
 
 if (failures.length > 0) {
   console.error(`Project checks failed (${failures.length}/${checks}):`);

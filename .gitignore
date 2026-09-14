@@ -4,6 +4,9 @@ public/js/config.js
 # Dependencies
 node_modules/
 
+# Generated build output
+_site/
+
 # Local/editor files
 .DS_Store
 .vscode/
