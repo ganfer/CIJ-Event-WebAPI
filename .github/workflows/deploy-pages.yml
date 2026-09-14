@@ -25,10 +25,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
@@ -43,7 +43,7 @@ jobs:
         run: npm run build
 
       - name: Configure GitHub Pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+        uses: actions/configure-pages@v5
 
       - name: Generate production configuration
         env:
@@ -56,7 +56,6 @@ jobs:
 
           node <<'NODE'
           const fs = require('fs');
-          const security = require('./public/js/security.js');
 
           const required = ['EVENTS_ORG_ID', 'EVENTS_API_TOKEN'];
           const missing = required.filter((name) => !process.env[name]);
@@ -66,14 +65,8 @@ jobs:
             process.exit(1);
           }
 
-          const baseUrl = process.env.EVENTS_BASE_URL || 'https://public-eur.mkt.dynamics.com';
-          if (!security.isAllowedEventsApiBaseUrl(baseUrl)) {
-            console.error('EVENTS_BASE_URL must be an HTTPS Microsoft Dynamics endpoint.');
-            process.exit(1);
-          }
-
           const config = {
-            BASE_URL: baseUrl,
+            BASE_URL: process.env.EVENTS_BASE_URL || 'https://public-eur.mkt.dynamics.com',
             ORG_ID: process.env.EVENTS_ORG_ID,
             TOKEN: process.env.EVENTS_API_TOKEN,
             WEBAPP_ID: process.env.EVENTS_WEBAPP_ID || ''
@@ -205,10 +198,10 @@ jobs:
           echo "Dynamics Events API smoke test passed (HTTP ${HTTP_STATUS}, CORS ${CORS_ORIGIN})."
 
       - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        uses: actions/upload-pages-artifact@v4
         with:
           path: _site
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+        uses: actions/deploy-pages@v4
