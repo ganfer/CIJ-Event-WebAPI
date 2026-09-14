@@ -31,8 +31,7 @@ const speakersList = document.getElementById('event-portal-speakers-list');
  * @returns {string|null} Event ID or null if not found.
  */
 function getEventIdFromUrl() {
-    const value = new URLSearchParams(window.location.search).get('id');
-    return window.EventPortalSecurity?.normalizeEventId(value) || null;
+    return new URLSearchParams(window.location.search).get('id');
 }
 
 /**
@@ -232,10 +231,9 @@ function renderEvent(event) {
         }
     }
 
-    if (event.image && /^https:\/\//i.test(event.image)) {
+    if (event.image && /^https?:\/\//i.test(event.image)) {
         eventImage.src = event.image;
         eventImage.alt = event.eventName ? `${event.eventName} event image` : 'Event image';
-        eventImage.referrerPolicy = 'no-referrer';
         eventImageWrapper.classList.remove('hidden');
     }
 
@@ -320,13 +318,11 @@ function renderSpeakers(speakers) {
         visual.className = 'event-portal-speaker-visual';
 
         const imageUrl = speaker.imageUrl || speaker.image;
-        if (typeof imageUrl === 'string' && /^https:\/\//i.test(imageUrl)) {
+        if (typeof imageUrl === 'string' && /^https?:\/\//i.test(imageUrl)) {
             const image = document.createElement('img');
             image.src = imageUrl;
             image.alt = speaker.name ? `${speaker.name}` : 'Speaker';
             image.loading = 'lazy';
-            image.decoding = 'async';
-            image.referrerPolicy = 'no-referrer';
             visual.appendChild(image);
         } else {
             visual.textContent = getInitials(speaker.name);
@@ -369,10 +365,7 @@ function addRegistrationForm(event) {
     }
 
     if (!event.registrationForm) {
-        const notice = document.createElement('p');
-        notice.className = 'event-portal-form-notice';
-        notice.textContent = window.__ ? __('formNotAvailable') : 'Registration form is not available for this event.';
-        formContainer.replaceChildren(notice);
+        formContainer.innerHTML = `<p class="event-portal-form-notice">${window.__ ? __('formNotAvailable') : 'Registration form is not available for this event.'}</p>`;
         return;
     }
 
@@ -383,46 +376,27 @@ function addRegistrationForm(event) {
     try {
         const parser = new DOMParser();
         const parsedDoc = parser.parseFromString(event.registrationForm, 'text/html');
-        const sourceHolder = parsedDoc.querySelector('[data-form-id], [data-form-block-id], [form-id]');
-        const sourceScript = Array.from(parsedDoc.querySelectorAll('script[src]'))
-            .find(script => window.EventPortalSecurity?.isAllowedFormLoaderUrl(script.getAttribute('src')));
+        const formElements = Array.from(parsedDoc.body.children);
 
-        if (!sourceHolder || !sourceScript) {
-            throw new Error('Registration form embed is missing an approved placeholder or loader.');
-        }
+        formElements.forEach(element => {
+            if (element.tagName.toLowerCase() === 'script') {
+                const newScript = document.createElement('script');
+                Array.from(element.attributes).forEach(attribute => {
+                    newScript.setAttribute(attribute.name, attribute.value);
+                });
 
-        const formIdAttribute = ['data-form-id', 'data-form-block-id', 'form-id']
-            .find(attribute => sourceHolder.hasAttribute(attribute));
-        const formId = formIdAttribute ? sourceHolder.getAttribute(formIdAttribute) : '';
-        const formApiUrl = sourceHolder.getAttribute('data-form-api-url');
-        const cachedFormUrl = sourceHolder.getAttribute('data-cached-form-url');
-        const eventId = getEventIdFromUrl();
+                if (element.textContent) {
+                    newScript.textContent = element.textContent;
+                }
 
-        if (!window.EventPortalSecurity.normalizeOpaqueId(formId) ||
-            !window.EventPortalSecurity.isAllowedFormApiUrl(formApiUrl) ||
-            !window.EventPortalSecurity.isAllowedCachedFormUrl(cachedFormUrl) ||
-            !eventId) {
-            throw new Error('Registration form embed contains invalid configuration.');
-        }
+                document.body.appendChild(newScript);
+                return;
+            }
 
-        const holder = document.createElement('div');
-        holder.setAttribute(formIdAttribute, formId.trim());
-        holder.setAttribute('data-form-api-url', formApiUrl.trim());
-        holder.setAttribute('data-cached-form-url', cachedFormUrl.trim());
-        holder.setAttribute('data-readable-event-id', eventId);
-
-        if (sourceHolder.getAttribute('data-preventsubmissionui') === 'true') {
-            holder.setAttribute('data-preventsubmissionui', 'true');
-        }
-
-        formWrapper.appendChild(holder);
-
-        const loader = document.createElement('script');
-        loader.src = sourceScript.getAttribute('src').trim();
-        loader.referrerPolicy = 'no-referrer';
-        document.body.appendChild(loader);
+            formWrapper.appendChild(element.cloneNode(true));
+        });
     } catch (error) {
-        console.warn('Registration form embed was rejected or could not be rendered.');
+        console.error('Error processing registration form:', error);
         formWrapper.textContent = window.__ ? __('formLoadError') : 'Error loading the registration form. Please try again later.';
     }
 }
@@ -453,39 +427,32 @@ async function loadEventDetails() {
         return;
     }
 
-    let event;
     try {
-        event = await eventsAPI.getEventById(eventId);
-        renderEvent(event);
-    } catch (error) {
-        eventsAPI.logFailure('event_details', error);
-        const key = error?.status === 404 ? 'eventNotFound' : 'errorLoadingEventDetails';
-        const fallback = error?.status === 404 ? 'Event not found' : 'Error loading event. Please try again later.';
-        showPageError(window.__ ? __(key) : fallback);
-        return;
-    }
-
-    if (pageLoading) pageLoading.classList.add('hidden');
-    if (eventContent) eventContent.classList.remove('hidden');
-
-    try {
-        addRegistrationForm(event);
-    } catch (_) {
-        console.warn('Registration form could not be rendered.');
-        if (formContainer) {
-            formContainer.textContent = window.__ ? __('formLoadError') : 'Error loading the registration form. Please try again later.';
+        const event = await eventsAPI.getEventById(eventId);
+        if (!event) {
+            showPageError(window.__ ? __('eventNotFound') : 'Event not found');
+            return;
         }
-    }
 
-    Promise.allSettled([
-        eventsAPI.getEventSessions(eventId),
-        eventsAPI.getEventSpeakers(eventId)
-    ]).then(([sessionsResult, speakersResult]) => {
-        if (sessionsResult.status === 'fulfilled') renderSessions(sessionsResult.value);
-        if (speakersResult.status === 'fulfilled') renderSpeakers(speakersResult.value);
-    }).catch(() => {
-        // Optional agenda and speaker data must never hide the usable event page.
-    });
+        renderEvent(event);
+
+        const [sessions, speakers] = await Promise.all([
+            eventsAPI.getEventSessions(eventId),
+            eventsAPI.getEventSpeakers(eventId)
+        ]);
+
+        renderSessions(sessions);
+        renderSpeakers(speakers);
+        addRegistrationForm(event);
+
+        if (pageLoading) {
+            pageLoading.classList.add('hidden');
+        }
+        eventContent.classList.remove('hidden');
+    } catch (error) {
+        console.error('Failed to load event details:', error);
+        showPageError(window.__ ? __('errorLoadingEventDetails') : 'Error loading event. Please try again later.');
+    }
 }
 
 /**

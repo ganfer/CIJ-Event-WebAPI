@@ -1,21 +1,21 @@
 {
-  "name": "cij-event-webapi",
+  "name": "simple-js-portal",
   "version": "1.0.0",
-  "private": true,
-  "description": "Static Customer Insights - Journeys event web portal",
+  "description": "Simple JS portal for event management",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "check": "node scripts/check-project.mjs",
     "check:translations": "node scripts/check-event-translations.mjs",
     "build": "node scripts/build.mjs",
-    "test": "node --test tests/*.test.js && npm run check && npm run test:theme",
-    "test:theme": "node scripts/check-theme.mjs"
+    "test": "npm run check && npm run test:theme",
+    "test:theme": "node scripts/check-theme.mjs",
+    "install-deps": "npm install"
   },
   "engines": {
     "node": ">=22"
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^4.22.2"
   }
 }
