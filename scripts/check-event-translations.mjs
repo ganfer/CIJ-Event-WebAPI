@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { assertAllowedEventsApiBaseUrl, fetchWithTimeout } from './lib/http.mjs';
 
-const baseUrl = process.env.EVENTS_BASE_URL || 'https://public-eur.mkt.dynamics.com';
+const baseUrl = assertAllowedEventsApiBaseUrl(process.env.EVENTS_BASE_URL || 'https://public-eur.mkt.dynamics.com');
 const orgId = process.env.EVENTS_ORG_ID;
 const token = process.env.EVENTS_API_TOKEN;
 const webappId = process.env.EVENTS_WEBAPP_ID || '';
@@ -44,7 +45,7 @@ const url = new URL(
 url.searchParams.set('emApplicationtoken', token);
 if (webappId) url.searchParams.set('webappId', webappId);
 
-const response = await fetch(url, {
+const response = await fetchWithTimeout(url, {
   headers: {
     Accept: 'application/json'
   }

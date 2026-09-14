@@ -9,7 +9,6 @@ class EventTranslationManager {
     constructor() {
         this.basePath = 'translations/events/';
         this.cache = new Map();
-        this.apiWrapped = false;
         this.localeInitialized = false;
     }
 
@@ -123,46 +122,6 @@ class EventTranslationManager {
     }
 
     /**
-     * Apply event-content translations directly to the existing Events API wrapper.
-     * This keeps the grid and detail renderers close to the Microsoft sample while
-     * ensuring every API consumer receives content for the currently selected locale.
-     */
-    wrapEventsApi() {
-        if (this.apiWrapped || !window.eventsAPI) return;
-        this.apiWrapped = true;
-
-        const api = window.eventsAPI;
-        const originalGetAllEvents = api.getAllEvents.bind(api);
-        const originalGetEventById = api.getEventById.bind(api);
-        const originalGetEventSessions = api.getEventSessions.bind(api);
-        const originalGetEventSpeakers = api.getEventSpeakers.bind(api);
-
-        api.getAllEvents = async (...args) => {
-            const events = await originalGetAllEvents(...args);
-            return this.localizeAll(events, window.i18n?.currentLocale);
-        };
-
-        api.getEventById = async (...args) => {
-            const event = await originalGetEventById(...args);
-            return event ? this.localize(event, window.i18n?.currentLocale) : event;
-        };
-
-        api.getEventSessions = async (eventId, ...args) => {
-            const sessions = await originalGetEventSessions(eventId, ...args);
-            const translation = await this.load({ readableEventId: eventId });
-            const localized = this.getLocalizedContent(translation, window.i18n?.currentLocale);
-            return this.localizeCollection(sessions, localized?.sessions, 'session');
-        };
-
-        api.getEventSpeakers = async (eventId, ...args) => {
-            const speakers = await originalGetEventSpeakers(eventId, ...args);
-            const translation = await this.load({ readableEventId: eventId });
-            const localized = this.getLocalizedContent(translation, window.i18n?.currentLocale);
-            return this.localizeCollection(speakers, localized?.speakers, 'speaker');
-        };
-    }
-
-    /**
      * The existing pages keep API results in memory. Reload after an explicit locale
      * change so the API wrapper can rehydrate the page with the newly selected event
      * content. The first setLocale call is initialization and must not reload.
@@ -183,16 +142,13 @@ class EventTranslationManager {
     }
 
     initRuntimeIntegration() {
-        this.wrapEventsApi();
         this.wrapLocaleChanges();
     }
 }
 
 window.eventTranslations = new EventTranslationManager();
 
-// event-translations.js is loaded before api-wrapper.js. DOMContentLoaded runs after
-// all page scripts have executed, and this listener is registered before the page
-// renderer listeners, so the API is wrapped before events are requested.
+// The API wrapper localizes responses directly. This hook only wires locale changes.
 document.addEventListener('DOMContentLoaded', () => {
     window.eventTranslations.initRuntimeIntegration();
 });
