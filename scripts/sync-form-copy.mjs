@@ -1,7 +1,14 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import {
+  assertAllowedEventsApiBaseUrl,
+  fetchWithTimeout,
+  isAllowedCachedFormUrl
+} from './lib/http.mjs';
 
-const baseUrl = process.env.EVENTS_BASE_URL || 'https://public-eur.mkt.dynamics.com';
+const baseUrl = assertAllowedEventsApiBaseUrl(
+  process.env.EVENTS_BASE_URL || 'https://public-eur.mkt.dynamics.com'
+);
 const orgId = process.env.EVENTS_ORG_ID;
 const token = process.env.EVENTS_API_TOKEN;
 const webappId = process.env.EVENTS_WEBAPP_ID || '';
@@ -105,9 +112,13 @@ function extractFormKey(embedHtml, fallbackEventKey) {
 async function resolveFormHtml(embedHtml, label) {
   const cachedUrl = findAttribute(embedHtml, ['data-cached-form-url']);
   if (!cachedUrl) return embedHtml;
+  if (!isAllowedCachedFormUrl(cachedUrl)) {
+    console.warn(`${label}: cached form URL is outside the approved Dynamics form endpoint; using embed HTML.`);
+    return embedHtml;
+  }
 
   try {
-    const response = await fetch(cachedUrl, { headers: { Accept: 'text/html,*/*' } });
+    const response = await fetchWithTimeout(cachedUrl, { headers: { Accept: 'text/html,*/*' } });
     if (!response.ok) {
       console.warn(`${label}: cached form returned HTTP ${response.status}; using embed HTML.`);
       return embedHtml;
@@ -259,7 +270,7 @@ await fs.mkdir(outputDir, { recursive: true });
 const publishedPath = `/api/v1.0/orgs/${encodeURIComponent(orgId)}/eventmanagement/events/published`;
 const publishedUrl = apiUrl(publishedPath);
 if (webappId) publishedUrl.searchParams.set('webappId', webappId);
-const publishedResponse = await fetch(publishedUrl, { headers: { Accept: 'application/json' } });
+const publishedResponse = await fetchWithTimeout(publishedUrl, { headers: { Accept: 'application/json' } });
 if (!publishedResponse.ok) throw new Error(`published events: HTTP ${publishedResponse.status}`);
 const events = asArray(await publishedResponse.json(), 'published events');
 
@@ -269,7 +280,7 @@ for (const listedEvent of events) {
   if (!key) continue;
 
   const root = `/api/v1.0/orgs/${encodeURIComponent(orgId)}/eventmanagement/events/${encodeURIComponent(key)}`;
-  const response = await fetch(apiUrl(root), { headers: { Accept: 'application/json' } });
+  const response = await fetchWithTimeout(apiUrl(root), { headers: { Accept: 'application/json' } });
   if (!response.ok) {
     console.warn(`${key}: event detail returned HTTP ${response.status}; skipping extended form copy.`);
     continue;
