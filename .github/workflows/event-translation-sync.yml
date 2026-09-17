@@ -38,7 +38,7 @@ jobs:
         run: npm ci
 
       - name: Set up Python
-        uses: actions/setup-python@ece7d599f3cf7c27a4a0d5f4e4b846283a322fbd # v6
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.12'
 
