@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - 'public/locales/translation.en-US.json'
+      - '.github/workflows/event-translation-sync.yml'
   schedule:
     - cron: '17 * * * *'
       timezone: 'Europe/Berlin'
