@@ -4,17 +4,17 @@
       "firstname": {
         "label": "Jméno",
         "placeholder": "Jméno",
-        "hint": "First Name"
+        "hint": "Křestní jméno"
       },
       "lastname": {
         "label": "Příjmení",
         "placeholder": "Příjmení",
-        "hint": "Last Name"
+        "hint": "Příjmení"
       },
       "emailaddress1": {
         "label": "E-mailová adresa",
         "placeholder": "E-mailová adresa",
-        "hint": "Email"
+        "hint": "E-mail"
       }
     },
     "buttons": {
@@ -23,13 +23,13 @@
     "texts": {
       "text_001": "{{EventName}}",
       "text_002": "{{AboutEventDescription}}",
-      "text_003": "© 2023. All rights reserved."
+      "text_003": "© 2023. Všechna práva vyhrazena."
     },
     "messages": {
-      "message_001": "Thank you for submitting the form.",
-      "message_002": "There was an error, please try again.",
-      "message_003": "You have been added to the waitlist.",
-      "message_004": "required"
+      "message_001": "Děkujeme za odeslání formuláře.",
+      "message_002": "Došlo k chybě, zkuste to prosím znovu.",
+      "message_003": "Byli jste přidáni do pořadníku.",
+      "message_004": "požadovaný"
     }
   },
   "de-DE": {
@@ -37,17 +37,17 @@
       "firstname": {
         "label": "Vorname",
         "placeholder": "Vorname",
-        "hint": "First Name"
+        "hint": "Vorname"
       },
       "lastname": {
         "label": "Nachname",
         "placeholder": "Nachname",
-        "hint": "Last Name"
+        "hint": "Nachname"
       },
       "emailaddress1": {
         "label": "E-Mail-Adresse",
         "placeholder": "E-Mail-Adresse",
-        "hint": "Email"
+        "hint": "E-Mail"
       }
     },
     "buttons": {
@@ -56,13 +56,13 @@
     "texts": {
       "text_001": "{{EventName}}",
       "text_002": "{{AboutEventDescription}}",
-      "text_003": "© 2023. All rights reserved."
+      "text_003": "© 2023. Alle Rechte vorbehalten."
     },
     "messages": {
-      "message_001": "Thank you for submitting the form.",
-      "message_002": "There was an error, please try again.",
-      "message_003": "You have been added to the waitlist.",
-      "message_004": "required"
+      "message_001": "Vielen Dank für das Absenden des Formulars.",
+      "message_002": "Es ist ein Fehler aufgetreten, bitte versuchen Sie es erneut.",
+      "message_003": "Sie wurden zur Warteliste hinzugefügt.",
+      "message_004": "erforderlich"
     }
   },
   "en-US": {
@@ -103,32 +103,32 @@
       "firstname": {
         "label": "Nombre",
         "placeholder": "Nombre",
-        "hint": "First Name"
+        "hint": "Nombre de pila"
       },
       "lastname": {
         "label": "Apellidos",
         "placeholder": "Apellidos",
-        "hint": "Last Name"
+        "hint": "Apellido"
       },
       "emailaddress1": {
         "label": "Correo electrónico",
         "placeholder": "Correo electrónico",
-        "hint": "Email"
+        "hint": "Correo electrónico"
       }
     },
     "buttons": {
       "submit": "Enviar"
     },
     "texts": {
-      "text_001": "{{EventName}}",
-      "text_002": "{{AboutEventDescription}}",
-      "text_003": "© 2023. All rights reserved."
+      "text_001": "{{Nombre del evento}}",
+      "text_002": "{{Acerca de la descripción del evento}}",
+      "text_003": "© 2023. Todos los derechos reservados."
     },
     "messages": {
-      "message_001": "Thank you for submitting the form.",
-      "message_002": "There was an error, please try again.",
-      "message_003": "You have been added to the waitlist.",
-      "message_004": "required"
+      "message_001": "Gracias por enviar el formulario.",
+      "message_002": "Se ha producido un error, inténtalo de nuevo.",
+      "message_003": "Has sido agregado a la lista de espera.",
+      "message_004": "requerido"
     }
   },
   "fr-FR": {
@@ -136,32 +136,32 @@
       "firstname": {
         "label": "Prénom",
         "placeholder": "Prénom",
-        "hint": "First Name"
+        "hint": "Prénom"
       },
       "lastname": {
         "label": "Nom",
         "placeholder": "Nom",
-        "hint": "Last Name"
+        "hint": "Nom de famille"
       },
       "emailaddress1": {
         "label": "Adresse e-mail",
         "placeholder": "Adresse e-mail",
-        "hint": "Email"
+        "hint": "E-mail"
       }
     },
     "buttons": {
       "submit": "Envoyer"
     },
     "texts": {
-      "text_001": "{{EventName}}",
-      "text_002": "{{AboutEventDescription}}",
-      "text_003": "© 2023. All rights reserved."
+      "text_001": "{{Nom de l'événement}}",
+      "text_002": "{{À propos de la description de l'événement}}",
+      "text_003": "© 2023. Tous droits réservés."
     },
     "messages": {
-      "message_001": "Thank you for submitting the form.",
-      "message_002": "There was an error, please try again.",
-      "message_003": "You have been added to the waitlist.",
-      "message_004": "required"
+      "message_001": "Merci d'avoir soumis le formulaire.",
+      "message_002": "Une erreur s'est produite, veuillez réessayer.",
+      "message_003": "Vous avez été ajouté à la liste d'attente.",
+      "message_004": "requis"
     }
   },
   "it-IT": {
@@ -169,32 +169,32 @@
       "firstname": {
         "label": "Nome",
         "placeholder": "Nome",
-        "hint": "First Name"
+        "hint": "Nome di battesimo"
       },
       "lastname": {
         "label": "Cognome",
         "placeholder": "Cognome",
-        "hint": "Last Name"
+        "hint": "Cognome"
       },
       "emailaddress1": {
         "label": "Indirizzo email",
         "placeholder": "Indirizzo email",
-        "hint": "Email"
+        "hint": "E-mail"
       }
     },
     "buttons": {
       "submit": "Invia"
     },
     "texts": {
-      "text_001": "{{EventName}}",
-      "text_002": "{{AboutEventDescription}}",
-      "text_003": "© 2023. All rights reserved."
+      "text_001": "{{NomeEvento}}",
+      "text_002": "{{Informazioni sull'eventoDescrizione}}",
+      "text_003": "© 2023. Tutti i diritti riservati."
     },
     "messages": {
-      "message_001": "Thank you for submitting the form.",
-      "message_002": "There was an error, please try again.",
-      "message_003": "You have been added to the waitlist.",
-      "message_004": "required"
+      "message_001": "Grazie per aver inviato il modulo",
+      "message_002": "Si è verificato un errore, riprova.",
+      "message_003": "Sei stato aggiunto alla lista d'attesa.",
+      "message_004": "necessario"
     }
   },
   "pl-PL": {
@@ -202,32 +202,32 @@
       "firstname": {
         "label": "Imię",
         "placeholder": "Imię",
-        "hint": "First Name"
+        "hint": "Imię"
       },
       "lastname": {
         "label": "Nazwisko",
         "placeholder": "Nazwisko",
-        "hint": "Last Name"
+        "hint": "Nazwisko"
       },
       "emailaddress1": {
         "label": "Adres e-mail",
         "placeholder": "Adres e-mail",
-        "hint": "Email"
+        "hint": "E-mail"
       }
     },
     "buttons": {
       "submit": "Wyślij"
     },
     "texts": {
-      "text_001": "{{EventName}}",
-      "text_002": "{{AboutEventDescription}}",
-      "text_003": "© 2023. All rights reserved."
+      "text_001": "{{Nazwa wydarzenia}}",
+      "text_002": "{{Opis wydarzenia}}",
+      "text_003": "© 2023. Wszelkie prawa zastrzeżone."
     },
     "messages": {
-      "message_001": "Thank you for submitting the form.",
-      "message_002": "There was an error, please try again.",
-      "message_003": "You have been added to the waitlist.",
-      "message_004": "required"
+      "message_001": "Dziękujemy za przesłanie formularza.",
+      "message_002": "Wystąpił błąd. Spróbuj ponownie.",
+      "message_003": "Zostałeś dodany do listy oczekujących.",
+      "message_004": "wymagany"
     }
   },
   "pt-PT": {
@@ -235,32 +235,32 @@
       "firstname": {
         "label": "Nome",
         "placeholder": "Nome",
-        "hint": "First Name"
+        "hint": "Primeiro nome"
       },
       "lastname": {
         "label": "Apelido",
         "placeholder": "Apelido",
-        "hint": "Last Name"
+        "hint": "Sobrenome"
       },
       "emailaddress1": {
         "label": "Endereço de e-mail",
         "placeholder": "Endereço de e-mail",
-        "hint": "Email"
+        "hint": "E-mail"
       }
     },
     "buttons": {
       "submit": "Enviar"
     },
     "texts": {
-      "text_001": "{{EventName}}",
-      "text_002": "{{AboutEventDescription}}",
-      "text_003": "© 2023. All rights reserved."
+      "text_001": "{{NomedoEvento}}",
+      "text_002": "{{SobreEventDescription}}",
+      "text_003": "© 2023. Todos os direitos reservados."
     },
     "messages": {
-      "message_001": "Thank you for submitting the form.",
-      "message_002": "There was an error, please try again.",
-      "message_003": "You have been added to the waitlist.",
-      "message_004": "required"
+      "message_001": "Obrigado por enviar o formulário.",
+      "message_002": "Ocorreu um erro, tente novamente.",
+      "message_003": "Você foi adicionado à lista de espera.",
+      "message_004": "obrigatório"
     }
   },
   "_meta": {
@@ -268,14 +268,6 @@
     "translationProvider": "googletrans+standard-fields+extended-copy",
     "translationSchemaVersion": 3,
     "sourceHash": "fc85949b681538e626b235b9dd6a6530e9d3b795f6f4de47ec1cd4b976af9e3b",
-    "pendingLocales": [
-      "cs-CZ",
-      "de-DE",
-      "es-ES",
-      "fr-FR",
-      "it-IT",
-      "pl-PL",
-      "pt-PT"
-    ]
+    "pendingLocales": []
   }
 }

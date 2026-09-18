@@ -1,20 +1,33 @@
 {
+  "cs-CZ": {
+    "title": "Nová akce 14"
+  },
+  "de-DE": {
+    "title": "Neue Veranstaltung 14"
+  },
   "en-US": {
     "title": "New event 14"
+  },
+  "es-ES": {
+    "title": "Nuevo evento 14"
+  },
+  "fr-FR": {
+    "title": "Nouvel événement 14"
+  },
+  "it-IT": {
+    "title": "Nuovo evento 14"
+  },
+  "pl-PL": {
+    "title": "Nowe wydarzenie 14"
+  },
+  "pt-PT": {
+    "title": "Novo evento 14"
   },
   "_meta": {
     "sourceLocale": "en-US",
     "translationProvider": "googletrans",
     "translationSchemaVersion": 2,
     "sourceHash": "a7b7c49484fdee8a8beba4f366ac6eb5c2d7e6b191f3185cf14f938286f21a00",
-    "pendingLocales": [
-      "cs-CZ",
-      "de-DE",
-      "es-ES",
-      "fr-FR",
-      "it-IT",
-      "pl-PL",
-      "pt-PT"
-    ]
+    "pendingLocales": []
   }
 }
