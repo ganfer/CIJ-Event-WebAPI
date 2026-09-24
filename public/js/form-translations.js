@@ -3,7 +3,7 @@
 
     class FormTranslationManager {
         constructor() {
-            this.basePath = 'translation/forms/';
+            this.basePath = 'translations/forms/';
             this.formKey = '';
             this.eventKey = '';
             this.translation = null;

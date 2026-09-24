@@ -73,7 +73,7 @@ const jsonFiles = [
   'package-lock.json',
   ...walk('public/locales', (file) => file.endsWith('.json')),
   ...walk('public/translations/events', (file) => file.endsWith('.json')),
-  ...walk('public/translation/forms', (file) => file.endsWith('.json'))
+  ...walk('public/translations/forms', (file) => file.endsWith('.json'))
 ];
 
 for (const file of jsonFiles) {
@@ -128,7 +128,17 @@ check(
   'server.js allows exactly the supported locales in the documented switcher order'
 );
 
-for (const directory of ['public/translations/events', 'public/translation/forms']) {
+check(fs.existsSync('public/translations/forms'), 'canonical form translation directory exists');
+const translationDirectories = fs.readdirSync('public', { withFileTypes: true })
+  .filter((entry) => entry.isDirectory() && entry.name.startsWith('translation'))
+  .map((entry) => entry.name)
+  .sort();
+check(
+  JSON.stringify(translationDirectories) === JSON.stringify(['translations']),
+  'public uses one canonical translations directory'
+);
+
+for (const directory of ['public/translations/events', 'public/translations/forms']) {
   for (const file of walk(directory, (candidate) => candidate.endsWith('.json') && !candidate.endsWith('.source.json'))) {
     const translation = JSON.parse(fs.readFileSync(file, 'utf8'));
     const unexpectedLocales = Object.keys(translation)
