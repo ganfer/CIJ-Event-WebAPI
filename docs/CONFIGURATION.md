@@ -40,6 +40,6 @@ The canonical set currently appears in `localization.js`, `server.js`, workflow 
 - `_site/`: generated static build; ignored.
 - `_site/js/config.js`: generated only by deployment.
 - `public/translations/events/*.source.json`: generated public event content.
-- `public/translation/forms/*.source.json`: generated visible form copy.
+- `public/translations/forms/*.source.json`: generated visible form copy.
 
 Review generated translation content before publishing if event copy is not intended to be public.

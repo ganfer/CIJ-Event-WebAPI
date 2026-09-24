@@ -13,7 +13,7 @@ const orgId = process.env.EVENTS_ORG_ID;
 const token = process.env.EVENTS_API_TOKEN;
 const webappId = process.env.EVENTS_WEBAPP_ID || '';
 const outputDir = path.join(process.cwd(), 'public', 'translations', 'events');
-const formOutputDir = path.join(process.cwd(), 'public', 'translation', 'forms');
+const formOutputDir = path.join(process.cwd(), 'public', 'translations', 'forms');
 
 if (!orgId || !token) {
   throw new Error('EVENTS_ORG_ID and EVENTS_API_TOKEN are required.');

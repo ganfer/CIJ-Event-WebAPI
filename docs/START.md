@@ -169,7 +169,7 @@ Production and non-production environments should use different web application 
 | `public/js/form-translations.js` | Registration-form copy overrides |
 | `public/locales/` | Portal UI translation files |
 | `public/translations/events/` | Per-event sources and localized content |
-| `public/translation/forms/` | Per-form sources and localized copy |
+| `public/translations/forms/` | Per-form sources and localized copy |
 | `scripts/` | Build, checks and translation synchronization |
 | `tests/` | Node unit/integration and visual preview fixtures |
 | `.github/workflows/` | CI, translation automation and Pages deployment |

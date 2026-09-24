@@ -8,7 +8,7 @@ This document describes the implemented code. The application owns no JSON API a
 | --- | --- | --- | --- |
 | `GET`/`HEAD` | `/`, `/index.html` | None | Event-list page |
 | `GET`/`HEAD` | `/event-details.html?id={id}` | None | Event detail and registration page |
-| `GET`/`HEAD` | `/js/*`, `/css/*`, `/assets/*`, `/locales/*`, `/translations/*`, `/translation/*`, `/lib/*` | None | Static resources |
+| `GET`/`HEAD` | `/js/*`, `/css/*`, `/assets/*`, `/locales/*`, `/translations/*`, `/lib/*` | None | Static resources |
 
 The local Express server returns:
 

@@ -79,16 +79,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ ! -d public/translation/forms ]; then
+          if [ ! -d public/translations/forms ]; then
             echo "No registration form translation sources found."
             exit 0
           fi
 
           while IFS= read -r source_file; do
             form_key="$(basename "$source_file" .source.json)"
-            output_file="public/translation/forms/${form_key}.json"
+            output_file="public/translations/forms/${form_key}.json"
             python scripts/translate-form-content-extended.py "$source_file" "$output_file"
-          done < <(find public/translation/forms -maxdepth 1 -type f -name '*.source.json' -print | sort)
+          done < <(find public/translations/forms -maxdepth 1 -type f -name '*.source.json' -print | sort)
 
       - name: Run project checks
         run: npm test
@@ -107,9 +107,9 @@ jobs:
       - name: Commit synchronized translations
         shell: bash
         run: |
-          git add public/locales public/translations/events public/translation/forms
+          git add public/locales public/translations
 
-          if git diff --cached --quiet -- public/locales public/translations/events public/translation/forms; then
+          if git diff --cached --quiet -- public/locales public/translations; then
             echo "No translation changes to commit."
             exit 0
           fi
